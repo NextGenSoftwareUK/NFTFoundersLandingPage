@@ -520,16 +520,16 @@ body.test-mode-on .test-chain-note{display:block}
           <button class="chain-switch-btn" id="connectEvmBtn" onclick="connectEVM()">
             <span id="connectEvmInner">🦊 Connect MetaMask</span>
           </button>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <input class="form-input" id="evmEmail" type="email" placeholder="you@example.com">
+          </div>
           <div class="price-row">
             <span class="price-label">TOTAL DUE</span>
             <span class="price-value" id="evmPrice" style="color:var(--cyan)"></span>
           </div>
           <button class="confirm-btn" id="evmConfirm" style="background:linear-gradient(135deg,#007acc,#00e5ff);color:#000a1a;" onclick="handleEVMPayment()" disabled>⚡ CONFIRM MINT</button>
           <div class="field-error" id="evmError"></div>
-          <div class="form-group" style="margin-top:12px">
-            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
-            <input class="form-input" id="evmEmail" type="email" placeholder="you@example.com">
-          </div>
         </div>
 
         <!-- SOL wallet sub-panel (Phantom) -->
@@ -543,16 +543,16 @@ body.test-mode-on .test-chain-note{display:block}
             <span id="connectSolInner">👻 Connect Phantom</span>
           </button>
           <div class="net-warn" id="solNetWarn"></div>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <input class="form-input" id="solEmail" type="email" placeholder="you@example.com">
+          </div>
           <div class="price-row">
             <span class="price-label">TOTAL DUE</span>
             <span class="price-value" id="solPrice" style="color:var(--cyan)"></span>
           </div>
           <button class="confirm-btn" id="solConfirm" style="background:linear-gradient(135deg,#3b006e,#9945ff,#c77dff);color:#fff;" onclick="handleSOLPayment()" disabled>◎ CONFIRM MINT</button>
           <div class="field-error" id="solError"></div>
-          <div class="form-group" style="margin-top:12px">
-            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
-            <input class="form-input" id="solEmail" type="email" placeholder="you@example.com">
-          </div>
         </div>
 
         <!-- QR sub-panel (BTC only) -->
