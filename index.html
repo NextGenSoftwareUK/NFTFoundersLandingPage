@@ -635,64 +635,22 @@ body.test-mode-on .test-chain-note{display:block}
 
 
 <script>
-// ══════════════════════════════════════════════════════════
-//  ⚙️  CONFIG  — replace placeholders with your real values
-// ══════════════════════════════════════════════════════════
+  let CFG = {};
+  let OASIS_CFG = {};
+  let TEST_MODE = false;
 
-// 🧪 SET TO false WHEN YOU GO LIVE
-const TEST_MODE = true;
-
-const CFG = {
-  // ── Stripe ──
-  // Live key:  pk_live_...   Test key: pk_test_...
-  stripePk: TEST_MODE
-    ? 'pk_test_51TQhYxD2t0mRpwzcuLPFfHAcFGB42R48H4b4NsBGLoHJgiUQwJhwtTPFHKvMmhBKK2yRatvKIYUGdY7GqVYcjzsx00T98kEqRz'
-    : 'pk_live_REPLACE_WITH_YOUR_LIVE_STRIPE_KEY',
-
-  // ── EVM receiving wallet ──
-  // In test mode this is a throwaway address — MetaMask sends to it on testnet (valueless)
-  evmReceiver: TEST_MODE
-    ? '0xee998b82d62d8f78e736a2e3ae592119bba92883'  // your test wallet (testnet only)
-    : '0xee998b82d62d8f78e736a2e3ae592119bba92883',  // your REAL mainnet wallet
-
-  // ── BTC receive address ──
-  btcAddr: TEST_MODE
-    ? 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx'  // Bitcoin Testnet (tb1q…)
-    : '12JhqQJ4kPz5BTyTbLhJNKWpKPcXj1to2N',         // your REAL BTC mainnet address
-
-  // ── SOL receive address ──
-  solAddr: TEST_MODE
-    ? '6B2LDtkNsa1pZ1zaUSHSM7uf8QtVdoQTqZeFhYWToDPv'  // Solana Devnet (same format, devnet funds only)
-    : '6B2LDtkNsa1pZ1zaUSHSM7uf8QtVdoQTqZeFhYWToDPv', // your REAL SOL mainnet address
-
-  // ── USDT contract addresses ──
-  // Testnet: official test/mock USDT contracts on each testnet
-  // Mainnet: official Tether contracts — do NOT change these
-  usdtContracts: TEST_MODE ? {
-    ETH:  '0x7169D38820dfd117C3FA1f22a697dBA58d90BA06', // USDT on Sepolia testnet
-    BNB:  '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd', // USDT on BNB testnet
-    MATIC:'0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1', // USDT on Polygon Amoy testnet
-  } : {
-    ETH:  '0xdAC17F958D2ee523a2206206994597C13D831ec7', // Ethereum mainnet
-    BNB:  '0x55d398326f99059fF775485246999027B3197955', // BNB Chain mainnet
-    MATIC:'0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // Polygon mainnet
+  async function loadConfig() {
+    const data = await fetch('/api/config').then(r => r.json());
+    TEST_MODE = data.testMode;
+    CFG = {
+      stripePk:      data.stripePk,
+      evmReceiver:   data.evmReceiver,
+      btcAddr:       data.btcAddr,
+      solAddr:       data.solAddr,
+      usdtContracts: data.usdtContracts,
+    };
+    OASIS_CFG = data.oasis;
   }
-};
-
-// ══════════════════════════════════════════════
-// OASIS MINT INTEGRATION
-// ══════════════════════════════════════════════
-// Replace with your OASIS credentials:
-const OASIS_CFG = {
-  apiUrl:   TEST_MODE
-    ? 'https://test.api.oasisweb4.one'   // OASIS testnet API
-    : 'https://api.oasisweb4.one',       // OASIS mainnet API
-  username: 'oasis',    // your avatar username
-  password: 'oasis',    // your avatar password
-  avatarId: '2e9e0288-914b-4ffb-a474-95409e383db1',   // your site avatar ID (GUID)
-  // NFT metadata — customise per tier as needed
-  imageUrl: 'https://gateway.pinata.cloud/ipfs/bafkreibhok44eomzkubmt3e2kzxip3w3b4pclixvgff5q7awhfa7kwlwsq',
-};
 
 // ── NFT ARTWORK (real images per tier) ──
 // const NFT_IMAGES = {
@@ -1500,7 +1458,7 @@ async function handleOasisMint() {
 
 window.addEventListener('load', () => setTimeout(initStripe, 400));
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   // console.log('NFT_IMAGES:', NFT_IMAGES);
   // console.log('TIERS:', TIERS);
   // console.log('currentTier:', currentTier);
@@ -1508,8 +1466,11 @@ window.addEventListener('DOMContentLoaded', () => {
   // console.log('NFT_IMAGES[0]:', NFT_IMAGES[0]);
   // console.log('TIERS[0]:', TIERS[0]);
 
-  currentTier = 'supporter';
+  //currentTier = 'supporter';
   //showSuccess('evm', '0xabc123def456abc123def456abc123def456abc123', 'https://etherscan.io');
+
+  await loadConfig();
+  //initApp(); // whatever your current init function is called
 });
 
 </script>
