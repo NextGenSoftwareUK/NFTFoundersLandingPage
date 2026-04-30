@@ -526,6 +526,10 @@ body.test-mode-on .test-chain-note{display:block}
           </div>
           <button class="confirm-btn" id="evmConfirm" style="background:linear-gradient(135deg,#007acc,#00e5ff);color:#000a1a;" onclick="handleEVMPayment()" disabled>⚡ CONFIRM MINT</button>
           <div class="field-error" id="evmError"></div>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <input class="form-input" id="evmEmail" type="email" placeholder="you@example.com">
+          </div>
         </div>
 
         <!-- SOL wallet sub-panel (Phantom) -->
@@ -545,6 +549,10 @@ body.test-mode-on .test-chain-note{display:block}
           </div>
           <button class="confirm-btn" id="solConfirm" style="background:linear-gradient(135deg,#3b006e,#9945ff,#c77dff);color:#fff;" onclick="handleSOLPayment()" disabled>◎ CONFIRM MINT</button>
           <div class="field-error" id="solError"></div>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <input class="form-input" id="solEmail" type="email" placeholder="you@example.com">
+          </div>
         </div>
 
         <!-- QR sub-panel (BTC only) -->
@@ -557,6 +565,10 @@ body.test-mode-on .test-chain-note{display:block}
               <button class="copy-btn" id="copyAddrBtn" onclick="copyAddr()">COPY</button>
             </div>
             <div class="qr-note" id="qrNote"></div>
+          </div>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <input class="form-input" id="btcEmail" type="email" placeholder="you@example.com">
           </div>
           <div class="price-row">
             <span class="price-label">EXACT AMOUNT</span>
@@ -951,13 +963,14 @@ async function checkAndWarnChain() {
 
 // ── EVM PAYMENT ──
 async function handleEVMPayment() {
-  const errEl = document.getElementById('evmError');
-  const btn   = document.getElementById('evmConfirm');
+  const errEl   = document.getElementById('evmError');
+  const btn     = document.getElementById('evmConfirm');
+  const evmEmail = document.getElementById('evmEmail').value.trim() || null;
   errEl.textContent = '';
   if (!evmSigner) { errEl.textContent = 'Connect MetaMask first.'; return; }
 
-  const coin = currentCoin;
-  const amt  = TIERS[currentTier].prices[coin];
+  const coin      = currentCoin;
+  const amt       = TIERS[currentTier].prices[coin];
   const chainInfo = EVM_CHAINS[coin];
 
   btn.disabled = true;
@@ -997,13 +1010,14 @@ async function handleEVMPayment() {
     }
 
     closeModal();
-    showSuccess('evm', txHash, chainInfo.explorer);
+    await showSuccess('evm', txHash, { explorerBase: chainInfo.explorer, email: evmEmail });
 
   } catch(e) {
     if (e.code===4001||e.code==='ACTION_REJECTED') errEl.textContent = 'Transaction rejected.';
     else if ((e.message||'').toLowerCase().includes('insufficient')) errEl.textContent = `Insufficient balance for ${amt} ${COIN_DISPLAY[coin]} + gas.`;
     else errEl.textContent = 'Error: '+(e.shortMessage||e.reason||e.message||'Unknown');
-    btn.disabled = false; btn.textContent = '⚡ CONFIRM MINT';
+    btn.disabled = false;
+    btn.textContent = '⚡ CONFIRM MINT';
   }
 }
 
@@ -1135,8 +1149,9 @@ async function getSolanaConnection() {
 }
 
 async function handleSOLPayment() {
-  const errEl = document.getElementById('solError');
-  const btn   = document.getElementById('solConfirm');
+  const errEl  = document.getElementById('solError');
+  const btn    = document.getElementById('solConfirm');
+  const solEmail = document.getElementById('solEmail').value.trim() || null; 
   errEl.textContent = '';
   if (!solPublicKey) { errEl.textContent = 'Connect Phantom first.'; return; }
 
@@ -1167,11 +1182,11 @@ async function handleSOLPayment() {
     await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, 'confirmed');
 
     closeModal();
-    const explorer = TEST_MODE
+    const explorerUrl = TEST_MODE
       ? `https://explorer.solana.com/tx/${signature}?cluster=devnet`
       : `https://explorer.solana.com/tx/${signature}`;
-      
-    await showSuccess('sol', signature, explorer);
+
+    await showSuccess('sol', signature, { explorerUrl, email: solEmail });
 
   } catch(e) {
     if (e.code === 4001 || (e.message||'').includes('rejected')) errEl.textContent = 'Transaction rejected.';
@@ -1217,8 +1232,9 @@ function copyAddr() {
 }
 
 async function handleQRConfirm() {
+  const btcEmail = document.getElementById('btcEmail').value.trim() || null;
   closeModal();
-  await showSuccess('qr', null, null);
+  await showSuccess('qr', null, { email: btcEmail });
 }
 
 // ── FIAT ──
@@ -1253,34 +1269,47 @@ function resetFiatBtn() {
 }
 
 // ── SUCCESS ──
-async function showSuccess(method, txHash, extra) 
-{
-  // Show the popup
+async function showSuccess(method, txHash, extra) {
   document.getElementById('sDesc').innerHTML = TIERS[currentTier].msg;
   document.getElementById('successNftImg').innerHTML = NFT_IMAGES[currentTier] || '';
   const txEl = document.getElementById('sTx');
+  const tier = TIERS[currentTier];
 
   let email = null;
-  let chain = method;
+  let chain = method.toUpperCase();
 
-  if ((method === 'evm' || method === 'sol') && txHash) {
+  if (method === 'evm' && txHash) {
     txEl.style.display = 'block';
-    const explorerUrl = method === 'sol' ? extra : `${extra}/tx/${txHash}`;
+    const explorerUrl = `${extra.explorerBase}/tx/${txHash}`;
     const shortHash = txHash.slice(0,22)+'...'+txHash.slice(-8);
-    const label = method === 'sol' ? '◎ Solana tx confirmed' : '🔗 Transaction confirmed';
-    txEl.innerHTML = `${label}:<br><a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${shortHash}</a>`;
+    txEl.innerHTML = `🔗 Transaction confirmed:<br><a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${shortHash}</a>`;
+    email = extra?.email || null;
+
+  } else if (method === 'sol' && txHash) {
+    txEl.style.display = 'block';
+    const shortHash = txHash.slice(0,22)+'...'+txHash.slice(-8);
+    txEl.innerHTML = `◎ Solana tx confirmed:<br><a href="${extra.explorerUrl}" target="_blank" style="color:var(--cyan)">${shortHash}</a>`;
+    email = extra?.email || null;
+    chain = 'Solana';
+
   } else if (method === 'card' && extra) {
     txEl.style.display = 'block';
-    txEl.textContent = `📧 Confirmation sent to ${extra}`;
-    email = extra; // card passes email as extra
+    txEl.textContent = `📧 Confirmation sent to ${extra.email || extra}`;
+    email = extra?.email || extra;
+    chain = 'Card Payment';
+
   } else if (method === 'oasis' && extra?.email) {
     txEl.style.display = 'block';
     txEl.innerHTML = extra.txLine;
     email = extra.email;
     chain = extra.chain;
+
   } else if (method === 'qr') {
     txEl.style.display = 'block';
     txEl.textContent = `⏳ Your BTC payment is pending confirmation. We'll email you once verified.`;
+    email = extra?.email || null;
+    chain = 'Bitcoin';
+
   } else {
     txEl.style.display = 'none';
   }
@@ -1292,8 +1321,8 @@ async function showSuccess(method, txHash, extra)
   if (email) {
     await sendConfirmationEmail({
       email,
-      tierTitle: TIERS[currentTier].title,
-      tierBadge: TIERS[currentTier].badge,
+      tierTitle: tier.title,
+      tierBadge: tier.badge,
       chain,
       txHash
     });
