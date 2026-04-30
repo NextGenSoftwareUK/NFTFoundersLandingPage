@@ -1170,7 +1170,8 @@ async function handleSOLPayment() {
     const explorer = TEST_MODE
       ? `https://explorer.solana.com/tx/${signature}?cluster=devnet`
       : `https://explorer.solana.com/tx/${signature}`;
-    showSuccess('sol', signature, explorer);
+      
+    await showSuccess('sol', signature, explorer);
 
   } catch(e) {
     if (e.code === 4001 || (e.message||'').includes('rejected')) errEl.textContent = 'Transaction rejected.';
@@ -1215,9 +1216,9 @@ function copyAddr() {
   });
 }
 
-function handleQRConfirm() {
+async function handleQRConfirm() {
   closeModal();
-  showSuccess('qr', null, null);
+  await showSuccess('qr', null, null);
 }
 
 // ── FIAT ──
@@ -1239,7 +1240,7 @@ async function handleFiatPayment() {
     console.log('[OASIS] PM:', paymentMethod.id, 'Tier:', currentTier);
     await pause(900);
     closeModal();
-    showSuccess('card', null, email);
+    await showSuccess('card', null, email);
   } catch(e) {
     errEl.textContent = 'Unexpected error. Please try again.';
     resetFiatBtn();
@@ -1252,10 +1253,16 @@ function resetFiatBtn() {
 }
 
 // ── SUCCESS ──
-function showSuccess(method, txHash, extra) {
+async function showSuccess(method, txHash, extra) 
+{
+  // Show the popup
   document.getElementById('sDesc').innerHTML = TIERS[currentTier].msg;
   document.getElementById('successNftImg').innerHTML = NFT_IMAGES[currentTier] || '';
   const txEl = document.getElementById('sTx');
+
+  let email = null;
+  let chain = method;
+
   if ((method === 'evm' || method === 'sol') && txHash) {
     txEl.style.display = 'block';
     const explorerUrl = method === 'sol' ? extra : `${extra}/tx/${txHash}`;
@@ -1265,12 +1272,32 @@ function showSuccess(method, txHash, extra) {
   } else if (method === 'card' && extra) {
     txEl.style.display = 'block';
     txEl.textContent = `📧 Confirmation sent to ${extra}`;
+    email = extra; // card passes email as extra
+  } else if (method === 'oasis' && extra?.email) {
+    txEl.style.display = 'block';
+    txEl.innerHTML = extra.txLine;
+    email = extra.email;
+    chain = extra.chain;
   } else if (method === 'qr') {
     txEl.style.display = 'block';
     txEl.textContent = `⏳ Your BTC payment is pending confirmation. We'll email you once verified.`;
-  } else { txEl.style.display='none'; }
+  } else {
+    txEl.style.display = 'none';
+  }
+
   document.getElementById('successOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  // Send confirmation email if we have one
+  if (email) {
+    await sendConfirmationEmail({
+      email,
+      tierTitle: TIERS[currentTier].title,
+      tierBadge: TIERS[currentTier].badge,
+      chain,
+      txHash
+    });
+  }
 }
 
 function closeSuccess() {
@@ -1486,21 +1513,42 @@ async function handleOasisMint() {
                 || null;
 
     closeModal();
-    const txLine = txHash
-      ? `<br>Tx: <span style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</span>`
-      : '';
-    document.getElementById('sDesc').innerHTML = tier.msg;
-    const txEl = document.getElementById('sTx');
-    txEl.style.display = 'block';
-    txEl.innerHTML = `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`;
-    document.getElementById('successOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+
+    await showSuccess('oasis', txHash, 
+    {
+      email,
+      chain: chain.label,
+      txLine: `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`
+    });
+
+    // const txLine = txHash
+    //   ? `<br>Tx: <span style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</span>`
+    //   : '';
+    // document.getElementById('sDesc').innerHTML = tier.msg;
+    // const txEl = document.getElementById('sTx');
+    // txEl.style.display = 'block';
+    // txEl.innerHTML = `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`;
+    // document.getElementById('successOverlay').classList.add('open');
+    // document.body.style.overflow = 'hidden';
 
   } catch(e) {
     errEl.textContent = 'Mint failed: ' + (e.message || 'Unknown error');
     btn.disabled = false;
     btn.textContent = '🌀 MINT WITH OASIS';
     setOasisStatus('❌ ' + (e.message || 'Mint failed'), 'var(--red)');
+  }
+}
+
+async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash }) {
+  try {
+    await fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash })
+    });
+  } catch(e) {
+    console.warn('Email send failed:', e.message);
+    // non-fatal, don't block the success UI
   }
 }
 
