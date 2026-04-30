@@ -1302,8 +1302,8 @@ const OASIS_CHAINS_TESTNET = {
 const OASIS_CHAINS = TEST_MODE ? OASIS_CHAINS_TESTNET : OASIS_CHAINS_MAINNET;
 
 let currentOasisChain = 'ERC721';
-let oasisJwt = null;
-let oasisJwtExpiry = 0;
+// let oasisJwt = null;
+// let oasisJwtExpiry = 0;
 
 function selectOasisChain(el) {
   currentOasisChain = el.dataset.ochain;
@@ -1323,97 +1323,172 @@ function setOasisStatus(msg, color) {
   el.innerHTML = msg;
 }
 
-async function oasisAuthenticate() {
-  if (oasisJwt && Date.now() < oasisJwtExpiry - 30000) return oasisJwt;
-  setOasisStatus('🔐 Authenticating with OASIS...', 'var(--cyan)');
-  const res = await fetch(`${OASIS_CFG.apiUrl}/api/avatar/authenticate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: OASIS_CFG.username, password: OASIS_CFG.password })
-  });
-  if (!res.ok) throw new Error(`OASIS auth failed: ${res.status}`);
-  const data = await res.json();
-  const token = data?.result?.jwtToken;
-  if (!token) throw new Error('No JWT token in OASIS auth response');
-  oasisJwt = token;
-  oasisJwtExpiry = Date.now() + 15 * 60 * 1000;
-  return token;
-}
+// async function oasisAuthenticate() {
+//   if (oasisJwt && Date.now() < oasisJwtExpiry - 30000) return oasisJwt;
+//   setOasisStatus('🔐 Authenticating with OASIS...', 'var(--cyan)');
+//   const res = await fetch(`${OASIS_CFG.apiUrl}/api/avatar/authenticate`, {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ username: OASIS_CFG.username, password: OASIS_CFG.password })
+//   });
+//   if (!res.ok) throw new Error(`OASIS auth failed: ${res.status}`);
+//   const data = await res.json();
+//   const token = data?.result?.jwtToken;
+//   if (!token) throw new Error('No JWT token in OASIS auth response');
+//   oasisJwt = token;
+//   oasisJwtExpiry = Date.now() + 15 * 60 * 1000;
+//   return token;
+// }
 
-async function oasisMintNFT(token, payload) {
-  const res = await fetch(`${OASIS_CFG.apiUrl}/api/nft/mint-nft`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`OASIS mint failed (${res.status}): ${errText.slice(0, 200)}`);
-  }
-  return res.json();
-}
+// async function oasisMintNFT(token, payload) {
+//   const res = await fetch(`${OASIS_CFG.apiUrl}/api/nft/mint-nft`, {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+//     body: JSON.stringify(payload)
+//   });
+//   if (!res.ok) {
+//     const errText = await res.text();
+//     throw new Error(`OASIS mint failed (${res.status}): ${errText.slice(0, 200)}`);
+//   }
+//   return res.json();
+// }
+
+// async function handleOasisMint() {
+//   const errEl   = document.getElementById('oasisError');
+//   const btn     = document.getElementById('oasisConfirm');
+//   const wallet  = document.getElementById('oasisWalletAddr').value.trim();
+//   const email   = document.getElementById('oasisEmail').value.trim();
+//   errEl.textContent = '';
+
+//   if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
+//   if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; return; }
+//   if (OASIS_CFG.username.startsWith('REPLACE')) {
+//     errEl.textContent = '⚠ Set your OASIS credentials in OASIS_CFG to enable minting.'; return;
+//   }
+
+//   btn.disabled = true;
+//   btn.innerHTML = '<span class="spinner"></span>CONNECTING TO OASIS...';
+
+//   try {
+//     // 1. Authenticate
+//     const token = await oasisAuthenticate();
+//     setOasisStatus('✅ Authenticated · Preparing mint...', 'var(--green)');
+
+//     // 2. Build payload from server.js pattern
+//     const tier = TIERS[currentTier];
+//     const chain = OASIS_CHAINS[currentOasisChain];
+//     btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
+//     setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
+
+//     const payload = {
+//       Title:                  tier.title,
+//       Description:            `OASIS Founder Access NFT — ${tier.badge}`,
+//       Symbol:                 'OASISFNDR',
+//       OnChainProvider:        chain.onChain,
+//       OffChainProvider:       { value: 23, name: 'MongoDBOASIS' },
+//       NFTOffChainMetaType:    { value: 3,  name: 'ExternalJsonURL' },
+//       NFTStandardType:        chain.nftStd,
+//       ImageUrl:               OASIS_CFG.imageUrl,
+//       ThumbnailUrl:           OASIS_CFG.imageUrl,
+//       Price:                  0,
+//       NumberToMint:           1,
+//       StoreNFTMetaDataOnChain: false,
+//       MintedByAvatarId:       OASIS_CFG.avatarId,
+//       SendToAddressAfterMinting: wallet,
+//       WaitTillNFTSent:         true,
+//       WaitForNFTToSendInSeconds: 60,
+//       AttemptToSendEveryXSeconds: 5,
+//       MetaData: { tier: currentTier, badge: tier.badge, email: email }
+//     };
+
+//     const result = await oasisMintNFT(token, payload);
+
+//     if (result?.isError) throw new Error(result.message || 'OASIS returned an error');
+
+//     // 3. Success
+//     const txHash = result?.result?.oasisnft?.mintTransactionHash
+//                 || result?.result?.mintTransactionHash
+//                 || result?.result?.transactionResult
+//                 || result?.result?.hash
+//                 || null;
+
+//     closeModal();
+//     const txLine = txHash ? `<br>Tx: <span style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</span>` : '';
+//     document.getElementById('sDesc').innerHTML = tier.msg;
+//     const txEl = document.getElementById('sTx');
+//     txEl.style.display = 'block';
+//     txEl.innerHTML = `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`;
+//     document.getElementById('successOverlay').classList.add('open');
+//     document.body.style.overflow = 'hidden';
+
+//   } catch(e) {
+//     errEl.textContent = 'Mint failed: ' + (e.message || 'Unknown error');
+//     btn.disabled = false;
+//     btn.textContent = '🌀 MINT WITH OASIS';
+//     setOasisStatus('❌ ' + (e.message || 'Mint failed'), 'var(--red)');
+//   }
+// }
+
+// DELETE oasisAuthenticate() and oasisMintNFT() entirely
+// Replace handleOasisMint() with this:
 
 async function handleOasisMint() {
-  const errEl   = document.getElementById('oasisError');
-  const btn     = document.getElementById('oasisConfirm');
-  const wallet  = document.getElementById('oasisWalletAddr').value.trim();
-  const email   = document.getElementById('oasisEmail').value.trim();
+  const errEl  = document.getElementById('oasisError');
+  const btn    = document.getElementById('oasisConfirm');
+  const wallet = document.getElementById('oasisWalletAddr').value.trim();
+  const email  = document.getElementById('oasisEmail').value.trim();
   errEl.textContent = '';
 
   if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
   if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; return; }
-  if (OASIS_CFG.username.startsWith('REPLACE')) {
-    errEl.textContent = '⚠ Set your OASIS credentials in OASIS_CFG to enable minting.'; return;
-  }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>CONNECTING TO OASIS...';
 
   try {
-    // 1. Authenticate
-    const token = await oasisAuthenticate();
-    setOasisStatus('✅ Authenticated · Preparing mint...', 'var(--green)');
-
-    // 2. Build payload from server.js pattern
-    const tier = TIERS[currentTier];
+    const tier  = TIERS[currentTier];
     const chain = OASIS_CHAINS[currentOasisChain];
-    btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
-    setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
 
+    setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
+    btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
+
+    // Build payload — no credentials, no avatarId, server fills those in
     const payload = {
-      Title:                  tier.title,
-      Description:            `OASIS Founder Access NFT — ${tier.badge}`,
-      Symbol:                 'OASISFNDR',
-      OnChainProvider:        chain.onChain,
-      OffChainProvider:       { value: 23, name: 'MongoDBOASIS' },
-      NFTOffChainMetaType:    { value: 3,  name: 'ExternalJsonURL' },
-      NFTStandardType:        chain.nftStd,
-      ImageUrl:               OASIS_CFG.imageUrl,
-      ThumbnailUrl:           OASIS_CFG.imageUrl,
-      Price:                  0,
-      NumberToMint:           1,
-      StoreNFTMetaDataOnChain: false,
-      MintedByAvatarId:       OASIS_CFG.avatarId,
+      Title:                     tier.title,
+      Description:               `OASIS Founder Access NFT — ${tier.badge}`,
+      Symbol:                    'OASISFNDR',
+      OnChainProvider:           chain.onChain,
+      OffChainProvider:          { value: 23, name: 'MongoDBOASIS' },
+      NFTOffChainMetaType:       { value: 3,  name: 'ExternalJsonURL' },
+      NFTStandardType:           chain.nftStd,
+      NumberToMint:              1,
+      StoreNFTMetaDataOnChain:   false,
       SendToAddressAfterMinting: wallet,
-      WaitTillNFTSent:         true,
+      WaitTillNFTSent:           true,
       WaitForNFTToSendInSeconds: 60,
       AttemptToSendEveryXSeconds: 5,
-      MetaData: { tier: currentTier, badge: tier.badge, email: email }
+      MetaData: { tier: currentTier, badge: tier.badge, email }
     };
 
-    const result = await oasisMintNFT(token, payload);
+    const res  = await fetch('/api/oasis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payload })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Mint failed');
 
-    if (result?.isError) throw new Error(result.message || 'OASIS returned an error');
-
-    // 3. Success
-    const txHash = result?.result?.oasisnft?.mintTransactionHash
-                || result?.result?.mintTransactionHash
-                || result?.result?.transactionResult
-                || result?.result?.hash
+    // Success
+    const txHash = data.result?.result?.oasisnft?.mintTransactionHash
+                || data.result?.result?.mintTransactionHash
+                || data.result?.result?.transactionResult
+                || data.result?.result?.hash
                 || null;
 
     closeModal();
-    const txLine = txHash ? `<br>Tx: <span style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</span>` : '';
+    const txLine = txHash
+      ? `<br>Tx: <span style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</span>`
+      : '';
     document.getElementById('sDesc').innerHTML = tier.msg;
     const txEl = document.getElementById('sTx');
     txEl.style.display = 'block';
