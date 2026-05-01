@@ -601,10 +601,39 @@ body.test-mode-on .test-chain-note{display:block}
         </div>
 
         <!-- Wallet address input -->
+        <!-- <div class="form-group">
+          <label class="form-label">YOUR WALLET ADDRESS</label>
+          <input class="form-input" id="oasisWalletAddr" type="text" placeholder="0x... or Solana address">
+        </div>
+        <div class="form-group">
+          <label class="form-label">EMAIL — CONFIRMATION</label>
+          <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
+        </div> -->
+
+        <!-- Wallet connect buttons -->
+        <div id="oasisWalletConnect">
+          <button class="chain-switch-btn" id="oasisEvmBtn" onclick="connectOasisEVM()" style="margin-bottom:8px">
+            <span id="oasisEvmInner">🦊 Connect MetaMask</span>
+          </button>
+          <button class="chain-switch-btn" id="oasisSolBtn" onclick="connectOasisPhantom()" style="display:none;margin-bottom:8px">
+            <span id="oasisSolInner">👻 Connect Phantom</span>
+          </button>
+        </div>
+
+        <!-- Wallet status row -->
+        <div class="wallet-row" style="margin-bottom:12px">
+          <div class="wallet-dot" id="oasisWDot"></div>
+          <span class="wallet-addr" id="oasisWAddr">No wallet connected</span>
+          <span class="wallet-chain-tag" id="oasisWChain"></span>
+        </div>
+
+        <!-- Wallet address input — kept so user can paste manually if preferred -->
         <div class="form-group">
           <label class="form-label">YOUR WALLET ADDRESS</label>
           <input class="form-input" id="oasisWalletAddr" type="text" placeholder="0x... or Solana address">
         </div>
+
+        <!-- Email stays exactly as before -->
         <div class="form-group">
           <label class="form-label">EMAIL — CONFIRMATION</label>
           <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
@@ -909,6 +938,8 @@ async function connectEVM() {
     btnInner.textContent = '🦊 Connect MetaMask';
     errEl.textContent = e.code===4001 ? 'Connection rejected by user.' : 'Error: '+(e.shortMessage||e.message);
   }
+
+  updateOasisWalletUI();
 }
 
 function setWalletUI(addr, network) {
@@ -1016,6 +1047,9 @@ async function handleEVMPayment() {
     if (e.code===4001||e.code==='ACTION_REJECTED') errEl.textContent = 'Transaction rejected.';
     else if ((e.message||'').toLowerCase().includes('insufficient')) errEl.textContent = `Insufficient balance for ${amt} ${COIN_DISPLAY[coin]} + gas.`;
     else errEl.textContent = 'Error: '+(e.shortMessage||e.reason||e.message||'Unknown');
+  }
+  finally 
+  {
     btn.disabled = false;
     btn.textContent = '⚡ CONFIRM MINT';
   }
@@ -1113,6 +1147,8 @@ async function connectPhantom() {
     btnInner.textContent = '👻 Connect Phantom';
     errEl.textContent = e.code === 4001 ? 'Connection rejected.' : 'Error: ' + (e.message || 'Unknown');
   }
+
+  updateOasisWalletUI();
 }
 
 function resetSolUI() {
@@ -1192,6 +1228,10 @@ async function handleSOLPayment() {
     if (e.code === 4001 || (e.message||'').includes('rejected')) errEl.textContent = 'Transaction rejected.';
     else if ((e.message||'').toLowerCase().includes('insufficient')) errEl.textContent = `Insufficient SOL balance for ${amt} SOL + fees.`;
     else errEl.textContent = 'Error: ' + (e.message || 'Unknown');
+  }
+  finally
+  {
+    // Always reset button regardless of success or failure
     btn.disabled = false;
     btn.textContent = '◎ CONFIRM MINT';
   }
@@ -1379,6 +1419,76 @@ function setOasisStatus(msg, color) {
   el.innerHTML = msg;
 }
 
+// ── OASIS WALLET CONNECT ──
+
+function updateOasisWalletUI() {
+  const isSol = currentOasisChain === 'SolanaOASIS';
+  const evmBtn = document.getElementById('oasisEvmBtn');
+  const solBtn = document.getElementById('oasisSolBtn');
+  const dot    = document.getElementById('oasisWDot');
+  const addr   = document.getElementById('oasisWAddr');
+  const chain  = document.getElementById('oasisWChain');
+  const input  = document.getElementById('oasisWalletAddr');
+
+  // Show correct connect button
+  evmBtn.style.display = isSol ? 'none' : 'block';
+  solBtn.style.display = isSol ? 'block' : 'none';
+
+  if (isSol) {
+    // Phantom
+    if (solPublicKey) {
+      dot.style.background   = 'var(--green)';
+      addr.textContent       = solPublicKey.slice(0,6)+'···'+solPublicKey.slice(-4);
+      chain.textContent      = TEST_MODE ? 'Devnet' : 'Mainnet';
+      chain.style.display    = 'inline';
+      input.value            = solPublicKey;
+      document.getElementById('oasisSolInner').textContent = '✓ Phantom Connected';
+    } else {
+      dot.style.background   = '#444';
+      addr.textContent       = 'No wallet connected';
+      chain.style.display    = 'none';
+      input.value            = '';
+      document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
+    }
+  } else {
+    // MetaMask
+    if (evmAddress) {
+      dot.style.background   = 'var(--green)';
+      addr.textContent       = evmAddress.slice(0,6)+'···'+evmAddress.slice(-4);
+      chain.textContent      = EVM_CHAINS[currentOasisChain === 'ArbitrumOASIS' ? 'ARB' : 'ETH']?.label || 'EVM';
+      chain.style.display    = 'inline';
+      input.value            = evmAddress;
+      document.getElementById('oasisEvmInner').textContent = '✓ MetaMask Connected';
+    } else {
+      dot.style.background   = '#444';
+      addr.textContent       = 'No wallet connected';
+      chain.style.display    = 'none';
+      input.value            = '';
+      document.getElementById('oasisEvmInner').textContent = '🦊 Connect MetaMask';
+    }
+  }
+}
+
+async function connectOasisEVM() {
+  // Reuse existing connectEVM() then update OASIS UI
+  await connectEVM();
+  updateOasisWalletUI();
+}
+
+async function connectOasisPhantom() {
+  // Reuse existing connectPhantom() then update OASIS UI
+  await connectPhantom();
+  updateOasisWalletUI();
+}
+
+// Update OASIS UI when chain changes
+const _origSelectOasisChain = selectOasisChain;
+function selectOasisChain(el) {
+  _origSelectOasisChain(el);
+  updateOasisWalletUI();
+}
+
+
 // async function oasisAuthenticate() {
 //   if (oasisJwt && Date.now() < oasisJwtExpiry - 30000) return oasisJwt;
 //   setOasisStatus('🔐 Authenticating with OASIS...', 'var(--cyan)');
@@ -1560,11 +1670,17 @@ async function handleOasisMint() {
     // document.getElementById('successOverlay').classList.add('open');
     // document.body.style.overflow = 'hidden';
 
-  } catch(e) {
+  } catch(e) 
+  {
     errEl.textContent = 'Mint failed: ' + (e.message || 'Unknown error');
     btn.disabled = false;
     btn.textContent = '🌀 MINT WITH OASIS';
     setOasisStatus('❌ ' + (e.message || 'Mint failed'), 'var(--red)');
+  }
+  finally 
+  {
+    btn.disabled = false;
+    btn.textContent = '🌀 MINT WITH OASIS';
   }
 }
 
@@ -1622,6 +1738,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   //showSuccess('evm', '0xabc123def456abc123def456abc123def456abc123', 'https://etherscan.io');
 
   await loadConfig();
+  updateOasisWalletUI();
   //initApp(); // whatever your current init function is called
 });
 
