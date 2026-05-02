@@ -679,6 +679,7 @@ body.test-mode-on .test-chain-note{display:block}
   let CFG = {};
   let OASIS_CFG = {};
   let TEST_MODE = false;
+  let evmAddress = null;
 
   async function loadConfig() {
     const data = await fetch('/api/config').then(r => r.json());
@@ -930,9 +931,23 @@ async function connectEVM() {
     evmProvider = new ethers.BrowserProvider(ethereum);
     evmSigner   = await evmProvider.getSigner();
     walletConnected = true;
+    evmAddress = accounts[0];
     const network = await evmProvider.getNetwork();
     setWalletUI(accounts[0], network);
-    ethereum.on('accountsChanged', a => { if(a[0]){evmProvider.getSigner().then(s=>{evmSigner=s});setWalletUI(a[0],null);}else{resetWalletUI();}});
+
+ethereum.on('accountsChanged', a => {
+  if (a[0]) {
+    evmAddress = a[0]; 
+    evmProvider.getSigner().then(s => { evmSigner = s });
+    setWalletUI(a[0], null);
+    updateOasisWalletUI();
+  } else {
+    evmAddress = null;
+    resetWalletUI();
+    updateOasisWalletUI();
+  }
+});
+
     ethereum.on('chainChanged', () => location.reload());
   } catch(e) {
     btnInner.textContent = '🦊 Connect MetaMask';
@@ -1137,11 +1152,25 @@ async function connectPhantom() {
     document.getElementById('solConfirm').disabled = false;
 
     // Listen for disconnect
-    phantom.on('disconnect', () => resetSolUI());
-    phantom.on('accountChanged', pk => {
-      if (pk) { solPublicKey = pk.toString(); addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4); }
-      else resetSolUI();
-    });
+phantom.on('disconnect', () => {
+  resetSolUI();
+  solPublicKey = null; 
+  updateOasisWalletUI();
+});
+
+phantom.on('accountChanged', pk => 
+{
+  if (pk) 
+  {
+    solPublicKey = pk.toString();
+    addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4);
+  } else 
+  {
+    solPublicKey = null;
+    resetSolUI();
+  }
+  updateOasisWalletUI();
+});
 
   } catch(e) {
     btnInner.textContent = '👻 Connect Phantom';
