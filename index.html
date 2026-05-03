@@ -1670,16 +1670,17 @@ async function handleOasisMint() {
     if (!res.ok) throw new Error(data.error || 'Mint failed');
 
     // Success
-    const txHash = data.result?.result?.oasisnft?.mintTransactionHash
-                || data.result?.result?.mintTransactionHash
-                || data.result?.result?.transactionResult
-                || data.result?.result?.hash
+    const txHash = data.result?.result?.web3NFTs?.[0]?.mintTransactionHash
+                || data.result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash
                 || null;
+
+    const txLine = txHash
+      ? `<br>Tx: <span style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</span>`
+      : '';
 
     closeModal();
 
-    await showSuccess('oasis', txHash, 
-    {
+    await showSuccess('oasis', txHash, {
       email,
       chain: chain.label,
       txLine: `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`
