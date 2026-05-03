@@ -1737,7 +1737,8 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
 })();
 
 // ── TEST MODE INIT ──
-(function initTestMode() {
+(function initTestMode() 
+{
   if (!TEST_MODE) {
     // Hide stripe test banner in live mode
     const sb = document.getElementById('stripeTestBanner');
