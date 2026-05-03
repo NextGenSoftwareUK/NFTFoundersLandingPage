@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     payload.OnChainProvider     = typeof payload.OnChainProvider     === 'object' ? payload.OnChainProvider.name     : String(payload.OnChainProvider);
     payload.NFTStandardType     = typeof payload.NFTStandardType     === 'object' ? payload.NFTStandardType.name     : String(payload.NFTStandardType);
     payload.OffChainProvider    = typeof payload.OffChainProvider    === 'object' ? payload.OffChainProvider.name    : String(payload.OffChainProvider);
-    payload.NFTOffChainMetaType = typeof payload.NFTOffChainMetaType === 'object' ? payload.NFTOffChainMetaType.name : String(payload.NFTOffChainMetaType);
+    payload.NFTOffChainMetaType = 'ExternalJSONURL'
 
     // Safety: always force server-side values, never trust client
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
