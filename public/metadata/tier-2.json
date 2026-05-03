@@ -1,0 +1,9 @@
+{
+  "name": "Genesis Founder NFT",
+  "description": "OASIS Founder Access NFT — Genesis Founder",
+  "image": "https://www.oasisfoundernfts.icu/img/nft-genesis.png",
+  "attributes": [
+    { "trait_type": "Tier", "value": "Genesis Founder" },
+    { "trait_type": "Access", "value": "Founder" }
+  ]
+}
