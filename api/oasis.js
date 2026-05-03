@@ -72,6 +72,8 @@ export default async function handler(req, res) {
 
     const mintText = await mintRes.text();
     console.log('Mint response length:', mintText.length);
+    console.log('Mint response:', mintText);
+
     let result;
     try {
       result = JSON.parse(mintText);
