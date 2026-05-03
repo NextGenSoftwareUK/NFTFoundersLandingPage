@@ -18,9 +18,19 @@ export default async function handler(req, res) {
       body: JSON.stringify({ username: OASIS_CFG.username, password: OASIS_CFG.password })
     });
     if (!authRes.ok) throw new Error(`OASIS auth failed: ${authRes.status}`);
-    const authData = await authRes.json();
-    console.log('OASIS auth response:', JSON.stringify(authData));
+
+    // Parse safely in case response is large
+    const authText = await authRes.text();
+    console.log('Auth response length:', authText.length);
+    let authData;
+    try {
+      authData = JSON.parse(authText);
+    } catch(e) {
+      throw new Error(`Failed to parse OASIS auth response: ${e.message}`);
+    }
+
     const token = authData?.result?.jwtToken;
+    console.log('Token found:', !!token);
     if (!token) throw new Error('No JWT token in OASIS auth response');
 
     // 2. Mint
@@ -32,21 +42,39 @@ export default async function handler(req, res) {
     payload.ThumbnailUrl     = OASIS_CFG.imageUrl;
     payload.Price            = 0;
 
+    console.log('Minting with payload:', JSON.stringify({
+      Title:           payload.Title,
+      OnChainProvider: payload.OnChainProvider,
+      NFTStandardType: payload.NFTStandardType,
+      SendToAddress:   payload.SendToAddressAfterMinting,
+    }));
+
     const mintRes = await fetch(`${OASIS_CFG.apiUrl}/api/nft/mint-nft`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(payload)
     });
+
     if (!mintRes.ok) {
       const errText = await mintRes.text();
       throw new Error(`OASIS mint failed (${mintRes.status}): ${errText.slice(0, 200)}`);
     }
-    const result = await mintRes.json();
+
+    const mintText = await mintRes.text();
+    console.log('Mint response length:', mintText.length);
+    let result;
+    try {
+      result = JSON.parse(mintText);
+    } catch(e) {
+      throw new Error(`Failed to parse OASIS mint response: ${e.message}`);
+    }
+
     if (result?.isError) throw new Error(result.message || 'OASIS returned an error');
 
     return res.status(200).json({ success: true, result });
 
   } catch (e) {
+    console.error('OASIS handler error:', e.message);
     return res.status(500).json({ error: e.message || 'Unknown error' });
   }
 }
