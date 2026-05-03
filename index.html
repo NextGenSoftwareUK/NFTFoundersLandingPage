@@ -1674,8 +1674,12 @@ async function handleOasisMint() {
                 || data.result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash
                 || null;
 
+    const explorerUrl = currentOasisChain === 'SolanaOASIS'
+      ? `https://explorer.solana.com/tx/${txHash}${TEST_MODE ? '?cluster=devnet' : ''}`
+      : `https://etherscan.io/tx/${txHash}`;
+
     const txLine = txHash
-      ? `<br>Tx: <span style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</span>`
+      ? `<br>Tx: <a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</a>`
       : '';
 
     closeModal();
