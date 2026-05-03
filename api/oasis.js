@@ -19,9 +19,7 @@ export default async function handler(req, res) {
     });
     if (!authRes.ok) throw new Error(`OASIS auth failed: ${authRes.status}`);
 
-    // Parse safely in case response is large
     const authText = await authRes.text();
-    console.log('Auth response length:', authText.length);
     let authData;
     try {
       authData = JSON.parse(authText);
@@ -29,19 +27,17 @@ export default async function handler(req, res) {
       throw new Error(`Failed to parse OASIS auth response: ${e.message}`);
     }
 
-    // console.log('authData keys:', Object.keys(authData));
-    // console.log('authData.result keys:', authData?.result ? Object.keys(authData.result) : 'no result');
-    // console.log('jwtToken direct:', authData?.jwtToken);
-    // console.log('jwtToken result:', authData?.result?.jwtToken);
-    // console.log('jwtToken result.result:', authData?.result?.result?.jwtToken);
-
-
-    const token = authData?.result?.result?.jwtToken;
-    console.log('Token found:', !!token);
+    const token = authData?.result?.jwtToken;
     if (!token) throw new Error('No JWT token in OASIS auth response');
 
-    // 2. Mint
+    // 2. Build mint payload — use raw values not objects
     const { payload } = req.body;
+
+    // Force numeric values for provider fields
+    payload.OnChainProvider  = typeof payload.OnChainProvider  === 'object' ? payload.OnChainProvider.value  : payload.OnChainProvider;
+    payload.NFTStandardType  = typeof payload.NFTStandardType  === 'object' ? payload.NFTStandardType.value  : payload.NFTStandardType;
+    payload.OffChainProvider = typeof payload.OffChainProvider === 'object' ? payload.OffChainProvider.value : payload.OffChainProvider;
+    payload.NFTOffChainMetaType = typeof payload.NFTOffChainMetaType === 'object' ? payload.NFTOffChainMetaType.value : payload.NFTOffChainMetaType;
 
     // Safety: always force server-side values, never trust client
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
@@ -50,12 +46,15 @@ export default async function handler(req, res) {
     payload.Price            = 0;
 
     console.log('Minting with payload:', JSON.stringify({
-      Title:           payload.Title,
-      OnChainProvider: payload.OnChainProvider,
-      NFTStandardType: payload.NFTStandardType,
-      SendToAddress:   payload.SendToAddressAfterMinting,
+      Title:              payload.Title,
+      OnChainProvider:    payload.OnChainProvider,
+      NFTStandardType:    payload.NFTStandardType,
+      OffChainProvider:   payload.OffChainProvider,
+      NFTOffChainMetaType: payload.NFTOffChainMetaType,
+      SendToAddress:      payload.SendToAddressAfterMinting,
     }));
 
+    // 3. Mint
     const mintRes = await fetch(`${OASIS_CFG.apiUrl}/api/nft/mint-nft`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -64,7 +63,7 @@ export default async function handler(req, res) {
 
     if (!mintRes.ok) {
       const errText = await mintRes.text();
-      throw new Error(`OASIS mint failed (${mintRes.status}): ${errText.slice(0, 200)}`);
+      throw new Error(`OASIS mint failed (${mintRes.status}): ${errText.slice(0, 500)}`);
     }
 
     const mintText = await mintRes.text();
