@@ -1425,14 +1425,19 @@ const OASIS_CHAINS_TESTNET = {
 };
 
 const OASIS_CHAINS = TEST_MODE ? OASIS_CHAINS_TESTNET : OASIS_CHAINS_MAINNET;
-
+const _origSelectOasisChain = selectOasisChain;
 let currentOasisChain = 'ERC721';
 // let oasisJwt = null;
 // let oasisJwtExpiry = 0;
 
-function selectOasisChain(el) {
+function selectOasisChain(el) 
+{
   currentOasisChain = el.dataset.ochain;
   document.querySelectorAll('#oasisChainGrid .coin-btn').forEach(b => b.classList.toggle('active', b.dataset.ochain === currentOasisChain));
+
+  // Update OASIS UI when chain changes
+  _origSelectOasisChain(el);
+  updateOasisWalletUI();
 }
 
 function updateOasisPrice() {
@@ -1509,14 +1514,6 @@ async function connectOasisPhantom() {
   await connectPhantom();
   updateOasisWalletUI();
 }
-
-// Update OASIS UI when chain changes
-const _origSelectOasisChain = selectOasisChain;
-function selectOasisChain(el) {
-  _origSelectOasisChain(el);
-  updateOasisWalletUI();
-}
-
 
 // async function oasisAuthenticate() {
 //   if (oasisJwt && Date.now() < oasisJwtExpiry - 30000) return oasisJwt;
