@@ -33,6 +33,8 @@ export default async function handler(req, res) {
     // 2. Build mint payload — use raw values not objects
     const { payload } = req.body;
 
+    console.log('Received JSONUrl:', payload.JSONUrl);
+
     // Force numeric values for provider fields
     // Force string values for provider fields
     payload.OnChainProvider     = typeof payload.OnChainProvider     === 'object' ? payload.OnChainProvider.name     : String(payload.OnChainProvider);
