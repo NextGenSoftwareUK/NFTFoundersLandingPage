@@ -1425,7 +1425,6 @@ const OASIS_CHAINS_TESTNET = {
 };
 
 const OASIS_CHAINS = TEST_MODE ? OASIS_CHAINS_TESTNET : OASIS_CHAINS_MAINNET;
-const _origSelectOasisChain = selectOasisChain;
 let currentOasisChain = 'ERC721';
 // let oasisJwt = null;
 // let oasisJwtExpiry = 0;
@@ -1436,7 +1435,6 @@ function selectOasisChain(el)
   document.querySelectorAll('#oasisChainGrid .coin-btn').forEach(b => b.classList.toggle('active', b.dataset.ochain === currentOasisChain));
 
   // Update OASIS UI when chain changes
-  _origSelectOasisChain(el);
   updateOasisWalletUI();
 }
 
