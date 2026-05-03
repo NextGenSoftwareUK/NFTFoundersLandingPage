@@ -34,10 +34,11 @@ export default async function handler(req, res) {
     const { payload } = req.body;
 
     // Force numeric values for provider fields
-    payload.OnChainProvider  = typeof payload.OnChainProvider  === 'object' ? payload.OnChainProvider.value  : payload.OnChainProvider;
-    payload.NFTStandardType  = typeof payload.NFTStandardType  === 'object' ? payload.NFTStandardType.value  : payload.NFTStandardType;
-    payload.OffChainProvider = typeof payload.OffChainProvider === 'object' ? payload.OffChainProvider.value : payload.OffChainProvider;
-    payload.NFTOffChainMetaType = typeof payload.NFTOffChainMetaType === 'object' ? payload.NFTOffChainMetaType.value : payload.NFTOffChainMetaType;
+    // Force string values for provider fields
+    payload.OnChainProvider     = typeof payload.OnChainProvider     === 'object' ? payload.OnChainProvider.name     : String(payload.OnChainProvider);
+    payload.NFTStandardType     = typeof payload.NFTStandardType     === 'object' ? payload.NFTStandardType.name     : String(payload.NFTStandardType);
+    payload.OffChainProvider    = typeof payload.OffChainProvider    === 'object' ? payload.OffChainProvider.name    : String(payload.OffChainProvider);
+    payload.NFTOffChainMetaType = typeof payload.NFTOffChainMetaType === 'object' ? payload.NFTOffChainMetaType.name : String(payload.NFTOffChainMetaType);
 
     // Safety: always force server-side values, never trust client
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
