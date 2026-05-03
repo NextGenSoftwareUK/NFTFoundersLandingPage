@@ -19,6 +19,7 @@ export default async function handler(req, res) {
     });
     if (!authRes.ok) throw new Error(`OASIS auth failed: ${authRes.status}`);
     const authData = await authRes.json();
+    console.log('OASIS auth response:', JSON.stringify(authData));
     const token = authData?.result?.jwtToken;
     if (!token) throw new Error('No JWT token in OASIS auth response');
 
