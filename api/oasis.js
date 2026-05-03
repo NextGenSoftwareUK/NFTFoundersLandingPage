@@ -44,8 +44,8 @@ export default async function handler(req, res) {
 
     // Safety: always force server-side values, never trust client
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
-    payload.ImageUrl         = OASIS_CFG.imageUrl;
-    payload.ThumbnailUrl     = OASIS_CFG.imageUrl;
+    // payload.ImageUrl         = OASIS_CFG.imageUrl;
+    // payload.ThumbnailUrl     = OASIS_CFG.imageUrl;
     payload.Price            = 0;
 
     console.log('Minting with payload:', JSON.stringify({
