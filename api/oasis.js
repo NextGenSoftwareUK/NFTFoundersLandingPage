@@ -55,6 +55,7 @@ export default async function handler(req, res) {
       OffChainProvider:   payload.OffChainProvider,
       NFTOffChainMetaType: payload.NFTOffChainMetaType,
       SendToAddress:      payload.SendToAddressAfterMinting,
+      JSONUrl:            payload.JSONUrl,
     }));
 
     // 3. Mint
