@@ -29,6 +29,13 @@ export default async function handler(req, res) {
       throw new Error(`Failed to parse OASIS auth response: ${e.message}`);
     }
 
+    console.log('authData keys:', Object.keys(authData));
+    console.log('authData.result keys:', authData?.result ? Object.keys(authData.result) : 'no result');
+    console.log('jwtToken direct:', authData?.jwtToken);
+    console.log('jwtToken result:', authData?.result?.jwtToken);
+    console.log('jwtToken result.result:', authData?.result?.result?.jwtToken);
+
+
     const token = authData?.result?.jwtToken;
     console.log('Token found:', !!token);
     if (!token) throw new Error('No JWT token in OASIS auth response');
