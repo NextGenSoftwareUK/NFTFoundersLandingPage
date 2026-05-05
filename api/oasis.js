@@ -20,13 +20,18 @@ export default async function handler(req, res) {
     if (!authRes.ok) throw new Error(`OASIS auth failed: ${authRes.status}`);
 
     const authText = await authRes.text();
-    console.log("authText = " + authText);
-
     let authData;
+    
     try {
       authData = JSON.parse(authText);
     } catch(e) {
       throw new Error(`Failed to parse OASIS auth response: ${e.message}`);
+    }
+
+    // NOW check for errors with full context
+    if (!authRes.ok || authData?.result?.isError) {
+      const msg = authData?.result?.message || `OASIS auth failed: ${authRes.status}`;
+      throw new Error(`OASIS authentication failed: ${msg}`);
     }
 
     const token = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
