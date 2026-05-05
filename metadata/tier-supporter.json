@@ -1,7 +1,7 @@
 {
   "name": "Early Supporters NFT",
   "description": "OASIS Founder Access NFT — Early Supporter",
-  "image": "https://www.oasisfoundernfts.icu/img/nft-supporter.png",
+  "image": "https://www.oasisfoundernfts.icu/img/nft-supporter-wallet.png",
   "attributes": [
     { "trait_type": "Tier", "value": "Early Supporter" },
     { "trait_type": "Access", "value": "Founder" }

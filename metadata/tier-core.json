@@ -1,7 +1,7 @@
 {
   "name": "Core Builders NFT",
   "description": "OASIS Founder Access NFT — Core Builder",
-  "image": "https://www.oasisfoundernfts.icu/img/nft-core.png",
+  "image": "https://www.oasisfoundernfts.icu/img/nft-core-wallet.png",
   "attributes": [
     { "trait_type": "Tier", "value": "Core Builder" },
     { "trait_type": "Access", "value": "Founder" }
