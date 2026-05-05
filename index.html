@@ -616,7 +616,7 @@ body.test-mode-on .test-chain-note{display:block}
             <span id="oasisEvmInner">🦊 Connect MetaMask</span>
           </button>
           <button class="chain-switch-btn" id="oasisSolBtn" onclick="connectOasisPhantom()" style="display:none;margin-bottom:8px">
-            <span id="oasisSolInner">👻 Connect Phantom</span>
+            <span id="oasisSolInnerOASIS">👻 Connect Phantom</span>
           </button>
         </div>
 
@@ -1118,11 +1118,15 @@ function updateSolNetWarn() {
 async function connectPhantom() {
   const errEl    = document.getElementById('solError');
   const btnInner = document.getElementById('connectSolInner');
+  const btnInnerOASIS = document.getElementById('oasisSolInnerOASIS');
+
   errEl.textContent = '';
   btnInner.innerHTML = '<span class="spinner"></span>Connecting...';
+  btnInnerOASIS.innerHTML = '<span class="spinner"></span>Connecting...';
 
   if (location.protocol === 'file:') {
     btnInner.textContent = '👻 Connect Phantom';
+    btnInnerOASIS.textContent = '👻 Connect Phantom';
     errEl.innerHTML = '⚠ <strong>Local file detected.</strong> Phantom cannot inject into file:// pages. Serve via http:// or https://.';
     return;
   }
@@ -1130,12 +1134,24 @@ async function connectPhantom() {
   const phantom = getPhantom();
   if (!phantom) {
     btnInner.textContent = '👻 Connect Phantom';
+    btnInnerOASIS.textContent = '👻 Connect Phantom';
     errEl.innerHTML = '👻 Phantom not detected. <a href="https://phantom.app/download" target="_blank" style="color:var(--cyan)">Install Phantom →</a> then refresh.';
     return;
   }
 
   try {
-    const resp = await phantom.connect();
+    //const resp = await phantom.connect();
+
+    let resp;
+    try 
+    {
+      resp = await phantom.connect({ onlyIfTrusted: true });
+    } 
+    catch 
+    {
+      resp = await phantom.connect();
+    }
+
     solPublicKey = resp.publicKey.toString();
     solConnected = true;
 
