@@ -20,6 +20,8 @@ export default async function handler(req, res) {
     if (!authRes.ok) throw new Error(`OASIS auth failed: ${authRes.status}`);
 
     const authText = await authRes.text();
+    console.log("authText = " + authText);
+
     let authData;
     try {
       authData = JSON.parse(authText);
@@ -28,7 +30,16 @@ export default async function handler(req, res) {
     }
 
     const token = authData?.result?.result?.jwtToken;
-    if (!token) throw new Error('No JWT token in OASIS auth response');
+    
+    if (!token)
+    { 
+      token = authData?.result?.jwtToken;
+
+      if (!token) 
+        throw new Error('No JWT token in OASIS auth response');
+    }
+
+
 
     // 2. Build mint payload — use raw values not objects
     const { payload } = req.body;
