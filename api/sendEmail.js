@@ -55,7 +55,7 @@ export default async function handler(req, res) {
               ${explorerUrl ? `<a href="${explorerUrl}" style="display:inline-block;margin-top:12px;padding:8px 16px;background:#00e5ff11;border:1px solid #00e5ff44;border-radius:8px;color:#00e5ff;text-decoration:none;font-size:13px">View on Explorer →</a>` : ''}
             </div>
             <p style="color:#666;font-size:13px">Your NFT grants you Founder access to the OASIS. It should appear in your wallet shortly.</p>
-            <p style="color:#666;font-size:13px">Questions? Contact us on our telegram group: https://t.me/oasisweb4chat</p>
+            <p style="color:#666;font-size:13px">Questions? Contact us on our telegram group: <a href="https://t.me/oasisweb4chat">https://t.me/oasisweb4chat</a></p>
             <hr style="border:none;border-top:1px solid #ffffff11;margin:24px 0">
             <p style="color:#444;font-size:11px;margin:0">OASIS · Founder Access Program</p>
           </div>
