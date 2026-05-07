@@ -1625,17 +1625,17 @@ async function handleFiatPayment() {
     closeModal();
 
     const explorerUrl = currentOasisChain === 'SolanaOASIS'
-      ? `https://explorer.solana.com/tx/${txHash}${TEST_MODE ? '?cluster=devnet' : ''}`
-      : `https://etherscan.io/tx/${txHash}`;
+      ? `https://explorer.solana.com/tx/${data.txHash}${TEST_MODE ? '?cluster=devnet' : ''}`
+      : `https://etherscan.io/tx/${data.txHash}`;
 
-    const txLine = txHash
-      ? `<br>Tx: <a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</a>`
+    const txLine = data.txHash
+      ? `<br>Tx: <a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${data.txHash.slice(0,24)}...${data.txHash.slice(-8)}</a>`
       : '';
 
-    await showSuccess('oasis', txHash, {
+    await showSuccess('oasis', data.txHash, {
       email,
-      chain: chain.label,
-      txLine: `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`
+      chain: 'Solana SPL',
+      txLine: `🌀 Minted via OASIS · 'Solana SPL'${txLine}<br>📧 Confirmation: ${email}`
     });
 
   } catch (e) {
