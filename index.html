@@ -543,7 +543,7 @@ body.test-mode-on .test-chain-note{display:block}
         <button
           class="chain-switch-btn"
           id="connectStripeSolBtn"
-          onclick="connectPhantomForStripe()"
+          onclick="connectPhantom()"
           style="margin-bottom:10px"
         >
           <span id="connectStripeSolInner">
@@ -1275,14 +1275,17 @@ async function connectPhantom() {
   const errEl    = document.getElementById('solError');
   const btnInner = document.getElementById('connectSolInner');
   const btnInnerOASIS = document.getElementById('oasisSolInnerOASIS');
+  const btnInnerStripe = document.getElementById('connectStripeSolInner');
 
   errEl.textContent = '';
   btnInner.innerHTML = '<span class="spinner"></span>Connecting...';
   btnInnerOASIS.innerHTML = '<span class="spinner"></span>Connecting...';
+  btnInnerStripe.innerHTML = '<span class="spinner"></span>Connecting...';
 
   if (location.protocol === 'file:') {
     btnInner.textContent = '👻 Connect Phantom';
     btnInnerOASIS.textContent = '👻 Connect Phantom';
+    btnInnerStripe.textContent = '👻 Connect Phantom';
     errEl.innerHTML = '⚠ <strong>Local file detected.</strong> Phantom cannot inject into file:// pages. Serve via http:// or https://.';
     return;
   }
@@ -1291,6 +1294,7 @@ async function connectPhantom() {
   if (!phantom) {
     btnInner.textContent = '👻 Connect Phantom';
     btnInnerOASIS.textContent = '👻 Connect Phantom';
+    btnInnerStripe.textContent = '👻 Connect Phantom';
     errEl.innerHTML = '👻 Phantom not detected. <a href="https://phantom.app/download" target="_blank" style="color:var(--cyan)">Install Phantom →</a> then refresh.';
     return;
   }
@@ -1322,6 +1326,7 @@ async function connectPhantom() {
     btn.classList.add('done');
     btnInner.textContent = '✓ Wallet Connected';
     btnInnerOASIS.textContent = '✓ Wallet Connected';
+    btnInnerStripe.textContent = '✓ Wallet Connected';
     document.getElementById('solConfirm').disabled = false;
 
     // Listen for disconnect
