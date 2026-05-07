@@ -766,7 +766,7 @@ body.test-mode-on .test-chain-note{display:block}
             <span id="oasisEvmInner">🦊 Connect MetaMask</span>
           </button>
           <button class="chain-switch-btn" id="oasisSolBtn" onclick="connectOasisPhantom()" style="display:none;margin-bottom:8px">
-            <span id="oasisSolInnerOASIS">👻 Connect Phantom</span>
+            <span id="oasisSolInner">👻 Connect Phantom</span>
           </button>
         </div>
 
@@ -1274,7 +1274,7 @@ function updateSolNetWarn() {
 async function connectPhantom() {
   const errEl    = document.getElementById('solError');
   const btnInner = document.getElementById('connectSolInner');
-  const btnInnerOASIS = document.getElementById('oasisSolInnerOASIS');
+  const btnInnerOASIS = document.getElementById('oasisSolInner');
   const btnInnerStripe = document.getElementById('connectStripeSolInner');
 
   errEl.textContent = '';
