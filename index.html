@@ -1321,7 +1321,6 @@ async function connectPhantom() {
     addrEl.classList.add('connected');
     addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4);
     updateSolNetWarn();
-    updateOasisWalletUI();
 
     const btn = document.getElementById('connectSolBtn');
     btn.classList.add('done');
@@ -1329,6 +1328,11 @@ async function connectPhantom() {
     btnInnerOASIS.textContent = '✓ Wallet Connected';
     btnInnerStripe.textContent = '✓ Wallet Connected';
     document.getElementById('solConfirm').disabled = false;
+
+    document.getElementById('stripeWalletAddr').value = solPublicKey;
+    document.getElementById('stripeSolAddr').textContent = solPublicKey.slice(0,6)+'···'+solPublicKey.slice(-4);
+    document.getElementById('stripeSolDot').style.background = 'var(--green)';
+    document.getElementById('connectStripeSolInner').textContent = '✓ Phantom Connected';
 
     // Listen for disconnect
 phantom.on('disconnect', () => {
