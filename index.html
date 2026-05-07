@@ -1321,6 +1321,7 @@ async function connectPhantom() {
     addrEl.classList.add('connected');
     addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4);
     updateSolNetWarn();
+    updateOasisWalletUI();
 
     const btn = document.getElementById('connectSolBtn');
     btn.classList.add('done');
