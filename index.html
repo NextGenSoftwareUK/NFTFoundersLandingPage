@@ -1624,18 +1624,19 @@ async function handleFiatPayment() {
 
     closeModal();
 
-    const explorerUrl = TEST_MODE
-      ? `https://explorer.solana.com/tx/${data.txHash}?cluster=devnet`
-      : `https://explorer.solana.com/tx/${data.txHash}`;
+    const explorerUrl = currentOasisChain === 'SolanaOASIS'
+      ? `https://explorer.solana.com/tx/${txHash}${TEST_MODE ? '?cluster=devnet' : ''}`
+      : `https://etherscan.io/tx/${txHash}`;
 
-    await showSuccess(
-      'sol',
-      data.txHash,
-      {
-        explorerUrl,
-        email
-      }
-    );
+    const txLine = txHash
+      ? `<br>Tx: <a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</a>`
+      : '';
+
+    await showSuccess('oasis', txHash, {
+      email,
+      chain: chain.label,
+      txLine: `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`
+    });
 
   } catch (e) {
 
