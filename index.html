@@ -1789,12 +1789,24 @@ function updateOasisWalletUI() {
       chain.style.display    = 'inline';
       input.value            = solPublicKey;
       document.getElementById('oasisSolInner').textContent = '✓ Phantom Connected';
+
+      // Stripe sync
+      document.getElementById('stripeWalletAddr').value = solPublicKey;
+      document.getElementById('stripeSolAddr').textContent = solPublicKey.slice(0,6)+'···'+solPublicKey.slice(-4);
+      document.getElementById('stripeSolDot').style.background = 'var(--green)';
+      document.getElementById('connectStripeSolInner').textContent = '✓ Phantom Connected';
     } else {
       dot.style.background   = '#444';
       addr.textContent       = 'No wallet connected';
       chain.style.display    = 'none';
       input.value            = '';
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
+
+      // Stripe reset
+      document.getElementById('stripeWalletAddr').value = '';
+      document.getElementById('stripeSolAddr').textContent = 'No wallet connected';
+      document.getElementById('stripeSolDot').style.background = '#444';
+      document.getElementById('connectStripeSolInner').textContent = '👻 Connect Phantom';
     }
   } else {
     // MetaMask
