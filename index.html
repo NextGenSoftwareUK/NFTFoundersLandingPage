@@ -2216,6 +2216,13 @@ async function handleOasisMint() {
   }
 }
 
+const es = new EventSource("/api/sol-price-stream");
+
+es.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  setSolPrice(data.price);
+};
+
 
 // let currentOrder = null;
 // let paymentStatus = "idle"; // idle | pending | paid | minting
