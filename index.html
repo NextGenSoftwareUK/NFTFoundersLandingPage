@@ -750,16 +750,6 @@ body.test-mode-on .test-chain-note{display:block}
           <div class="coin-btn"        data-ochain="SolanaOASIS"   onclick="selectOasisChain(this)"><div class="coin-icon">◎</div><div class="coin-label">SOL</div><div class="coin-sub">Solana</div></div>
         </div>
 
-        <!-- Wallet address input -->
-        <!-- <div class="form-group">
-          <label class="form-label">YOUR WALLET ADDRESS</label>
-          <input class="form-input" id="oasisWalletAddr" type="text" placeholder="0x... or Solana address">
-        </div>
-        <div class="form-group">
-          <label class="form-label">EMAIL — CONFIRMATION</label>
-          <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
-        </div> -->
-
         <!-- Wallet connect buttons -->
         <div id="oasisWalletConnect">
           <button class="chain-switch-btn" id="oasisEvmBtn" onclick="connectOasisEVM()" style="margin-bottom:8px">
@@ -788,6 +778,27 @@ body.test-mode-on .test-chain-note{display:block}
           <label class="form-label">EMAIL — CONFIRMATION</label>
           <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
         </div>
+
+        <!-- Coming soon notice -->
+      <div
+        id="oasisComingSoon"
+        class="coming-soon-box"
+        style="
+          display:none;
+          margin-bottom:14px;
+          background:rgba(255,180,0,.08);
+          border:1px solid rgba(255,180,0,.2);
+          color:#ffd166;
+          border-radius:10px;
+          padding:12px 14px;
+          font-size:12px;
+          line-height:1.6;
+          font-family:'Share Tech Mono',monospace
+        "
+      >
+        ⚡ Ethereum + Arbitrum minting is currently being finalized.<br>
+        Solana minting is live now via OASIS.
+      </div>
 
         <!-- OASIS API status -->
         <div id="oasisStatus" style="display:none;background:rgba(0,0,0,.25);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:12px;font-family:'Share Tech Mono',monospace;color:var(--text-dim);line-height:1.6"></div>
@@ -1782,6 +1793,8 @@ function updateOasisWalletUI() {
   const addr   = document.getElementById('oasisWAddr');
   const chain  = document.getElementById('oasisWChain');
   const input  = document.getElementById('oasisWalletAddr');
+  const comingSoon = document.getElementById('oasisComingSoon');
+  const mintBtn    = document.getElementById('oasisConfirm');
 
   // Show correct connect button
   evmBtn.style.display = isSol ? 'none' : 'block';
@@ -1797,6 +1810,12 @@ function updateOasisWalletUI() {
       input.value            = solPublicKey;
       document.getElementById('oasisSolInner').textContent = '✓ Phantom Connected';
 
+      comingSoon.style.display = 'none';
+      mintBtn.disabled = false;
+      mintBtn.textContent = '🌀 MINT WITH OASIS';
+      mintBtn.style.opacity = '1';
+      mintBtn.style.cursor = 'pointer';
+
       // Stripe sync
       document.getElementById('stripeWalletAddr').value = solPublicKey;
       document.getElementById('stripeSolAddr').textContent = solPublicKey.slice(0,6)+'···'+solPublicKey.slice(-4);
@@ -1808,6 +1827,12 @@ function updateOasisWalletUI() {
       chain.style.display    = 'none';
       input.value            = '';
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
+
+      comingSoon.style.display = 'block';
+      mintBtn.disabled = true;
+      mintBtn.textContent = 'COMING SOON';
+      mintBtn.style.opacity = '.6';
+      mintBtn.style.cursor = 'not-allowed';
 
       // Stripe reset
       document.getElementById('stripeWalletAddr').value = '';
