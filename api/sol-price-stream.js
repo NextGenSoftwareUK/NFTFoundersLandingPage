@@ -1,3 +1,6 @@
+//const { getSolPriceUSD } = require("../lib/solPrice");
+import { getSolPriceUSD } from "../lib/solPrice";
+
 export default async function handler(req, res) {
   try {
     console.log("STREAM START");
