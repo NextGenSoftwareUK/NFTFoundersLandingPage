@@ -1,3 +1,5 @@
+import { kv } from '@vercel/kv';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -9,6 +11,37 @@ export default async function handler(req, res) {
     avatarId: process.env.OASIS_AVATAR_ID,
     imageUrl: process.env.OASIS_IMAGE_URL,
   };
+
+  const lockKey = `mint-lock:${payload.MetaData.wallet}`;
+  const locked = await kv.get(lockKey);
+
+  if (locked) {
+    return res.status(429).json({ error: "Mint already in progress" });
+  }
+
+  // set lock (30 sec safety window)
+  await kv.set(lockKey, true, { ex: 30 });
+
+  const { wallet } = req.body.payload.MetaData;
+
+  const order = await kv.get(`order:${payload.MetaData.orderId}`);
+
+  if (!order || order.status !== "paid" || order.used) {
+    return res.status(403).json({ error: "Payment required" });
+  }
+
+  // const orders = await kv.scan(0, {
+  //   match: "order:*"
+  // });
+
+  // const paidOrder = orders[1]
+  //   .map(o => JSON.parse(o))
+  //   .find(o => o.wallet === wallet && o.status === "paid" && !o.used);
+
+  // if (!paidOrder) {
+  //   return res.status(403).json({ error: "Payment required" });
+  // }
+
 
   try {
     // 1. Authenticate
@@ -91,6 +124,15 @@ export default async function handler(req, res) {
     }
 
     if (result?.isError) throw new Error(result.message || 'OASIS returned an error');
+
+    // paidOrder.used = true;
+    // await kv.set(`order:${paidOrder.orderId}`, paidOrder);
+
+    order.used = true;
+    order.status = "minted";
+    await kv.set(`order:${order.orderId}`, order);
+
+    await kv.del(`mint-lock:${payload.MetaData.wallet}`);
 
     return res.status(200).json({ success: true, result });
 
