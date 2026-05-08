@@ -2220,7 +2220,8 @@ const es = new EventSource("/api/sol-price-stream");
 
 es.onmessage = (event) => {
   const data = JSON.parse(event.data);
-  setSolPrice(data.price);
+  console.log("data = " + data);
+  //setSolPrice(data.price);
 };
 
 
