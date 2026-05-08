@@ -11,6 +11,12 @@ export default async function handler(req, res) {
         const price = await getSolPriceUSD();
         //const price = 100;
 
+        // res.write(`data: ${JSON.stringify({
+        //   solPrice: price,
+        //   nftPrice: 1499,
+        //   nftPriceInSOL: 1499 / price
+        // })}\n\n`);
+
         res.write(`data: ${JSON.stringify({ price })}\n\n`);
       } catch (e) {
         console.error("SEND ERROR:", e);
