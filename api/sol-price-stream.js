@@ -1,4 +1,4 @@
-import { getSolPriceUSD } from "api/lib/solPrice";
+import { getSolPriceUSD } from "./lib/solPrice";
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "text/event-stream");

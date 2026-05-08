@@ -1,7 +1,7 @@
 import { kv } from '@vercel/kv';
 import { v4 as uuidv4 } from 'uuid';
 import { rateLimit } from "../lib/rateLimit";
-import { getSolPriceUSD } from "../lib/solPrice";
+import { getSolPriceUSD } from "./lib/solPrice";
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
