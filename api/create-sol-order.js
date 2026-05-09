@@ -55,9 +55,9 @@ module.exports = async function handler(req, res) {
 
     // 💰 Tier prices are in USD
     const TIERS = {
-      0: { priceUSD: 149 },
-      1: { priceUSD: 499 },
-      2: { priceUSD: 1499 }
+      supporter: { priceUSD: 149 },
+      core: { priceUSD: 499 },
+      genesis: { priceUSD: 1499 }
     };
 
     const tierData = TIERS[tier];
