@@ -2046,7 +2046,7 @@ es.onmessage = (event) => {
    const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
 
    const nftInSol = nftUsdPrice / solPrice;
-   console.log("solPrice formatted:", `${nftInSol.toFixed(4)} SOL`);   
+   console.log("solPrice formatted:", `$${solPrice.toFixed(2)} USD`);   
 
   // SOL price display
   document.getElementById("solPrice").innerText =
