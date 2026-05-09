@@ -37,7 +37,7 @@ export default async function handler(req, res) {
    console.log('Received mint request with payload:', JSON.stringify(payload));
 
   await ensureRedis();
-  const lockKey = `mint-lock:${payload.MetaData.wallet}`;
+  const lockKey = `mint-lock:${payload.SendToAddressAfterMinting}`;
   const locked = await redis.get(lockKey);
 
   if (locked) {
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
   // set lock (30 sec safety window)
   await redis.set(lockKey, true, { ex: 30 });
 
-  const { wallet } = req.body.payload.MetaData;
+  //const { wallet } = req.body.payload.MetaData;
 
   const order = await redis.get(`order:${payload.MetaData.orderId}`);
 
@@ -111,7 +111,7 @@ export default async function handler(req, res) {
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
     // payload.ImageUrl         = OASIS_CFG.imageUrl;
     // payload.ThumbnailUrl     = OASIS_CFG.imageUrl;
-    payload.Price            = 0;
+    payload.Price            = order.priceSOL; //TODO: Not sure if the sc already charges the wallet?! How do we check?
 
     console.log('Minting with payload:', JSON.stringify({
       Title:              payload.Title,
