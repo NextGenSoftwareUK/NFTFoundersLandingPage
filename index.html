@@ -1915,6 +1915,14 @@ async function handleOasisMint() {
         throw new Error("Wallet not connected");
       }
 
+      if (isSol) {
+        try {
+          new solanaWeb3.PublicKey(wallet);
+        } catch (e) {
+          throw new Error("Invalid Solana wallet");
+        }
+      }
+
       const order = await fetch('/api/create-sol-order', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -2032,21 +2040,21 @@ const es = new EventSource("/api/sol-price-stream");
 es.onmessage = (event) => {
   const data = JSON.parse(event.data);
   //console.log("data = " + data);
-  console.log("data =", data);
-  console.log(JSON.stringify(data));
-  console.log("raw event:", event.data);
+  // console.log("data =", data);
+  // console.log(JSON.stringify(data));
+  // console.log("raw event:", event.data);
 
-  console.log("RAW:", event.data);
-  console.log("PARSED:", data);
+  // console.log("RAW:", event.data);
+  // console.log("PARSED:", data);
 
    const solPrice = Number(data.price);
-   console.log("solPrice:", solPrice);   
+   //console.log("solPrice:", solPrice);   
 
    const tier = TIERS[currentTier];
    const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
 
    const nftInSol = nftUsdPrice / solPrice;
-   console.log("solPrice formatted:", `$${solPrice.toFixed(2)} USD`);   
+   //console.log("solPrice formatted:", `$${solPrice.toFixed(2)} USD`);   
 
   // SOL price display
   document.getElementById("solPriceOASIS").innerText =
