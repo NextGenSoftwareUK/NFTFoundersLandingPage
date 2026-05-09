@@ -1985,7 +1985,8 @@ async function handleOasisMint() {
 
 
       const latestBlockhash = await connection.getLatestBlockhash(
-        "finalized"
+        "confirmed"
+        //"finalized"
       );
 
       tx.recentBlockhash = latestBlockhash.blockhash;
@@ -2003,13 +2004,17 @@ async function handleOasisMint() {
 
       console.log("TX SENT:", sig);
 
-      await connection.confirmTransaction({
+     const confirmation = await connection.confirmTransaction(
+      {
         signature: sig,
         blockhash: latestBlockhash.blockhash,
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-      }, "confirmed");
+      },
+      "confirmed"
+    );
 
-      console.log("TX CONFIRMED:", sig);
+      //console.log("TX CONFIRMED:", sig);
+      console.log("CONFIRM:", confirmation);
 
       console.log("SOL PAYMENT SUCCESS:", sig);
 
