@@ -1,4 +1,25 @@
-import { kv } from '@vercel/kv';
+//import { kv } from '@vercel/kv';
+
+const { createClient } = require("redis");
+
+const redis = createClient({
+  url: process.env.REDIS_URL,
+});
+
+redis.on("error", (err) => {
+  console.error("Redis error:", err);
+});
+
+let redisReady = null;
+
+async function ensureRedis() {
+  if (!redisReady) {
+    redisReady = redis.connect();
+  }
+
+  return redisReady;
+}
+
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -12,19 +33,23 @@ export default async function handler(req, res) {
     imageUrl: process.env.OASIS_IMAGE_URL,
   };
 
+   const { payload } = req.body;
+   console.log('Received mint request with payload:', JSON.stringify(payload));
+
+  await ensureRedis();
   const lockKey = `mint-lock:${payload.MetaData.wallet}`;
-  const locked = await kv.get(lockKey);
+  const locked = await redis.get(lockKey);
 
   if (locked) {
     return res.status(429).json({ error: "Mint already in progress" });
   }
 
   // set lock (30 sec safety window)
-  await kv.set(lockKey, true, { ex: 30 });
+  await redis.set(lockKey, true, { ex: 30 });
 
   const { wallet } = req.body.payload.MetaData;
 
-  const order = await kv.get(`order:${payload.MetaData.orderId}`);
+  const order = await redis.get(`order:${payload.MetaData.orderId}`);
 
   if (!order || order.status !== "paid" || order.used) {
     return res.status(403).json({ error: "Payment required" });
@@ -73,8 +98,6 @@ export default async function handler(req, res) {
 
 
     // 2. Build mint payload — use raw values not objects
-    const { payload } = req.body;
-
     console.log('Received JSONUrl:', payload.JSONUrl);
 
     // Force numeric values for provider fields
