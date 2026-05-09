@@ -1963,20 +1963,53 @@ async function handleOasisMint() {
 
       // await connection.confirmTransaction(sig);
 
-      const latestBlockhash = await connection.getLatestBlockhash();
+
+
+
+      // const latestBlockhash = await connection.getLatestBlockhash();
+      // tx.recentBlockhash = latestBlockhash.blockhash;
+
+      // const signed = await walletProvider.signTransaction(tx);
+
+      // const sig = await connection.sendRawTransaction(
+      //   signed.serialize()
+      // );
+
+      // await connection.confirmTransaction({
+      //   signature: sig,
+      //   blockhash: latestBlockhash.blockhash,
+      //   lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+      // });
+
+
+
+
+      const latestBlockhash = await connection.getLatestBlockhash(
+        "finalized"
+      );
+
       tx.recentBlockhash = latestBlockhash.blockhash;
+     // tx.feePayer = walletProvider.publicKey;
 
       const signed = await walletProvider.signTransaction(tx);
 
       const sig = await connection.sendRawTransaction(
-        signed.serialize()
+        signed.serialize(),
+        {
+          skipPreflight: false,
+          preflightCommitment: "confirmed",
+        }
       );
+
+      console.log("TX SENT:", sig);
 
       await connection.confirmTransaction({
         signature: sig,
         blockhash: latestBlockhash.blockhash,
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-      });
+      }, "confirmed");
+
+      console.log("TX CONFIRMED:", sig);
 
       console.log("SOL PAYMENT SUCCESS:", sig);
 
