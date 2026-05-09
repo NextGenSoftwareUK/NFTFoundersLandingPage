@@ -1,5 +1,25 @@
-import { kv } from "@vercel/kv";
-import { verifySolPayment } from "../lib/verifySolTx";
+//import { kv } from "@vercel/kv";
+//import { verifySolPayment } from "../lib/verifySolTx";
+const { verifySolPayment } = require("../lib/verifySolTx");
+const { createClient } = require("redis");
+
+const redis = createClient({
+  url: process.env.REDIS_URL,
+});
+
+redis.on("error", (err) => {
+  console.error("Redis error:", err);
+});
+
+let redisReady = null;
+
+async function ensureRedis() {
+  if (!redisReady) {
+    redisReady = redis.connect();
+  }
+
+  return redisReady;
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
@@ -7,7 +27,8 @@ export default async function handler(req, res) {
   try {
     const { signature, orderId } = req.body;
 
-    const order = await kv.get(`order:${orderId}`);
+    await ensureRedis();
+    const order = await redis.get(`order:${orderId}`);
 
     if (!order || order.used) {
       return res.json({ success: false, error: "Invalid order" });
@@ -26,7 +47,7 @@ export default async function handler(req, res) {
     order.status = "paid";
     order.signature = signature;
 
-    await kv.set(`order:${orderId}`, order);
+    await redis.set(`order:${orderId}`, JSON.stringify(order));
 
     return res.json({ success: true });
 

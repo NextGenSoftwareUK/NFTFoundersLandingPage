@@ -3,11 +3,32 @@
 // import { rateLimit } from "../lib/rateLimit";
 //import { getSolPriceUSD } from "../lib/solPrice";
 
-const { kv } = require("@vercel/kv");
+//const { kv } = require("@vercel/kv");
 //const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
 const { rateLimit } = require("../lib/rateLimit");
 const { getSolPriceUSD } = require("../lib/solPrice");
+const { createClient } = require("redis");
+
+const redis = createClient({
+  url: process.env.REDIS_URL,
+});
+
+redis.on("error", (err) => {
+  console.error("Redis error:", err);
+});
+
+let redisReady = null;
+
+async function ensureRedis() {
+  if (!redisReady) {
+    redisReady = redis.connect();
+  }
+
+  return redisReady;
+}
+
+
 
 //export default async function handler(req, res) {
 module.exports = async function handler(req, res) {
@@ -20,9 +41,9 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "Missing wallet or tier" });
     }
 
-    if (!(await rateLimit(wallet))) {
-      return res.status(429).json({ error: "Too many requests" });
-    }
+    // if (!(await rateLimit(wallet))) {
+    //   return res.status(429).json({ error: "Too many requests" });
+    // }
 
     if (!wallet || typeof wallet !== "string") {
       return res.status(400).json({
@@ -71,7 +92,8 @@ module.exports = async function handler(req, res) {
       createdAt: Date.now()
     };
 
-    await kv.set(`order:${orderId}`, order, { ex: 60 * 15 });
+    ensureRedis();
+    await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 });
 
     return res.status(200).json({
       orderId,

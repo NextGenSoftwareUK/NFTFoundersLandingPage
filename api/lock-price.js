@@ -1,6 +1,28 @@
-import { kv } from "@vercel/kv";
-import { getSolPriceUSD } from "../lib/solPrice";
-import { v4 as uuidv4 } from "uuid";
+// import { kv } from "@vercel/kv";
+// import { getSolPriceUSD } from "../lib/solPrice";
+// import { v4 as uuidv4 } from "uuid";
+
+const crypto = require("crypto");
+const { verifySolPayment } = require("../lib/verifySolTx");
+const { createClient } = require("redis");
+
+const redis = createClient({
+  url: process.env.REDIS_URL,
+});
+
+redis.on("error", (err) => {
+  console.error("Redis error:", err);
+});
+
+let redisReady = null;
+
+async function ensureRedis() {
+  if (!redisReady) {
+    redisReady = redis.connect();
+  }
+
+  return redisReady;
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
@@ -19,7 +41,8 @@ export default async function handler(req, res) {
   const solPriceUSD = await getSolPriceUSD();
   const priceUSD = priceSOL * solPriceUSD;
 
-  const lockId = uuidv4();
+  //const lockId = uuidv4();
+  const lockId = crypto.randomUUID();
 
   const lock = {
     lockId,
@@ -31,7 +54,8 @@ export default async function handler(req, res) {
     expiresAt: Date.now() + 5 * 60 * 1000 // 5 min lock
   };
 
-  await kv.set(`lock:${lockId}`, lock, { ex: 300 });
+  await ensureRedis();
+  await redis.set(`lock:${lockId}`, JSON.stringify(lock), { EX: 300 });
 
   return res.status(200).json(lock);
 }
