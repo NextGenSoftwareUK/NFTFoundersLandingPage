@@ -1,12 +1,15 @@
-import { kv } from '@vercel/kv';
-//import { v4 as uuidv4 } from 'uuid';
-const { v4: uuidv4 } = require("uuid");
-import { rateLimit } from "../lib/rateLimit";
-
-const { getSolPriceUSD } = require("../lib/solPrice");
+// import { kv } from '@vercel/kv';
+// import { v4 as uuidv4 } from 'uuid';
+// import { rateLimit } from "../lib/rateLimit";
 //import { getSolPriceUSD } from "../lib/solPrice";
 
-export default async function handler(req, res) {
+const { kv } = require("@vercel/kv");
+const { v4: uuidv4 } = require("uuid");
+const { rateLimit } = require("../lib/rateLimit");
+const { getSolPriceUSD } = require("../lib/solPrice");
+
+//export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   try {
