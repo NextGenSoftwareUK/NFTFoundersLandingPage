@@ -1906,8 +1906,8 @@ async function handleOasisMint() {
     setOasisStatus(`⛓ Preparing mint...`, 'var(--cyan)');
 
     // 🔥 NEW: SOL PAYMENT GATE (ONLY FOR SOLANA CHAIN)
-    if (currentOasisChain === 'SolanaOASIS') {
-
+    if (currentOasisChain === 'SolanaOASIS') 
+    {
       btn.innerHTML = '<span class="spinner"></span>APPROVING PAYMENT...';
 
       const walletProvider = window.solana;
@@ -1915,12 +1915,10 @@ async function handleOasisMint() {
         throw new Error("Wallet not connected");
       }
 
-      if (isSol) {
-        try {
-          new solanaWeb3.PublicKey(wallet);
-        } catch (e) {
-          throw new Error("Invalid Solana wallet");
-        }
+      try {
+        new solanaWeb3.PublicKey(wallet);
+      } catch (e) {
+        throw new Error("Invalid Solana wallet");
       }
 
       const order = await fetch('/api/create-sol-order', {
