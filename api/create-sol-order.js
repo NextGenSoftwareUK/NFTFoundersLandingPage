@@ -4,7 +4,8 @@
 //import { getSolPriceUSD } from "../lib/solPrice";
 
 const { kv } = require("@vercel/kv");
-const { v4: uuidv4 } = require("uuid");
+//const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 const { rateLimit } = require("../lib/rateLimit");
 const { getSolPriceUSD } = require("../lib/solPrice");
 
@@ -47,7 +48,8 @@ module.exports = async function handler(req, res) {
 
     // 🧠 Convert USD → SOL (THIS is the correct direction for minting)
     const priceSOL = Number((priceUSD / solPriceUSD).toFixed(4));
-    const orderId = uuidv4();
+    //const orderId = uuidv4();
+    const orderId = crypto.randomUUID();
 
     const order = {
       orderId,
