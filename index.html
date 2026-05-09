@@ -1834,10 +1834,10 @@ function updateOasisWalletUI() {
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
       comingSoon.style.display = 'none';
       
-      mintBtn.disabled = true;
-      mintBtn.textContent = 'COMING SOON';
-      mintBtn.style.opacity = '.6';
-      mintBtn.style.cursor = 'not-allowed';
+      mintBtn.disabled = false;
+      mintBtn.textContent = '🌀 MINT WITH OASIS';
+      mintBtn.style.opacity = '1';
+      mintBtn.style.cursor = 'pointer';
 
       // Stripe reset
       document.getElementById('stripeWalletAddr').value = '';
@@ -1849,6 +1849,11 @@ function updateOasisWalletUI() {
   else 
   {
     comingSoon.style.display = 'block';
+
+    mintBtn.disabled = true;
+    mintBtn.textContent = 'COMING SOON';
+    mintBtn.style.opacity = '.6';
+    mintBtn.style.cursor = 'not-allowed';
 
     // MetaMask
     if (evmAddress) {
