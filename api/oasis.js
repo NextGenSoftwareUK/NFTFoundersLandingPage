@@ -51,6 +51,8 @@ export default async function handler(req, res) {
 
   const order = await redis.get(`order:${payload.MetaData.orderId}`);
 
+  console.log('Fetched order from Redis:', order);
+
   if (!order || order.status !== "paid" || order.used) {
     return res.status(403).json({ error: "Payment required" });
   }
