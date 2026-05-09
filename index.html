@@ -1935,6 +1935,9 @@ async function handleOasisMint() {
       }).then(r => r.json());
 
 
+      console.log("ORDER RESPONSE:", order);
+      console.log("priceSOL:", order.priceSOL);
+
       const { Connection, PublicKey, SystemProgram, Transaction } = solanaWeb3;
       const connection = new Connection("https://api.mainnet-beta.solana.com");
 
