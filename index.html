@@ -1921,6 +1921,10 @@ async function handleOasisMint() {
         throw new Error("Invalid Solana wallet");
       }
 
+      console.log("selectedChain =", selectedOasisChain);
+      console.log("wallet =", wallet);
+      console.log("tier =", tier);
+
       const order = await fetch('/api/create-sol-order', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -1937,7 +1941,7 @@ async function handleOasisMint() {
       const tx = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: walletProvider.publicKey,
-          toPubkey: new PublicKey("YOUR_TREASURY_WALLET"),
+          toPubkey: new PublicKey("89443sASVtWyg5pqSxMgtr7MxdTL1NTBqCFSHztKcGzq"),
           lamports: tier.priceSOL * 1e9 // 👈 define per tier
         })
       );
