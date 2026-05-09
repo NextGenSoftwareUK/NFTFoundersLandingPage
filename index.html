@@ -2041,12 +2041,12 @@ es.onmessage = (event) => {
 
    const solPrice = Number(data.price);
    console.log("solPrice:", solPrice);   
-   console.log("solPrice formatted:", `${nftInSol.toFixed(4)} SOL`);   
 
    const tier = TIERS[currentTier];
    const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
 
    const nftInSol = nftUsdPrice / solPrice;
+   console.log("solPrice formatted:", `${nftInSol.toFixed(4)} SOL`);   
 
   // SOL price display
   document.getElementById("solPrice").innerText =
