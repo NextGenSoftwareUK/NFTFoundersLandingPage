@@ -809,7 +809,7 @@ body.test-mode-on .test-chain-note{display:block}
         </div>
         <div class="price-row" style="margin-top:6px">
           <span class="price-label">SOL PRICE</span>
-          <span class="price-value" id="solPrice" style="color:#00e5ff">USD</span>
+          <span class="price-value" id="solPriceOASIS" style="color:#00e5ff">USD</span>
         </div>
         <div class="price-row" style="margin-top:6px">
           <span class="price-label">NFT PRICE (SOL)</span>
@@ -2049,7 +2049,7 @@ es.onmessage = (event) => {
    console.log("solPrice formatted:", `$${solPrice.toFixed(2)} USD`);   
 
   // SOL price display
-  document.getElementById("solPrice").innerText =
+  document.getElementById("solPriceOASIS").innerText =
     `$${solPrice.toFixed(2)} USD`;
 
   // NFT price in SOL
