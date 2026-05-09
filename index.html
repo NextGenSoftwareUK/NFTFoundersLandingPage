@@ -784,7 +784,7 @@ body.test-mode-on .test-chain-note{display:block}
         id="oasisComingSoon"
         class="coming-soon-box"
         style="
-          display:none;
+          display:block;
           margin-bottom:14px;
           background:rgba(255,180,0,.08);
           border:1px solid rgba(255,180,0,.2);
@@ -1802,7 +1802,8 @@ function updateOasisWalletUI() {
   evmBtn.style.display = isSol ? 'none' : 'block';
   solBtn.style.display = isSol ? 'block' : 'none';
 
-  if (isSol) {
+  if (isSol) 
+  {
     // Phantom
     if (solPublicKey) {
       dot.style.background   = 'var(--green)';
@@ -1823,14 +1824,16 @@ function updateOasisWalletUI() {
       document.getElementById('stripeSolAddr').textContent = solPublicKey.slice(0,6)+'···'+solPublicKey.slice(-4);
       document.getElementById('stripeSolDot').style.background = 'var(--green)';
       document.getElementById('connectStripeSolInner').textContent = '✓ Phantom Connected';
-    } else {
+    } 
+    else 
+    {
       dot.style.background   = '#444';
       addr.textContent       = 'No wallet connected';
       chain.style.display    = 'none';
       input.value            = '';
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
-
-      comingSoon.style.display = 'block';
+      comingSoon.style.display = 'none';
+      
       mintBtn.disabled = true;
       mintBtn.textContent = 'COMING SOON';
       mintBtn.style.opacity = '.6';
@@ -1842,7 +1845,11 @@ function updateOasisWalletUI() {
       document.getElementById('stripeSolDot').style.background = '#444';
       document.getElementById('connectStripeSolInner').textContent = '👻 Connect Phantom';
     }
-  } else {
+  } 
+  else 
+  {
+    comingSoon.style.display = 'block';
+
     // MetaMask
     if (evmAddress) {
       dot.style.background   = 'var(--green)';
