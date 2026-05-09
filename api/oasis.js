@@ -153,9 +153,10 @@ export default async function handler(req, res) {
 
     order.used = true;
     order.status = "minted";
-    await kv.set(`order:${order.orderId}`, order);
+    await redis.set(lockKey, true, { ex: 30 });
+    await redis.set(`order:${order.orderId}`, order);
 
-    await kv.del(`mint-lock:${payload.MetaData.wallet}`);
+    await redis.del(`mint-lock:${payload.MetaData.wallet}`);
 
     return res.status(200).json({ success: true, result });
 
