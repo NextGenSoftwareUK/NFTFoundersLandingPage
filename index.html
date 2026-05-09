@@ -1942,12 +1942,14 @@ async function handleOasisMint() {
       //const connection = new Connection("https://api.mainnet-beta.solana.com");
       //const connection = new Connection("https://rpc.ankr.com/solana");
       //const connection = new Connection("https://solana-mainnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe");
-      const connection = new Connection("https://solana-mainnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe");
+      //const connection = new Connection("https://solana-mainnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe");
+      const connection = new Connection("https://solana-devnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe");
       //const connection = new Connection("https://solana-mainnet.g.alchemy.com/v2/demo");
 
       const tx = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: walletProvider.publicKey,
+          //toPubkey: new PublicKey("89443sASVtWyg5pqSxMgtr7MxdTL1NTBqCFSHztKcGzq"),
           toPubkey: new PublicKey("89443sASVtWyg5pqSxMgtr7MxdTL1NTBqCFSHztKcGzq"),
           lamports: Math.floor(Number(order.priceSOL) * solanaWeb3.LAMPORTS_PER_SOL) // 👈 define per tier
         })
