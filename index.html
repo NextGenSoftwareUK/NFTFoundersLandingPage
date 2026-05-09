@@ -1946,8 +1946,8 @@ async function handleOasisMint() {
       //const connection = new Connection("https://solana-mainnet.g.alchemy.com/v2/demo");
 
       const connection = TEST_MODE
-        ? 'https://solana-devnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe'
-        : 'https://solana-mainnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe';
+        ? new Connection('https://solana-devnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe')
+        : new Connection('https://solana-mainnet.g.alchemy.com/v2/2gYC0H1CyjRsQnrlyNERe');
 
       console.log("connection = ", connection);
 
