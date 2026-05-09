@@ -27,6 +27,8 @@ export default async function handler(req, res) {
   try {
     const { signature, orderId } = req.body;
 
+    console.log("VERIFY BODY:", req.body);
+
     await ensureRedis();
     const order = await redis.get(`order:${orderId}`);
 
