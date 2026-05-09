@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     const result = await verifySolPayment({
       signature,
-      expectedRecipient: process.env.TREASURY_WALLET,
+      expectedRecipient: process.env.TREASURY_WALLET_SOL,
       expectedAmountSOL: order.price
     });
 
