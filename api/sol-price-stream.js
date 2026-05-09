@@ -1,5 +1,5 @@
-//const { getSolPriceUSD } = require("../lib/solPrice");
-import { getSolPriceUSD } from "../lib/solPrice";
+const { getSolPriceUSD } = require("../lib/solPrice");
+//import { getSolPriceUSD } from "../lib/solPrice";
 
 export default async function handler(req, res) {
   try {
