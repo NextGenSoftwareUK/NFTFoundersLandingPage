@@ -1,5 +1,6 @@
 import { kv } from '@vercel/kv';
-import { v4 as uuidv4 } from 'uuid';
+//import { v4 as uuidv4 } from 'uuid';
+const { v4: uuidv4 } = require("uuid");
 import { rateLimit } from "../lib/rateLimit";
 
 const { getSolPriceUSD } = require("../lib/solPrice");
