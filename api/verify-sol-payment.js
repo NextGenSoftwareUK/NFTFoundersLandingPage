@@ -34,6 +34,10 @@ export default async function handler(req, res) {
       return res.json({ success: false, error: "Invalid order" });
     }
 
+    console.log("sig = ", signature, "order = ", order);
+    console.log("treasury wallet = ", process.env.TREASURY_WALLET_SOL);
+    console.log("price = ", order.price);
+
     const result = await verifySolPayment({
       signature,
       expectedRecipient: process.env.TREASURY_WALLET_SOL,
