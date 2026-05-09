@@ -30,11 +30,30 @@ export default async function handler(req, res) {
     console.log("VERIFY BODY:", req.body);
 
     await ensureRedis();
-    const order = await redis.get(`order:${orderId}`);
 
-    if (!order || order.used) {
-      return res.json({ success: false, error: "Invalid order" });
+    const rawOrder = await redis.get(`order:${orderId}`);
+
+    if (!rawOrder) {
+      return res.json({
+        success: false,
+        error: "Invalid order"
+      });
     }
+
+    const order = JSON.parse(rawOrder);
+
+    if (order.used) {
+      return res.json({
+        success: false,
+        error: "Order already used"
+      });
+    }
+
+    // const order = await redis.get(`order:${orderId}`);
+
+    // if (!order || order.used) {
+    //   return res.json({ success: false, error: "Invalid order" });
+    // }
 
     console.log("sig = ", signature, "order = ", order);
     console.log("treasury wallet = ", process.env.TREASURY_WALLET_SOL);
@@ -43,7 +62,7 @@ export default async function handler(req, res) {
     const result = await verifySolPayment({
       signature,
       expectedRecipient: process.env.TREASURY_WALLET_SOL,
-      expectedAmountSOL: order.price
+      expectedAmountSOL: order.priceSOL
     });
 
     if (!result.ok) {

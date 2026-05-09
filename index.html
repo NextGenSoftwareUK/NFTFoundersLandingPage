@@ -2057,6 +2057,7 @@ async function handleOasisMint() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           signature: sig,
+          orderId: order.orderId,
           wallet,
           email,
           tier: currentTier
