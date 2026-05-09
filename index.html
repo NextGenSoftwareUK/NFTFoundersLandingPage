@@ -435,7 +435,7 @@ body.test-mode-on .test-chain-note{display:block}
     <div class="footer-brand">OASIS</div>
     <div>A next-generation ecosystem · Games · Worlds · Avatars · AI · Ownership</div>
     <div style="margin-top:8px;color:rgba(255,255,255,.2)">Founder NFTs may never be minted again. · This is just the beginning.</div>
-    <div style="margin-top:12px;font-size:12px">Minting powered by <a href="https://oasisweb4.one" target="_blank" style="color:var(--cyan);text-decoration:none">THE OASIS</a> · OGEngine Web4+Web5 Infrastructure</div>
+    <div style="margin-top:12px;font-size:12px">Minting powered by <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none">THE OASIS</a> · OGEngine Web4+Web5 Infrastructure</div>
   </footer>
 </div>
 
@@ -822,7 +822,7 @@ body.test-mode-on .test-chain-note{display:block}
 
         <!-- Powered by badge -->
         <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace">
-          POWERED BY <a href="https://oasisweb4.one" target="_blank" style="color:var(--cyan);text-decoration:none;font-weight:700">THE OASIS</a> · OGEngine Web4+Web5
+          POWERED BY <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none;font-weight:700">THE OASIS</a> · OGEngine Web4+Web5
         </div>
       </div><!-- /panelOasis -->
 
@@ -1945,7 +1945,7 @@ async function handleOasisMint() {
         SystemProgram.transfer({
           fromPubkey: walletProvider.publicKey,
           toPubkey: new PublicKey("89443sASVtWyg5pqSxMgtr7MxdTL1NTBqCFSHztKcGzq"),
-          lamports: tier.priceSOL * 1e9 // 👈 define per tier
+          lamports: Math.floor(Number(order.priceSOL) * solanaWeb3.LAMPORTS_PER_SOL) // 👈 define per tier
         })
       );
 
