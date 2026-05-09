@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
     console.log("sig = ", signature, "order = ", order);
     console.log("treasury wallet = ", process.env.TREASURY_WALLET_SOL);
-    console.log("price = ", order.price);
+    console.log("price = ", order.priceSOL);
 
     const result = await verifySolPayment({
       signature,
