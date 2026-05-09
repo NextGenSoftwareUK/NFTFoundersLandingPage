@@ -2004,14 +2004,45 @@ async function handleOasisMint() {
 
       console.log("TX SENT:", sig);
 
-     const confirmation = await connection.confirmTransaction(
-      {
-        signature: sig,
-        blockhash: latestBlockhash.blockhash,
-        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-      },
-      "confirmed"
-    );
+    //  const confirmation = await connection.confirmTransaction(
+    //   {
+    //     signature: sig,
+    //     blockhash: latestBlockhash.blockhash,
+    //     lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+    //   },
+    //   "confirmed"
+    // );
+
+
+    console.log("Waiting for confirmation...");
+
+    let confirmed = false;
+
+    for (let i = 0; i < 15; i++) 
+    {
+      const status = await connection.getSignatureStatuses([sig]);
+      const info = status?.value?.[0];
+
+      console.log("STATUS:", info);
+
+      if (info &&
+        (info.confirmationStatus === "confirmed" ||
+        info.confirmationStatus === "finalized")) 
+        {
+          confirmed = true;
+          break;
+        }
+
+        await new Promise(r => setTimeout(r, 2000));
+    }
+
+    if (!confirmed) {
+      throw new Error(
+        "Transaction not confirmed in time"
+      );
+    }
+
+    console.log("SOL PAYMENT SUCCESS:", sig);
 
       //console.log("TX CONFIRMED:", sig);
       console.log("CONFIRM:", confirmation);
