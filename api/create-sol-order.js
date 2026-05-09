@@ -46,8 +46,7 @@ module.exports = async function handler(req, res) {
     }
 
     // 🧠 Convert USD → SOL (THIS is the correct direction for minting)
-    const priceSOL = priceUSD / solPriceUSD;
-
+    const priceSOL = Number((priceUSD / solPriceUSD).toFixed(4));
     const orderId = uuidv4();
 
     const order = {
