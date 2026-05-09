@@ -1890,6 +1890,7 @@ async function handleOasisMint() {
   const btn    = document.getElementById('oasisConfirm');
   const wallet = document.getElementById('oasisWalletAddr').value.trim();
   const email  = document.getElementById('oasisEmail').value.trim();
+  let order = null;
   errEl.textContent = '';
 
   if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
@@ -1925,7 +1926,7 @@ async function handleOasisMint() {
       console.log("wallet =", wallet);
       console.log("tier =", tier);
 
-      const order = await fetch('/api/create-sol-order', {
+      order = await fetch('/api/create-sol-order', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
