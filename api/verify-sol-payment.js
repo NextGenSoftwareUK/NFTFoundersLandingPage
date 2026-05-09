@@ -59,11 +59,26 @@ export default async function handler(req, res) {
     console.log("treasury wallet = ", process.env.TREASURY_WALLET_SOL);
     console.log("price = ", order.priceSOL);
 
-    const result = await verifySolPayment({
-      signature,
-      expectedRecipient: process.env.TREASURY_WALLET_SOL,
-      expectedAmountSOL: order.priceSOL
-    });
+    let result;
+
+    try {
+      result = await verifySolPayment({
+        signature,
+        expectedRecipient: process.env.TREASURY_WALLET_SOL,
+        expectedAmountSOL: order.priceSOL
+      });
+
+      console.log("VERIFY RESULT:", result);
+
+    } catch (err) {
+      console.error("VERIFY ERROR:", err);
+
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+        stack: err.stack
+      });
+    }
 
     if (!result.ok) {
       return res.json({ success: false, error: result.error });
