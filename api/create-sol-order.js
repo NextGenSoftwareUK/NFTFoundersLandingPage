@@ -24,6 +24,14 @@ module.exports = async function handler(req, res) {
       return res.status(429).json({ error: "Too many requests" });
     }
 
+    if (!wallet || typeof wallet !== "string") {
+      return res.status(400).json({
+        error: "Invalid wallet"
+      });
+    }
+
+    console.log("Creating order for wallet:", wallet, "tier:", tier);
+
     // 💰 Tier prices are in USD
     const TIERS = {
       0: { priceUSD: 149 },
