@@ -1,10 +1,6 @@
 //import { kv } from '@vercel/kv';
-
 const { createClient } = require("redis");
-
-const redis = createClient({
-  url: process.env.REDIS_URL,
-});
+const redis = createClient({ url: process.env.REDIS_URL });
 
 redis.on("error", (err) => {
   console.error("Redis error:", err);
@@ -13,58 +9,56 @@ redis.on("error", (err) => {
 let redisReady = null;
 
 async function ensureRedis() {
-  if (!redisReady) {
-    redisReady = redis.connect();
-  }
-
+  if (!redisReady) redisReady = redis.connect();
   return redisReady;
 }
 
 export default async function handler(req, res) {
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const testMode = process.env.TEST_MODE === 'true';
-
-  const OASIS_CFG = {
-    apiUrl: testMode
-      ? process.env.OASIS_API_URL_TEST
-      : process.env.OASIS_API_URL_LIVE,
-
-    username: process.env.OASIS_USERNAME,
-    password: process.env.OASIS_PASSWORD,
-    avatarId: process.env.OASIS_AVATAR_ID,
-    imageUrl: process.env.OASIS_IMAGE_URL,
-  };
-
+  let order = null;
   let lockKey = null;
 
   try {
 
+    await ensureRedis();
     const { payload } = req.body;
     console.log('Received mint request with payload:', JSON.stringify(payload));
-    await ensureRedis();
+    const testMode = process.env.TEST_MODE === 'true';
+
+    const OASIS_CFG = {
+      apiUrl: testMode ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
+      username: process.env.OASIS_USERNAME,
+      password: process.env.OASIS_PASSWORD,
+      avatarId: process.env.OASIS_AVATAR_ID,
+      imageUrl: process.env.OASIS_IMAGE_URL,
+    };
+
+    // =========================
+    // 1. CREATE MINT LOCK
+    // =========================
 
     lockKey = `mint-lock:${payload.SendToAddressAfterMinting}`;
-    const locked = await redis.get(lockKey);
 
-    if (locked) {
+    const lockResult = await redis.set(lockKey, "1", {
+      NX: true,
+      EX: 60 * 30 // 30 mins
+    });
+
+    if (!lockResult) {
       return res.status(429).json({
         error: "Mint already in progress"
       });
     }
 
-    // Create temporary mint lock
-    await redis.set(lockKey, "1");
+    // =========================
+    // 2. FETCH ORDER
+    // =========================
 
-    // 30 minute expiry
-    await redis.expire(lockKey, 60 * 30);
-
-    // Fetch order
-    const orderRaw = await redis.get(
-      `order:${payload.MetaData.orderId}`
-    );
+    const orderRaw = await redis.get(`order:${payload.MetaData.orderId}`);
 
     if (!orderRaw) {
       return res.status(404).json({
@@ -72,10 +66,18 @@ export default async function handler(req, res) {
       });
     }
 
-    const order = JSON.parse(orderRaw);
+    try {
+      order = JSON.parse(orderRaw);
+    } catch {
+      throw new Error("Invalid order data");
+    }
+
     console.log('Fetched order from Redis:', order);
 
-    // Verify payment
+    // =========================
+    // 3. VERIFY PAYMENT
+    // =========================
+
     if (!order || order.status !== "paid" || order.used) {
       return res.status(403).json({
         error: "Payment required"
@@ -83,22 +85,19 @@ export default async function handler(req, res) {
     }
 
     // =========================
-    // 1. Authenticate
+    // 4. AUTHENTICATE OASIS
     // =========================
 
-    const authRes = await fetch(
-      `${OASIS_CFG.apiUrl}/api/avatar/authenticate`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: OASIS_CFG.username,
-          password: OASIS_CFG.password
-        })
-      }
-    );
+    const authRes = await fetch(`${OASIS_CFG.apiUrl}/api/avatar/authenticate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: OASIS_CFG.username,
+        password: OASIS_CFG.password
+      })
+    });
 
     if (!authRes.ok) {
       throw new Error(`OASIS auth failed: ${authRes.status}`);
@@ -119,38 +118,32 @@ export default async function handler(req, res) {
       throw new Error(msg);
     }
 
-    const token =
-      authData?.result?.result?.jwtToken ??
-      authData?.result?.jwtToken;
+    const token = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
 
     if (!token) {
       throw new Error('No JWT token in OASIS auth response');
     }
 
     // =========================
-    // 2. Prepare mint payload
+    // 5. PREPARE PAYLOAD
     // =========================
 
-    payload.OnChainProvider =
-      typeof payload.OnChainProvider === 'object'
-        ? payload.OnChainProvider.name
-        : String(payload.OnChainProvider);
+    payload.OnChainProvider = typeof payload.OnChainProvider === 'object'
+      ? payload.OnChainProvider.name
+      : String(payload.OnChainProvider);
 
-    payload.NFTStandardType =
-      typeof payload.NFTStandardType === 'object'
-        ? payload.NFTStandardType.name
-        : String(payload.NFTStandardType);
+    payload.NFTStandardType = typeof payload.NFTStandardType === 'object'
+      ? payload.NFTStandardType.name
+      : String(payload.NFTStandardType);
 
-    payload.OffChainProvider =
-      typeof payload.OffChainProvider === 'object'
-        ? payload.OffChainProvider.name
-        : String(payload.OffChainProvider);
+    payload.OffChainProvider = typeof payload.OffChainProvider === 'object'
+      ? payload.OffChainProvider.name
+      : String(payload.OffChainProvider);
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
 
     // Force server-side values
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
-    payload.Price = order.priceSOL;
 
     console.log('Minting with payload:', JSON.stringify({
       Title: payload.Title,
@@ -162,20 +155,25 @@ export default async function handler(req, res) {
     }));
 
     // =========================
-    // 3. Mint NFT
+    // 6. MARK ORDER MINTING
     // =========================
 
-    const mintRes = await fetch(
-      `${OASIS_CFG.apiUrl}/api/nft/mint-nft`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      }
-    );
+    order.status = "minting";
+
+    await redis.set(`order:${order.orderId}`, JSON.stringify(order));
+
+    // =========================
+    // 7. MINT NFT
+    // =========================
+
+    const mintRes = await fetch(`${OASIS_CFG.apiUrl}/api/nft/mint-nft`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
 
     if (!mintRes.ok) {
       const errText = await mintRes.text();
@@ -201,21 +199,30 @@ export default async function handler(req, res) {
     }
 
     // =========================
-    // 4. Mark order used
+    // 8. SAVE SUCCESS
     // =========================
 
     order.used = true;
     order.status = "minted";
+    order.mintedAt = Date.now();
 
-    await redis.set(
-      `order:${order.orderId}`,
-      JSON.stringify(order)
-    );
+    order.mintTx = result?.result?.web3NFTs?.[0]?.mintTransactionHash || null;
+    order.sendTx = result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash || null;
 
-    await redis.expire(
-      `order:${order.orderId}`,
-      60 * 60 * 24
-    );
+    order.paymentSignature = payload.MetaData.paymentSignature || null;
+    order.email = payload.MetaData.email || null;
+
+    order.lockReleasedAt = Date.now();
+    order.oasisResponse = mintText;
+
+    // Optional debug snapshot
+    // order.oasisResponse = {
+    //   success: true,
+    //   mintTx: order.mintTx,
+    //   sendTx: order.sendTx
+    // };
+
+    await redis.set(`order:${order.orderId}`, JSON.stringify(order));
 
     return res.status(200).json({
       success: true,
@@ -225,6 +232,17 @@ export default async function handler(req, res) {
   } catch (e) {
 
     console.error('OASIS handler error:', e);
+
+    // Rollback minting state if mint failed
+    if (order && order.status === "minting" && !order.used) {
+
+      order.status = "paid";
+
+      await redis.set(
+        `order:${order.orderId}`,
+        JSON.stringify(order)
+      );
+    }
 
     return res.status(500).json({
       error: e.message || 'Unknown error'
@@ -239,8 +257,8 @@ export default async function handler(req, res) {
         console.log('Mint lock released:', lockKey);
       }
 
-    } catch (unlockErr) {
-
+    } catch (unlockErr) 
+    {
       console.error(
         'Failed to release mint lock:',
         unlockErr

@@ -1891,6 +1891,7 @@ async function handleOasisMint() {
   const wallet = document.getElementById('oasisWalletAddr').value.trim();
   const email  = document.getElementById('oasisEmail').value.trim();
   let order = null;
+  let sig = null;
   errEl.textContent = '';
 
   if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
@@ -1999,7 +2000,7 @@ async function handleOasisMint() {
 
       const signed = await walletProvider.signTransaction(tx);
 
-      const sig = await connection.sendRawTransaction(
+      sig = await connection.sendRawTransaction(
         signed.serialize(),
         {
           skipPreflight: false,
@@ -2092,7 +2093,7 @@ async function handleOasisMint() {
       WaitTillNFTSent:           true,
       WaitForNFTToSendInSeconds: 60,
       AttemptToSendEveryXSeconds: 5,
-      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order?.orderId || null }
+      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order?.orderId || null, paymentSignature: sig }
     };
 
     const res  = await fetch('/api/oasis', {

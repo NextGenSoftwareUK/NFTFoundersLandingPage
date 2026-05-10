@@ -41,9 +41,9 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "Missing wallet or tier" });
     }
 
-    // if (!(await rateLimit(wallet))) {
-    //   return res.status(429).json({ error: "Too many requests" });
-    // }
+    if (!(await rateLimit(wallet))) {
+      return res.status(429).json({ error: "Too many requests" });
+    }
 
     if (!wallet || typeof wallet !== "string") {
       return res.status(400).json({
@@ -93,7 +93,7 @@ module.exports = async function handler(req, res) {
     };
 
     ensureRedis();
-    await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 });
+    await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
 
     return res.status(200).json({
       orderId,
