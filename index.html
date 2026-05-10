@@ -2092,7 +2092,7 @@ async function handleOasisMint() {
       WaitTillNFTSent:           true,
       WaitForNFTToSendInSeconds: 60,
       AttemptToSendEveryXSeconds: 5,
-      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order.orderId }
+      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order?.orderId || null }
     };
 
     const res  = await fetch('/api/oasis', {

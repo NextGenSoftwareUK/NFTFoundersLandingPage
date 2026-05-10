@@ -45,7 +45,9 @@ export default async function handler(req, res) {
   }
 
   // set lock (30 sec safety window)
-  await redis.set(lockKey, true, { ex: 30 });
+  //await redis.set(lockKey, true, { ex: 30 });
+  await redis.set(lockKey, JSON.stringify(data));
+  await redis.expire(lockKey, 60 * 30);  //30 mins
 
   //const { wallet } = req.body.payload.MetaData;
 
