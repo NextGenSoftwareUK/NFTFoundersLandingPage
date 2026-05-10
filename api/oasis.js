@@ -51,8 +51,11 @@ export default async function handler(req, res) {
 
   //const { wallet } = req.body.payload.MetaData;
 
-  const order = await redis.get(`order:${payload.MetaData.orderId}`);
+  const orderRaw = await redis.get(
+    `order:${payload.MetaData.orderId}`
+  );
 
+  const order = JSON.parse(orderRaw);
   console.log('Fetched order from Redis:', order);
 
   if (!order || order.status !== "paid" || order.used) {
