@@ -870,7 +870,7 @@ body.test-mode-on .test-chain-note{display:block}
 
 const TREASURY_WALLETS = {
   SolanaOASIS:   '89443sASVtWyg5pqSxMgtr7MxdTL1NTBqCFSHztKcGzq',
-  ArbitrumOASIS: 'YOUR_CORE_TREASURY_WALLET',
+  ArbitrumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48',
   EthereumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48'
 };
 
@@ -1817,13 +1817,13 @@ function updateOasisWalletUI() {
   switch (currentOasisChain)
   {
     case 'ERC721':
-      treasury.textContent = 'YOUR_ERC721_TREASURY_WALLET';
+      treasury.textContent = TREASURY_WALLETS.EthereumOASIS;
       break;
     case 'ArbitrumOASIS':
-      treasury.textContent = 'YOUR_ARBITRUM_OASIS_TREASURY_WALLET';
+      treasury.textContent = TREASURY_WALLETS.ArbitrumOASIS;
       break;
     case 'SolanaOASIS':
-      treasury.textContent = 'YOUR_SOLANA_OASIS_TREASURY_WALLET';
+      treasury.textContent = TREASURY_WALLETS.SolanaOASIS;
       break;
   }
 
