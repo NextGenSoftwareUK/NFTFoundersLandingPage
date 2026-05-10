@@ -25,10 +25,8 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    const { signature, orderId } = req.body;
-
+    const { signature, orderId, testMode } = req.body;
     console.log("VERIFY BODY:", req.body);
-
     await ensureRedis();
 
     const rawOrder = await redis.get(`order:${orderId}`);
@@ -58,6 +56,7 @@ export default async function handler(req, res) {
     console.log("sig = ", signature, "order = ", order);
     console.log("treasury wallet = ", process.env.TREASURY_WALLET_SOL);
     console.log("price = ", order.priceSOL);
+    console.log("test mode = ", testMode);
 
     let result;
 
@@ -65,7 +64,8 @@ export default async function handler(req, res) {
       result = await verifySolPayment({
         signature,
         expectedRecipient: process.env.TREASURY_WALLET_SOL,
-        expectedAmountSOL: order.priceSOL
+        expectedAmountSOL: order.priceSOL,
+        testMode
       });
 
       console.log("VERIFY RESULT:", result);
