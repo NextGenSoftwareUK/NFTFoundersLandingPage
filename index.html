@@ -1668,16 +1668,15 @@ async function handleFiatPayment() {
     console.log("paymentIntent=", paymentIntent);
 
    // console.log('PaymentMethod:', paymentMethod);  
-
     //const data = await res.json();
     
+    // if (!data.success) {
+    //   errEl.textContent =
+    //     data.error || 'Payment failed.';
+    //   return;
+    // }
 
-    if (!data.success) {
-      errEl.textContent =
-        data.error || 'Payment failed.';
-      return;
-    }
-
+    console.log("calling mint function...");
     currentOasisChain = "SolanaOASIS";
     await mint(data.orderId, data.paymentIntentId);
 
@@ -2209,6 +2208,8 @@ async function mint(orderId, paymentSignature) {
 
   const tier  = TIERS[currentTier];
   const chain = OASIS_CHAINS[currentOasisChain];
+  console.log("minting...");
+
 
   setOasisStatus(`⛓ Preparing mint...`, 'var(--cyan)');
 
@@ -2243,6 +2244,7 @@ async function mint(orderId, paymentSignature) {
       MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order?.orderId || null, paymentSignature: paymentSignature }
     };
 
+    console.log("calling oasis mint api...");
     const res  = await fetch('/api/oasis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
