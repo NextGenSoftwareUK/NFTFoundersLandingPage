@@ -2104,6 +2104,18 @@ async function handleOasisMint() {
 
     console.log("Waiting for confirmation...");
 
+    const status = await connection.confirmTransaction({
+      signature: sig,
+      blockhash: latestBlockhash.blockhash,
+      lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+    }, "finalized");
+
+    if (status.value.err) {
+      throw new Error("Transaction failed on-chain");
+    }
+
+
+
     let confirmed = false;
 
     for (let i = 0; i < 15; i++) 
