@@ -2125,6 +2125,26 @@ async function handleOasisMint() {
     } catch (e) {
       console.log("Confirm timeout — falling back to signature check...");
 
+      const tx = await connection.getTransaction(sig, {
+        maxSupportedTransactionVersion: 0,
+      });
+
+      if (!tx) {
+        throw new Error("Transaction not found");
+      }
+
+      // 🔥 THIS is the real check
+      if (tx.meta?.err) {
+        throw new Error("Transaction failed on-chain");
+      }
+
+      // 🔥 THIS confirms SOL actually moved
+      const postBalances = tx.meta.postBalances;
+      const preBalances = tx.meta.preBalances;
+
+      console.log("TX VALID — REAL PAYMENT CONFIRMED");
+
+
       const status = await connection.getSignatureStatus(sig, {
         searchTransactionHistory: true,
       });
@@ -2209,7 +2229,7 @@ async function handleOasisMint() {
       const verifyData = await verify.json();
 
       if (!verify.ok || !verifyData.success) {
-        throw new Error('Payment verification failed');
+        throw new Error('Payment verification failed: ' + (verifyData.error || 'Unknown error'));
       }
     }
 
