@@ -49,7 +49,7 @@ export default async function handler(req, res) {
             <p style="color:#888;margin:0 0 24px">Welcome to the OASIS, Founder.</p>
             ${imageLine}
             <div style="background:#0a0f2a;border-radius:12px;padding:24px;margin-bottom:24px">
-              <p style="margin:0 0 8px;font-size:18px">$<strong>${tierTitle}</strong></p>
+              <p style="margin:0 0 8px;font-size:18px"><strong>${tierTitle}</strong></p>
               <p style="margin:8px 0;color:#888">Chain: ${chain}</p>
               ${txLine}
               ${explorerUrl ? `<a href="${explorerUrl}" style="display:inline-block;margin-top:12px;padding:8px 16px;background:#00e5ff11;border:1px solid #00e5ff44;border-radius:8px;color:#00e5ff;text-decoration:none;font-size:13px">View on Explorer →</a>` : ''}
