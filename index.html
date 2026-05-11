@@ -976,6 +976,9 @@ function initStripe() {
         variables:{colorPrimary:'#00e5ff',colorBackground:'transparent',colorText:'#d0e4ff',colorDanger:'#ff4d4d',fontFamily:"'Rajdhani',sans-serif",borderRadius:'8px'}
       }
     });
+
+    elements = els; // 👈 ADD THIS LINE
+
     cardElement = els.create('card', {
       style:{base:{color:'#d0e4ff',fontFamily:"'Rajdhani',sans-serif",fontSize:'15px','::placeholder':{color:'#6a80a8'}},invalid:{color:'#ff4d4d'}}
     });
@@ -1636,14 +1639,24 @@ async function handleFiatPayment() {
     const clientSecret = data.clientSecret; // 👈 IMPORTANT
 
     // 2. Confirm payment (THIS is the ONLY Stripe call you need)
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      clientSecret,
-      elements,
-      confirmParams: {
-        receipt_email: email
-      },
-      redirect: 'if_required'
-    });
+    // const { error, paymentIntent } = await stripe.confirmPayment({
+    //   clientSecret,
+    //   elements,
+    //   confirmParams: {
+    //     receipt_email: email
+    //   },
+    //   redirect: 'if_required'
+    // });
+
+    await stripe.confirmCardPayment(clientSecret, {
+  payment_method: {
+    card: cardElement,
+    billing_details: {
+      name,
+      email
+    }
+  }
+});
 
     if (error) {
       errEl.textContent = error.message;
