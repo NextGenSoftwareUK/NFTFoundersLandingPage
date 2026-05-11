@@ -1616,6 +1616,8 @@ async function handleFiatPayment() {
     // }
 
     console.log("Publishable key:", CFG.stripePk);
+    console.log("email:", email);
+    console.log("wallet:", wallet);
 
     // 1. Create PaymentIntent first
     const res = await fetch('/api/createPayment', {
@@ -1679,7 +1681,7 @@ async function handleFiatPayment() {
     })
   });
 
-   await mint(data.orderId, data.paymentIntentId);
+   await mint(data.orderId, data.paymentIntentId, wallet, email);
 
     // if (paymentIntent.status === "succeeded") {
 
@@ -2151,7 +2153,7 @@ async function handleOasisMint() {
       }
     }
 
-    await mint(order.orderId, sig);
+    await mint(order.orderId, sig, wallet, email);
     // setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
     // btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
 
@@ -2218,11 +2220,11 @@ async function handleOasisMint() {
 
 
 
-async function mint(orderId, paymentSignature) {
+async function mint(orderId, paymentSignature, wallet, email) {
   const errEl  = document.getElementById('oasisError');
   const btn    = document.getElementById('oasisConfirm');
-  const wallet = document.getElementById('oasisWalletAddr').value.trim();
-  const email  = document.getElementById('oasisEmail').value.trim();
+  // const wallet = document.getElementById('oasisWalletAddr').value.trim();
+  // const email  = document.getElementById('oasisEmail').value.trim();
   errEl.textContent = '';
 
   const tier  = TIERS[currentTier];
