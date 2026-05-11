@@ -41,9 +41,9 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "Missing wallet or tier" });
     }
 
-    if (!(await rateLimit(wallet))) {
-      return res.status(429).json({ error: "Too many requests" });
-    }
+    // if (!(await rateLimit(wallet))) {
+    //   return res.status(429).json({ error: "Too many requests" });
+    // }
 
     if (!wallet || typeof wallet !== "string") {
       return res.status(400).json({
