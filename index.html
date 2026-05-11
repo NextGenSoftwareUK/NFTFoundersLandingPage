@@ -1666,19 +1666,38 @@ async function handleFiatPayment() {
     }
 
     console.log("paymentIntent=", paymentIntent);
+    console.log("calling mint function...");
+    currentOasisChain = "SolanaOASIS";
 
-   // console.log('PaymentMethod:', paymentMethod);  
-    //const data = await res.json();
-    
-    // if (!data.success) {
-    //   errEl.textContent =
-    //     data.error || 'Payment failed.';
+   await fetch("/api/verify-card-payment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      paymentIntentId: paymentIntent.id,
+      orderId: data.orderId
+    })
+  });
+
+
+     await mint(data.orderId, data.paymentIntentId);
+
+    // if (paymentIntent.status === "succeeded") {
+
+    //   await mint(data.orderId, data.paymentIntentId);
+    //   // await fetch("/api/mint-after-payment", {
+    //   //   method: "POST",
+    //   //   headers: { "Content-Type": "application/json" },
+    //   //   body: JSON.stringify({
+    //   //     paymentIntentId: paymentIntent.id,
+    //   //     orderId: data.orderId
+    //   //   })
+    //   // });
+    // } else {
+    //   errEl.textContent = 'Payment not successful.';
     //   return;
     // }
 
-    console.log("calling mint function...");
-    currentOasisChain = "SolanaOASIS";
-    await mint(data.orderId, data.paymentIntentId);
+    
 
     // console.log(
     //   '[OASIS] Payment + Mint Success:',
