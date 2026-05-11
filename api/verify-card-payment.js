@@ -1,5 +1,7 @@
 
 const { createClient } = require("redis");
+const Stripe = require("stripe");
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const redis = createClient({
   url: process.env.REDIS_URL,
@@ -23,8 +25,10 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    const { paymentIntentId, orderId } = req.body;
+    const { paymentIntentId, orderId, testMode } = req.body;
     console.log("VERIFY BODY:", req.body);
+
+    const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
     await ensureRedis();
 
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);

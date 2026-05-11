@@ -1674,12 +1674,12 @@ async function handleFiatPayment() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       paymentIntentId: paymentIntent.id,
-      orderId: data.orderId
+      orderId: data.orderId,
+      testMode: TEST_MODE
     })
   });
 
-
-     await mint(data.orderId, data.paymentIntentId);
+   await mint(data.orderId, data.paymentIntentId);
 
     // if (paymentIntent.status === "succeeded") {
 
