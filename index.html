@@ -968,6 +968,7 @@ let evmProvider = null, evmSigner = null, walletConnected = false;
 // ── STRIPE ──
 function initStripe() {
   try {
+    console.log("CFG.stripePk = ", CFG.stripePk);
     stripe = Stripe(CFG.stripePk);
     const els = stripe.elements({
       appearance:{
