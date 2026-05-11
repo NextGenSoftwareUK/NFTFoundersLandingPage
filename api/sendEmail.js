@@ -49,7 +49,6 @@ export default async function handler(req, res) {
             <p style="color:#888;margin:0 0 24px">Welcome to the OASIS, Founder.</p>
             ${imageLine}
             <div style="background:#0a0f2a;border-radius:12px;padding:24px;margin-bottom:24px">
-              <!--<p style="margin:0 0 8px;font-size:18px">${tierBadge} <strong>${tierTitle}</strong></p>-->
               <p style="margin:0 0 8px;font-size:18px">$<strong>${tierTitle}</strong></p>
               <p style="margin:8px 0;color:#888">Chain: ${chain}</p>
               ${txLine}
