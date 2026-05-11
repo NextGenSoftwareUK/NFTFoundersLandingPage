@@ -2443,12 +2443,12 @@ es.onmessage = (event) => {
 // }
 
 
-async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage }) {
+async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode }) {
   try {
     await fetch('/api/sendEmail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage })
+      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode })
     });
   } catch(e) {
     console.warn('Email send failed:', e.message);
