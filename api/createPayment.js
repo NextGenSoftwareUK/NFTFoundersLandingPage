@@ -79,7 +79,7 @@ export default async function handler(req, res) {
       amount,
       currency: 'usd',
       //payment_method: paymentMethodId,
-      confirm: true,
+      //confirm: true,
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: 'never'
