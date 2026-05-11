@@ -1,20 +1,30 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { email, tierTitle, tierBadge, chain, txHash, nftImage } = req.body;
+  const { email, tierTitle, tierBadge, chain, txHash, nftImage, testMode } = req.body;
+
+  console.log('Email:', email);
+  console.log('Tier Title:', tierTitle);
+  console.log('Tier Badge:', tierBadge);
+  console.log('Chain:', chain);
+  console.log('Transaction Hash:', txHash);
+  console.log('NFT Image:', nftImage);
+  console.log('Test Mode:', testMode);
+
   if (!email || !tierTitle) return res.status(400).json({ error: 'Missing fields' });
 
   // Build explorer URL based on chain
-  const getExplorerUrl = (chain, hash) => {
+  const getExplorerUrl = (chain, hash, testMode) => {
     if (!hash) return null;
     const c = chain?.toLowerCase();
-    if (c?.includes('solana')) return `https://explorer.solana.com/tx/${hash}?cluster=devnet`;
-    if (c?.includes('ethereum')) return `https://etherscan.io/tx/${hash}`;
-    if (c?.includes('polygon')) return `https://polygonscan.com/tx/${hash}`;
+    if (c?.includes('solana')) return testMode ? `https://explorer.solana.com/tx/${hash}?cluster=devnet` : `https://explorer.solana.com/tx/${hash}`;
+    if (c?.includes('ethereum')) return testMode ? `https://etherscan.io/tx/${hash}?testnet=true` : `https://etherscan.io/tx/${hash}`;
+    if (c?.includes('polygon')) return testMode ? `https://polygonscan.com/tx/${hash}?testnet=true` : `https://polygonscan.com/tx/${hash}`;
     return null;
   };
 
-  const explorerUrl = getExplorerUrl(chain, txHash);
+  const explorerUrl = getExplorerUrl(chain, txHash, testMode);
+  console.log('Explorer URL:', explorerUrl);
 
   const txLine = txHash ? `
     <p style="margin:8px 0;color:#888">Transaction: 

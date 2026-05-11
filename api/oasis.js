@@ -37,6 +37,8 @@ export default async function handler(req, res) {
       imageUrl: process.env.OASIS_IMAGE_URL,
     };
 
+    console.log('OASIS config:', JSON.stringify(OASIS_CFG));
+
     // =========================
     // 1. CREATE MINT LOCK
     // =========================
