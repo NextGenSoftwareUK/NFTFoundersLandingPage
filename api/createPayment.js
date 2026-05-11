@@ -46,6 +46,7 @@ export default async function handler(req, res) {
       testMode
     } = req.body;
 
+    testMode = true; //TODO: REMEMBER TO REMOVE AFTER!!!!
     const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
 
     console.log("Stripe mode:", testMode ? "TEST" : "LIVE");
@@ -66,7 +67,7 @@ export default async function handler(req, res) {
     const prices = {
       genesis: 149900,   // $1,499
       core: 49900,    // $499
-      supporter: 50//14900     // $149
+      supporter: 50//14900     // $149  //TODO: REMEMBER TO REMOVE AFTER!!!!
     };
 
     const amount = prices[tier];
