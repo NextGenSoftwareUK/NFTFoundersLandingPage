@@ -1,8 +1,26 @@
 // /api/create-payment.js
 
 import Stripe from 'stripe';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST);
+const { createClient } = require("redis");
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const redis = createClient({
+  url: process.env.REDIS_URL,
+});
+
+redis.on("error", (err) => {
+  console.error("Redis error:", err);
+});
+
+let redisReady = null;
+
+async function ensureRedis() {
+  if (!redisReady) {
+    redisReady = redis.connect();
+  }
+
+  return redisReady;
+}
 
 export default async function handler(req, res) {
 
@@ -15,6 +33,8 @@ export default async function handler(req, res) {
   }
 
   try {
+
+    await ensureRedis();
 
     const {
       paymentMethodId,
@@ -84,6 +104,23 @@ export default async function handler(req, res) {
 // MINT NFT
 // ==================================================
 
+const orderId = crypto.randomUUID();
+
+    const order = {
+      orderId,
+      wallet: null,
+      tier,
+      priceUSD : null,
+      priceSOL: null,
+      solPriceUSD: null,
+      status: "pending",
+      used: false,
+      createdAt: Date.now()
+    };
+
+    await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
+
+
 const chains = {
   SolanaOASIS: {
     label: 'Solana',
@@ -108,42 +145,31 @@ const payload = {
   Title: `${tier.toUpperCase()} Founder Access`,
   Description: `OASIS Founder Access NFT — ${tier}`,
   Symbol: 'OASISFNDR',
-
   OnChainProvider: chain.onChain,
-
   OffChainProvider: {
     value: 23,
     name: 'MongoDBOASIS'
   },
-
   NFTOffChainMetaType: {
     value: 3,
     name: 'ExternalJsonURL'
   },
-
   NFTStandardType: chain.nftStd,
-
   JSONMetaDataURL: `https://oasisfoundernfts.icu/metadata/tier-${tier}.json`,
-
   ImageUrl: `https://www.oasisfoundernfts.icu/img/nft-${tier}-wallet.png`,
-
   ThumbnailUrl: `https://www.oasisfoundernfts.icu/img/nft-${tier}-wallet.png`,
-
   NumberToMint: 1,
-
   StoreNFTMetaDataOnChain: false,
-
   SendToAddressAfterMinting: req.body.wallet,
-
   WaitTillNFTSent: true,
-
   WaitForNFTToSendInSeconds: 60,
-
   AttemptToSendEveryXSeconds: 5,
-
-  MetaData: {
+  MetaData: 
+  {
     tier,
-    email
+    email,
+    orderId: order?.orderId || null,
+    paymentSignature: paymentIntent.id
   }
 };
 
