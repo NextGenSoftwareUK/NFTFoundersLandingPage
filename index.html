@@ -1615,6 +1615,8 @@ async function handleFiatPayment() {
     //   return;
     // }
 
+    console.log("Publishable key:", CFG.stripePk);
+
     // 1. Create PaymentIntent first
     const res = await fetch('/api/createPayment', {
       method: 'POST',

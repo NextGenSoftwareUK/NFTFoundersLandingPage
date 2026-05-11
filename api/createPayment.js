@@ -47,7 +47,11 @@ export default async function handler(req, res) {
     } = req.body;
 
     const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
-    console.log("Stripe initialized with key:", testMode ? "TEST" : "LIVE");
+
+    console.log("Stripe mode:", testMode ? "TEST" : "LIVE");
+    console.log("Secret key prefix:", process.env.STRIPE_SECRET_KEY_TEST?.slice(0,7));
+
+
     //console.log("stripe = ", stripe);
 
     // Basic validation
