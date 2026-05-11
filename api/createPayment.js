@@ -48,15 +48,15 @@ export default async function handler(req, res) {
 
     const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
     console.log("Stripe initialized with key:", testMode ? "TEST" : "LIVE");
-    console.log("stripe = ", stripe);
+    //console.log("stripe = ", stripe);
 
     // Basic validation
-    if (!paymentMethodId || !tier || !email) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields'
-      });
-    }
+    // if (!paymentMethodId || !tier || !email) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     error: 'Missing required fields'
+    //   });
+    // }
 
     // Pricing by tier
     const prices = {
@@ -73,12 +73,6 @@ export default async function handler(req, res) {
         error: 'Invalid tier'
       });
     }
-
-    stripe.paymentIntents.create({
-      amount,
-      currency,
-      automatic_payment_methods: { enabled: true }
-    });
 
     // Create and confirm payment
     const paymentIntent = await stripe.paymentIntents.create({
