@@ -2212,18 +2212,19 @@ async function mint(orderId, paymentSignature) {
 
 
   setOasisStatus(`⛓ Preparing mint...`, 'var(--cyan)');
-
+  console.log("minting2...");
   // if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
   // if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; return; }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>CONNECTING TO OASIS...';
+   console.log("minting3...");
 
   try {
 
     setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
     btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
-
+console.log("minting4...");
     const payload = {
       Title:                     tier.title,
       Description:               `OASIS Founder Access NFT — ${tier.badge}`,
@@ -2279,6 +2280,7 @@ async function mint(orderId, paymentSignature) {
     btn.disabled = false;
     btn.textContent = '🌀 MINT WITH OASIS';
     setOasisStatus('❌ ' + (e.message || 'Mint failed'), 'var(--red)');
+    console.log("error in mint function: ", e);
   }
   finally {
     btn.disabled = false;
