@@ -2113,9 +2113,16 @@ async function handleOasisMint() {
 
       console.log("STATUS:", info);
 
-      if (info &&
-        (info.confirmationStatus === "confirmed" ||
-        info.confirmationStatus === "finalized")) 
+      if (info?.err) {
+        throw new Error("Transaction failed on-chain");
+      }
+
+      if (
+          info &&
+          (info.confirmationStatus === "confirmed" ||
+          info.confirmationStatus === "finalized") &&
+          !info.err
+        )
         {
           confirmed = true;
           break;
