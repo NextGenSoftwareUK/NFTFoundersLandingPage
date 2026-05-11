@@ -1678,28 +1678,29 @@ async function handleFiatPayment() {
       return;
     }
 
-    await mint(sig, data.orderId, data.paymentIntentId);
+    currentOasisChain = "SolanaOASIS";
+    await mint(data.orderId, data.paymentIntentId);
 
-    console.log(
-      '[OASIS] Payment + Mint Success:',
-      data
-    );
+    // console.log(
+    //   '[OASIS] Payment + Mint Success:',
+    //   data
+    // );
 
-    closeModal();
+    // closeModal();
 
-    const explorerUrl = TEST_MODE
-      ? `https://explorer.solana.com/tx/${data.txHash}?cluster=devnet`
-      : `https://explorer.solana.com/tx/${data.txHash}`;
+    // const explorerUrl = TEST_MODE
+    //   ? `https://explorer.solana.com/tx/${data.txHash}?cluster=devnet`
+    //   : `https://explorer.solana.com/tx/${data.txHash}`;
 
-    const txLine = data.txHash
-      ? `<br>Tx: <a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${data.txHash.slice(0,24)}...${data.txHash.slice(-8)}</a>`
-      : '';
+    // const txLine = data.txHash
+    //   ? `<br>Tx: <a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${data.txHash.slice(0,24)}...${data.txHash.slice(-8)}</a>`
+    //   : '';
 
-    await showSuccess('oasis', data.txHash, {
-      email,
-      chain: 'Solana SPL',
-      txLine: `🌀 Minted via OASIS · 'Solana SPL'${txLine}<br>📧 Confirmation: ${email}`
-    });
+    // await showSuccess('oasis', data.txHash, {
+    //   email,
+    //   chain: 'Solana SPL',
+    //   txLine: `🌀 Minted via OASIS · 'Solana SPL'${txLine}<br>📧 Confirmation: ${email}`
+    // });
 
   } catch (e) {
 
@@ -2132,7 +2133,7 @@ async function handleOasisMint() {
       }
     }
 
-    await mint(sig, order.orderId, paymentSignature);
+    await mint(order.orderId, sig);
     // setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
     // btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
 
@@ -2199,12 +2200,17 @@ async function handleOasisMint() {
 
 
 
-async function mint(sig, orderId, paymentSignature) {
+async function mint(orderId, paymentSignature) {
   const errEl  = document.getElementById('oasisError');
   const btn    = document.getElementById('oasisConfirm');
   const wallet = document.getElementById('oasisWalletAddr').value.trim();
   const email  = document.getElementById('oasisEmail').value.trim();
   errEl.textContent = '';
+
+  const tier  = TIERS[currentTier];
+  const chain = OASIS_CHAINS[currentOasisChain];
+
+  setOasisStatus(`⛓ Preparing mint...`, 'var(--cyan)');
 
   // if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
   // if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; return; }
@@ -2234,7 +2240,7 @@ async function mint(sig, orderId, paymentSignature) {
       WaitTillNFTSent:           true,
       WaitForNFTToSendInSeconds: 60,
       AttemptToSendEveryXSeconds: 5,
-      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order?.orderId || null, paymentSignature: sig }
+      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order?.orderId || null, paymentSignature: paymentSignature }
     };
 
     const res  = await fetch('/api/oasis', {
