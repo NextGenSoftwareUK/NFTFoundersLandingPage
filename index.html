@@ -1600,7 +1600,6 @@ async function handleFiatPayment() {
       await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
-
         billing_details: {
           name,
           email
@@ -1627,7 +1626,8 @@ async function handleFiatPayment() {
           tier: currentTier,
           name,
           email,
-          wallet
+          wallet,
+          testMode: TEST_MODE,
         })
       }
     );

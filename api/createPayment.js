@@ -1,8 +1,9 @@
 // /api/create-payment.js
 
 import Stripe from 'stripe';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST);
+//const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST);
 const { createClient } = require("redis");
+const crypto = require("crypto");
 
 const redis = createClient({
   url: process.env.REDIS_URL,
@@ -35,13 +36,19 @@ export default async function handler(req, res) {
   try {
 
     await ensureRedis();
+    console.log("Body:", req.body);
 
     const {
       paymentMethodId,
       tier,
       name,
-      email
+      email,
+      testMode
     } = req.body;
+
+    const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
+    console.log("Stripe initialized with key:", testMode ? "TEST" : "LIVE");
+    console.log("stripe = ", stripe);
 
     // Basic validation
     if (!paymentMethodId || !tier || !email) {
@@ -107,8 +114,9 @@ export default async function handler(req, res) {
 const orderId = crypto.randomUUID();
 
     const order = {
+      type: "card",
       orderId,
-      wallet: null,
+      wallet: null, //maybe store last 4 digits of their card here?
       tier,
       priceUSD : null,
       priceSOL: null,

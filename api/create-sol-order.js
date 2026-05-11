@@ -81,6 +81,7 @@ module.exports = async function handler(req, res) {
     const orderId = crypto.randomUUID();
 
     const order = {
+      type: "sol",
       orderId,
       wallet,
       tier,
