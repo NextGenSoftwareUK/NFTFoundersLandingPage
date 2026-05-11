@@ -1648,15 +1648,15 @@ async function handleFiatPayment() {
     //   redirect: 'if_required'
     // });
 
-    await stripe.confirmCardPayment(clientSecret, {
-  payment_method: {
-    card: cardElement,
-    billing_details: {
-      name,
-      email
-    }
-  }
-});
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          name,
+          email
+        }
+      }
+    });
 
     if (error) {
       errEl.textContent = error.message;
