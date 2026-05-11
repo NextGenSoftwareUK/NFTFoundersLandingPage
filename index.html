@@ -2025,8 +2025,9 @@ async function handleOasisMint() {
       console.log("ORDER RESPONSE:", order);
       console.log("priceSOL:", order.priceSOL);
 
-      if (order.error != "")
+      if (order?.error) {
         throw new Error(order.error);
+      }
 
       const { Connection, PublicKey, SystemProgram, Transaction } = solanaWeb3;
       //const connection = new Connection("https://api.mainnet-beta.solana.com");
