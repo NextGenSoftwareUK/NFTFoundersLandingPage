@@ -93,13 +93,15 @@ export default async function handler(req, res) {
       }
     });
 
-    // Payment failed
-    if (paymentIntent.status !== 'succeeded') {
-      return res.status(400).json({
-        success: false,
-        error: 'Payment failed'
-      });
-    }
+    console.log("paymentIntent", paymentIntent);
+
+    // // Payment failed
+    // if (paymentIntent.status !== 'succeeded') {
+    //   return res.status(400).json({
+    //     success: false,
+    //     error: 'Payment failed'
+    //   });
+    // }
 
 
     const orderId = crypto.randomUUID();
@@ -212,10 +214,17 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
+      clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      txHash,
       orderId
     });
+
+    // return res.status(200).json({
+    //   success: true,
+    //   paymentIntentId: paymentIntent.id,
+    //   txHash,
+    //   orderId
+    // });
 
   } catch (err) {
 
