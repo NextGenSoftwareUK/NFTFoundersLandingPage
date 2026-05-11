@@ -2108,14 +2108,16 @@ async function handleOasisMint() {
 
     console.log("Waiting for confirmation...");
 
-    const confirmation = await connection.confirmTransaction(
-      {
-        signature: sig,
-        blockhash: latestBlockhash.blockhash,
-        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-      },
-      "confirmed"
-    );
+    await connection.confirmTransaction(sig, "confirmed");
+
+    // const confirmation = await connection.confirmTransaction(
+    //   {
+    //     signature: sig,
+    //     blockhash: latestBlockhash.blockhash,
+    //     lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+    //   },
+    //   "confirmed"
+    // );
 
     // if (status.value.err) {
     //   throw new Error("Transaction failed on-chain");
