@@ -1633,8 +1633,10 @@ async function handleFiatPayment() {
       }
     );
 
+    console.log('PaymentMethod:', paymentMethod);  
+
     const data = await res.json();
-    console.log("data=" + data);
+    console.log("data=", data);
 
     if (!data.success) {
       errEl.textContent =
