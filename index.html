@@ -1597,52 +1597,72 @@ async function handleFiatPayment() {
   try {
 
     // Create Stripe payment method
-    const { paymentMethod, error } =
-      await stripe.createPaymentMethod({
-        type: 'card',
-        card: cardElement,
-        billing_details: {
-          name,
-          email
-        }
-      });
+    // const { paymentMethod, error } =
+    //   await stripe.createPaymentMethod({
+    //     type: 'card',
+    //     card: cardElement,
+    //     billing_details: {
+    //       name,
+    //       email
+    //     }
+    //   });
+
+    // if (error) {
+    //   errEl.textContent = error.message;
+    //   return;
+    // }
+
+    // 1. Create PaymentIntent first
+    const res = await fetch('/api/createPayment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tier: currentTier,
+        name,
+        email,
+        wallet,
+        testMode: TEST_MODE,
+      })
+    });
+
+    const data = await res.json();
+    console.log("data=", data);
+    
+    if (!data.success) {
+      errEl.textContent = data.error || 'Payment failed.';
+      return;
+    }
+
+    const clientSecret = data.clientSecret; // 👈 IMPORTANT
+
+    // 2. Confirm payment (THIS is the ONLY Stripe call you need)
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      clientSecret,
+      elements,
+      confirmParams: {
+        receipt_email: email
+      },
+      redirect: 'if_required'
+    });
 
     if (error) {
       errEl.textContent = error.message;
       return;
     }
 
-    // Send payment to backend
-    const res = await fetch(
-      '/api/createPayment',
-      {
-        method: 'POST',
 
-        headers: {
-          'Content-Type': 'application/json'
-        },
+   // console.log('PaymentMethod:', paymentMethod);  
 
-        body: JSON.stringify({
-          paymentMethodId: paymentMethod.id,
-          tier: currentTier,
-          name,
-          email,
-          wallet,
-          testMode: TEST_MODE,
-        })
-      }
-    );
-
-    console.log('PaymentMethod:', paymentMethod);  
-
-    const data = await res.json();
-    console.log("data=", data);
+    //const data = await res.json();
+    
 
     if (!data.success) {
       errEl.textContent =
         data.error || 'Payment failed.';
       return;
     }
+
+    await mint(sig, data.orderId, data.paymentIntentId);
 
     console.log(
       '[OASIS] Payment + Mint Success:',
@@ -2096,6 +2116,88 @@ async function handleOasisMint() {
       }
     }
 
+    await mint(sig, order.orderId, paymentSignature);
+    // setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
+    // btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
+
+    // const payload = {
+    //   Title:                     tier.title,
+    //   Description:               `OASIS Founder Access NFT — ${tier.badge}`,
+    //   Symbol:                    'OASISFNDR',
+    //   OnChainProvider:           chain.onChain,
+    //   OffChainProvider:          { value: 23, name: 'MongoDBOASIS' },
+    //   NFTOffChainMetaType:       { value: 3,  name: 'ExternalJsonURL' },
+    //   NFTStandardType:           chain.nftStd,
+    //   JSONMetaDataURL:           `https://oasisfoundernfts.icu/metadata/tier-${currentTier}.json`,
+    //   ImageUrl:                  `https://www.oasisfoundernfts.icu/img/nft-${currentTier}-wallet.png`,
+    //   ThumbnailUrl:              `https://www.oasisfoundernfts.icu/img/nft-${currentTier}-wallet.png`,
+    //   NumberToMint:              1,
+    //   StoreNFTMetaDataOnChain:   false,
+    //   SendToAddressAfterMinting: wallet,
+    //   WaitTillNFTSent:           true,
+    //   WaitForNFTToSendInSeconds: 60,
+    //   AttemptToSendEveryXSeconds: 5,
+    //   MetaData: { tier: currentTier, badge: tier.badge, email, orderId: order?.orderId || null, paymentSignature: sig }
+    // };
+
+    // const res  = await fetch('/api/oasis', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ payload })
+    // });
+
+    // const data = await res.json();
+    // if (!res.ok) throw new Error(data.error || 'Mint failed');
+
+    // const txHash = data.result?.result?.web3NFTs?.[0]?.mintTransactionHash
+    //             || data.result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash
+    //             || null;
+
+    // const explorerUrl = currentOasisChain === 'SolanaOASIS'
+    //   ? `https://explorer.solana.com/tx/${txHash}${TEST_MODE ? '?cluster=devnet' : ''}`
+    //   : `https://etherscan.io/tx/${txHash}`;
+
+    // const txLine = txHash
+    //   ? `<br>Tx: <a href="${explorerUrl}" target="_blank" style="color:var(--cyan)">${txHash.slice(0,24)}...${txHash.slice(-8)}</a>`
+    //   : '';
+
+    // closeModal();
+
+    // await showSuccess('oasis', txHash, {
+    //   email,
+    //   chain: chain.label,
+    //   txLine: `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`
+    // });
+
+  } catch(e) {
+    errEl.textContent = 'Mint failed: ' + (e.message || 'Unknown error');
+    btn.disabled = false;
+    btn.textContent = '🌀 MINT WITH OASIS';
+    setOasisStatus('❌ ' + (e.message || 'Mint failed'), 'var(--red)');
+  }
+  finally {
+    btn.disabled = false;
+    btn.textContent = '🌀 MINT WITH OASIS';
+  }
+}
+
+
+
+async function mint(sig, orderId, paymentSignature) {
+  const errEl  = document.getElementById('oasisError');
+  const btn    = document.getElementById('oasisConfirm');
+  const wallet = document.getElementById('oasisWalletAddr').value.trim();
+  const email  = document.getElementById('oasisEmail').value.trim();
+  errEl.textContent = '';
+
+  // if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
+  // if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>CONNECTING TO OASIS...';
+
+  try {
+
     setOasisStatus(`⛓ Minting on ${chain.label}...`, 'var(--cyan)');
     btn.innerHTML = '<span class="spinner"></span>MINTING ON-CHAIN...';
 
@@ -2159,6 +2261,7 @@ async function handleOasisMint() {
     btn.textContent = '🌀 MINT WITH OASIS';
   }
 }
+
 
 const es = new EventSource("/api/sol-price-stream");
 

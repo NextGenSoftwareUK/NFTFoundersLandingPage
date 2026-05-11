@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     console.log("Body:", req.body);
 
     const {
-      paymentMethodId,
+      //paymentMethodId,
       tier,
       name,
       email,
@@ -74,24 +74,24 @@ export default async function handler(req, res) {
       });
     }
 
+    stripe.paymentIntents.create({
+      amount,
+      currency,
+      automatic_payment_methods: { enabled: true }
+    });
+
     // Create and confirm payment
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: 'usd',
-
-      payment_method: paymentMethodId,
-
+      //payment_method: paymentMethodId,
       confirm: true,
-
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: 'never'
       },
-
       receipt_email: email,
-
       description: `OASIS ${tier} NFT Mint`,
-
       metadata: {
         tier,
         email,
@@ -107,11 +107,8 @@ export default async function handler(req, res) {
       });
     }
 
-// ==================================================
-// MINT NFT
-// ==================================================
 
-const orderId = crypto.randomUUID();
+    const orderId = crypto.randomUUID();
 
     const order = {
       type: "card",
@@ -129,92 +126,101 @@ const orderId = crypto.randomUUID();
     await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
 
 
-const chains = {
-  SolanaOASIS: {
-    label: 'Solana',
-    onChain: { value: 30, name: 'SolanaOASIS' },
-    nftStd: { value: 8, name: 'SPL' }
-  },
 
-  EthereumOASIS: {
-    label: 'Ethereum',
-    onChain: { value: 20, name: 'EthereumOASIS' },
-    nftStd: { value: 1, name: 'ERC721' }
-  }
-};
 
-// Default chain
-const currentOasisChain = 'SolanaOASIS';
+// // ==================================================
+// // MINT NFT
+// // ==================================================
 
-const chain = chains[currentOasisChain];
 
-// Build mint payload
-const payload = {
-  Title: `${tier.toUpperCase()} Founder Access`,
-  Description: `OASIS Founder Access NFT — ${tier}`,
-  Symbol: 'OASISFNDR',
-  OnChainProvider: chain.onChain,
-  OffChainProvider: {
-    value: 23,
-    name: 'MongoDBOASIS'
-  },
-  NFTOffChainMetaType: {
-    value: 3,
-    name: 'ExternalJsonURL'
-  },
-  NFTStandardType: chain.nftStd,
-  JSONMetaDataURL: `https://oasisfoundernfts.icu/metadata/tier-${tier}.json`,
-  ImageUrl: `https://www.oasisfoundernfts.icu/img/nft-${tier}-wallet.png`,
-  ThumbnailUrl: `https://www.oasisfoundernfts.icu/img/nft-${tier}-wallet.png`,
-  NumberToMint: 1,
-  StoreNFTMetaDataOnChain: false,
-  SendToAddressAfterMinting: req.body.wallet,
-  WaitTillNFTSent: true,
-  WaitForNFTToSendInSeconds: 60,
-  AttemptToSendEveryXSeconds: 5,
-  MetaData: 
-  {
-    tier,
-    email,
-    orderId: order?.orderId || null,
-    paymentSignature: paymentIntent.id
-  }
-};
 
-// Call OASIS mint API
-const mintRes = await fetch(
-  'https://www.oasisfoundernfts.icu/api/oasis',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ payload })
-  }
-);
+// const chains = {
+//   SolanaOASIS: {
+//     label: 'Solana',
+//     onChain: { value: 30, name: 'SolanaOASIS' },
+//     nftStd: { value: 8, name: 'SPL' }
+//   },
 
-const mintData = await mintRes.json();
+//   EthereumOASIS: {
+//     label: 'Ethereum',
+//     onChain: { value: 20, name: 'EthereumOASIS' },
+//     nftStd: { value: 1, name: 'ERC721' }
+//   }
+// };
 
-if (!mintRes.ok) {
-  throw new Error(
-    mintData.error || 'NFT mint failed'
-  );
-}
+// // Default chain
+// const currentOasisChain = 'SolanaOASIS';
 
-// Extract tx hash
-const txHash =
-  mintData.result?.result?.web3NFTs?.[0]?.mintTransactionHash ||
-  mintData.result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash ||
-  null;
+// const chain = chains[currentOasisChain];
 
-console.log('[OASIS] Mint success:', txHash);
+// // Build mint payload
+// const payload = {
+//   Title: `${tier.toUpperCase()} Founder Access`,
+//   Description: `OASIS Founder Access NFT — ${tier}`,
+//   Symbol: 'OASISFNDR',
+//   OnChainProvider: chain.onChain,
+//   OffChainProvider: {
+//     value: 23,
+//     name: 'MongoDBOASIS'
+//   },
+//   NFTOffChainMetaType: {
+//     value: 3,
+//     name: 'ExternalJsonURL'
+//   },
+//   NFTStandardType: chain.nftStd,
+//   JSONMetaDataURL: `https://oasisfoundernfts.icu/metadata/tier-${tier}.json`,
+//   ImageUrl: `https://www.oasisfoundernfts.icu/img/nft-${tier}-wallet.png`,
+//   ThumbnailUrl: `https://www.oasisfoundernfts.icu/img/nft-${tier}-wallet.png`,
+//   NumberToMint: 1,
+//   StoreNFTMetaDataOnChain: false,
+//   SendToAddressAfterMinting: req.body.wallet,
+//   WaitTillNFTSent: true,
+//   WaitForNFTToSendInSeconds: 60,
+//   AttemptToSendEveryXSeconds: 5,
+//   MetaData: 
+//   {
+//     tier,
+//     email,
+//     orderId: order?.orderId || null,
+//     paymentSignature: paymentIntent.id
+//   }
+// };
+
+// // Call OASIS mint API
+// const mintRes = await fetch(
+//   'https://www.oasisfoundernfts.icu/api/oasis',
+//   {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({ payload })
+//   }
+// );
+
+// const mintData = await mintRes.json();
+
+// if (!mintRes.ok) {
+//   throw new Error(
+//     mintData.error || 'NFT mint failed'
+//   );
+// }
+
+// // Extract tx hash
+// const txHash =
+//   mintData.result?.result?.web3NFTs?.[0]?.mintTransactionHash ||
+//   mintData.result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash ||
+//   null;
+
+// console.log('[OASIS] Mint success:', txHash);
 
     console.log('[OASIS] Payment success:', paymentIntent.id);
 
     return res.status(200).json({
       success: true,
       paymentIntentId: paymentIntent.id,
-      txHash
+      txHash,
+      orderId
     });
 
   } catch (err) {
