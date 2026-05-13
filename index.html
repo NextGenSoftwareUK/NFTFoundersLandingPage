@@ -292,12 +292,20 @@ body.test-mode-on .test-chain-note{display:block}
 .why-icon{font-size:32px;margin-bottom:14px}
 .why-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--gold);margin-bottom:8px}
 .why-text{font-size:14px;color:var(--text-dim);line-height:1.6}
+.video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;max-width:1100px;margin:0 auto}
+.video-card{background:rgba(10,21,53,.82);border:1px solid rgba(0,229,255,.14);border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.video-frame{position:relative;aspect-ratio:16/9;background:#020610}
+.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-info{padding:18px 18px 20px}
+.video-kicker{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--gold-light);margin-bottom:8px}
+.video-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--cyan);margin-bottom:8px}
+.video-text{font-size:14px;color:var(--text-dim);line-height:1.55}
 .cta-band{background:linear-gradient(135deg,rgba(240,165,0,.08),rgba(0,229,255,.06));border-top:1px solid rgba(240,165,0,.15);border-bottom:1px solid rgba(0,229,255,.1);padding:60px 20px;text-align:center}
 .cta-band h2{font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,28px);font-weight:700;letter-spacing:.1em;margin-bottom:10px;background:linear-gradient(90deg,var(--gold-light),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .cta-band p{font-size:16px;color:var(--text-dim);margin-bottom:28px}
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:40px 20px;text-align:center;font-size:13px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:2}
 .footer-brand{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:.2em;margin-bottom:8px}
-@media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}.video-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}}
 .perk-section-title{font-size:11px;letter-spacing:.15em;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin:16px 0 8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(255,255,255,.15)}
 .genesis .perk-section-title{border-left-color:var(--gold)}
@@ -344,7 +352,7 @@ body.test-mode-on .test-chain-note{display:block}
       <div class="feature-item"><div class="feature-icon">🧠</div><div class="feature-title">AVATAR + KARMA</div><div class="feature-desc">A shared identity, wallet and reputation system follows users across OASIS-powered apps and worlds.</div></div>
       <div class="feature-item"><div class="feature-icon">⚙️</div><div class="feature-title">WEB4 NFTS</div><div class="feature-desc">OASIS NFTs can wrap cross-chain Web3 NFTs with shared metadata, replication and universal ownership context.</div></div>
       <div class="feature-item"><div class="feature-icon">🕹</div><div class="feature-title">OGENGINE</div><div class="feature-desc">The Omniverse Game Engine runtime connects ODOOM, OQuake, Our World and future games to shared STAR quests and inventory.</div></div>
-      <div class="feature-item"><div class="feature-icon">✨</div><div class="feature-title">STAR CLI + ODK</div><div class="feature-desc">Beam in, publish STARNET holons and generate OAPPs from DNA/templates with the low/no-code Light generator.</div></div>
+      <div class="feature-item"><div class="feature-icon">✨</div><div class="feature-title">STAR CLI + ODK</div><div class="feature-desc">Beam in, publish STARNET holons and generate OAPPs from DNA/templates with hundreds of CLI command paths.</div></div>
       <div class="feature-item"><div class="feature-icon">🧬</div><div class="feature-title">COSMIC ORM</div><div class="feature-desc">A universal ORM over Web2 and Web3 storage, using HyperDrive for provider routing, migration and auto-replication.</div></div>
       <div class="feature-item"><div class="feature-icon">💼</div><div class="feature-title">UNIVERSAL WALLET</div><div class="feature-desc">One avatar-linked wallet layer for Web2, Web3, fiat, portfolio, DeFi and cross-chain asset management.</div></div>
     </div>
@@ -550,6 +558,39 @@ body.test-mode-on .test-chain-note{display:block}
       <div class="why-card"><div class="why-icon">📈</div><div class="why-title">TOKEN PRESALE EDGE</div><div class="why-text">Founder holders get early and advantaged access to the OASIS token launch. Earlier = better positioning.</div></div>
       <div class="why-card"><div class="why-icon">⏳</div><div class="why-title">LIMITED FOREVER</div><div class="why-text">Only 170 Founder slots will ever be available. When they're gone, they're gone.</div></div>
       <div class="why-card"><div class="why-icon">🏗</div><div class="why-title">ALREADY BUILDING</div><div class="why-text">This isn't a concept. OASIS is already being built. Games. Worlds. Avatars. AI. Ownership.</div></div>
+      <div class="why-card"><div class="why-icon">🌐</div><div class="why-title">500+ API ENDPOINTS</div><div class="why-text">Docs identify 500+ actual Web4 and Web5 endpoints across OASIS, STAR, HyperDrive, wallets, NFTs, maps and providers.</div></div>
+      <div class="why-card"><div class="why-icon">💾</div><div class="why-title">10-YEAR CODEBASE</div><div class="why-text">This Founder mint is tied to a decade-scale, millions-of-lines build across OASIS, STAR ODK, OGEngine and Web4 NFTs.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">SEE THE TECH WORKING</h2>
+    <span class="section-line"></span>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/s4aCSoD84pw" title="Our World GeoNFT AR demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="video-info">
+          <div class="video-kicker">OUR WORLD</div>
+          <div class="video-title">GEOLOCATION AR + WEB4 GEONFTS</div>
+          <div class="video-text">A live look at Our World using geolocation AR gameplay with Web4 GeoNFTs from the OASIS NFT API.</div>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/3O4ykhDzsiE" title="OGEngine shared inventory and SSO demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="video-info">
+          <div class="video-kicker">OGENGINE DEMO 1</div>
+          <div class="video-title">ODOOM + OQUAKE SSO INVENTORY</div>
+          <div class="video-text">Shows shared inventory and avatar SSO flowing across ODOOM and OQuake through OGEngine and STAR.</div>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/ZH5u6OVPVYg?start=1" title="OGEngine cross-game quests demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="video-info">
+          <div class="video-kicker">OGENGINE DEMO 2</div>
+          <div class="video-title">WEAPONS + CROSS-GAME QUESTS</div>
+          <div class="video-text">Demonstrates shared weapons, inventory, SSO and cross-game quests between ODOOM and OQuake.</div>
+        </div>
+      </div>
     </div>
   </section>
 
