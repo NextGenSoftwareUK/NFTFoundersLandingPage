@@ -300,13 +300,28 @@ body.test-mode-on .test-chain-note{display:block}
 .video-kicker{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--gold-light);margin-bottom:8px}
 .video-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--cyan);margin-bottom:8px}
 .video-text{font-size:14px;color:var(--text-dim);line-height:1.55}
+.proof-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:1100px;margin:0 auto}
+.proof-card{background:rgba(10,21,53,.82);border:1px solid rgba(0,229,255,.13);border-radius:12px;padding:24px 22px;box-shadow:0 20px 60px rgba(0,0,0,.16)}
+.proof-card.gold{border-color:rgba(240,165,0,.22);background:linear-gradient(135deg,rgba(240,165,0,.08),rgba(10,21,53,.82))}
+.proof-kicker{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--gold-light);margin-bottom:10px}
+.proof-title{font-family:'Orbitron',sans-serif;font-size:15px;letter-spacing:.08em;color:var(--cyan);margin-bottom:10px}
+.proof-text{font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:14px}
+.proof-link{display:inline-flex;align-items:center;gap:8px;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;text-decoration:none;border:1px solid rgba(0,229,255,.22);border-radius:999px;padding:9px 12px;background:rgba(0,229,255,.05);margin:4px 6px 4px 0}
+.proof-link:hover{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.42)}
+.download-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1100px;margin:24px auto 0}
+.download-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.075);border-radius:12px;padding:20px 18px;min-height:210px}
+.download-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--gold);margin-bottom:12px}
+.download-list{list-style:none;display:grid;gap:8px}
+.download-list a{color:var(--text);font-size:13px;line-height:1.35;text-decoration:none}
+.download-list a:hover{color:var(--cyan)}
+.download-note{max-width:900px;margin:28px auto 0;text-align:center;color:var(--text-dim);font-size:14px;line-height:1.7}
 .cta-band{background:linear-gradient(135deg,rgba(240,165,0,.08),rgba(0,229,255,.06));border-top:1px solid rgba(240,165,0,.15);border-bottom:1px solid rgba(0,229,255,.1);padding:60px 20px;text-align:center}
 .cta-band h2{font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,28px);font-weight:700;letter-spacing:.1em;margin-bottom:10px;background:linear-gradient(90deg,var(--gold-light),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .cta-band p{font-size:16px;color:var(--text-dim);margin-bottom:28px}
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:40px 20px;text-align:center;font-size:13px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:2}
 .footer-brand{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:.2em;margin-bottom:8px}
-@media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}.video-grid{grid-template-columns:1fr}}
-@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}}
+@media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}.video-grid{grid-template-columns:1fr}.proof-grid{grid-template-columns:1fr}.download-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.download-grid{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}}
 .perk-section-title{font-size:11px;letter-spacing:.15em;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin:16px 0 8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(255,255,255,.15)}
 .genesis .perk-section-title{border-left-color:var(--gold)}
 .core .perk-section-title{border-left-color:var(--core)}
@@ -592,6 +607,100 @@ body.test-mode-on .test-chain-note{display:block}
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">LIVE APIS + DOWNLOADS</h2>
+    <span class="section-line"></span>
+    <div class="proof-grid">
+      <div class="proof-card gold">
+        <div class="proof-kicker">LIVE INFRASTRUCTURE</div>
+        <div class="proof-title">WEB4 + WEB5 APIS ARE ONLINE</div>
+        <div class="proof-text">The Founder NFT is tied to live infrastructure: Web4 OASIS for identity, data, wallets, providers and HyperDrive; Web5 STAR for OAPPs, quests, missions, NFTs and STARNET.</div>
+        <a class="proof-link" href="https://api.oasisweb4.one" target="_blank">WEB4 API</a>
+        <a class="proof-link" href="https://star.oasisweb4.one" target="_blank">WEB5 STAR API</a>
+      </div>
+      <div class="proof-card">
+        <div class="proof-kicker">PACKAGE ECOSYSTEM</div>
+        <div class="proof-title">50 NUGET PACKAGES · 256,208+ DOWNLOADS</div>
+        <div class="proof-text">The public NuGet profile shows 50 packages and 256,208 total downloads across HoloNET, OASIS, provider, CLI, logging, websocket and utility packages.</div>
+        <a class="proof-link" href="https://www.nuget.org/profiles/dellams" target="_blank">NUGET PROFILE</a>
+        <a class="proof-link" href="https://github.com/NextGenSoftwareUK/holochain-client-csharp" target="_blank">HOLONET GITHUB</a>
+      </div>
+      <div class="proof-card">
+        <div class="proof-kicker">P2P FOUNDATION</div>
+        <div class="proof-title">HOLONET + HOLOOASIS PROVIDER</div>
+        <div class="proof-text">HoloNET is the first C#/Unity client for Holochain and includes its own ORM/API layer. It is deeply integrated into OASIS through the HoloOASIS provider for P2P distributed networking.</div>
+        <a class="proof-link" href="https://github.com/NextGenSoftwareUK/holochain-client-csharp" target="_blank">VIEW HOLONET</a>
+      </div>
+      <div class="proof-card">
+        <div class="proof-kicker">COMING SOON</div>
+        <div class="proof-title">OPORTAL + OUR WORLD MVP</div>
+        <div class="proof-text">OPORTAL will be the web portal into OASIS for managing avatars, OAPPs, karma, quests, NFTs, missions, assets, OGAMES and more. The Our World MVP is also coming soon.</div>
+      </div>
+    </div>
+
+    <div class="download-grid">
+      <div class="download-card">
+        <div class="download-title">CORE RELEASES</div>
+        <ul class="download-list">
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-ODK-Runtime-v3.5.0" target="_blank">STAR CLI / ODK Runtime v3.5.0</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/OASIS-Runtime-v4.5.1" target="_blank">OASIS Runtime v4.5.1</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-API-CLIENT-v1.0.0" target="_blank">STAR API Client v1.0.0</a></li>
+        </ul>
+      </div>
+      <div class="download-card">
+        <div class="download-title">OGENGINE GAMES</div>
+        <ul class="download-list">
+          <li><a href="https://github.com/NextGenSoftwareUK/ODOOM/releases/tag/ODOOM_v.1.0.0_ALPHA" target="_blank">ODOOM v1.0.0 Alpha</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OQUAKE/releases/tag/OQUAKE_v1.0.0_ALPHA" target="_blank">OQuake v1.0.0 Alpha</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/ODOOM-Editor/releases/tag/ODOOM_Editor_v1.0.0_ALPHA" target="_blank">ODOOM Editor v1.0.0 Alpha</a></li>
+        </ul>
+      </div>
+      <div class="download-card">
+        <div class="download-title">AVATAR SSO SDKS</div>
+        <ul class="download-list">
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-avatar-sso-sdk-angular" target="_blank">Angular Avatar SSO SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-avatar-sso-sdk-nextjs" target="_blank">Next.js Avatar SSO SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-avatar-sso-sdk-pack" target="_blank">Avatar SSO SDK Pack</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-avatar-sso-sdk-react" target="_blank">React Avatar SSO SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-avatar-sso-sdk-svelte" target="_blank">Svelte Avatar SSO SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-avatar-sso-sdk-vanilla" target="_blank">Vanilla Avatar SSO SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-avatar-sso-sdk-vue" target="_blank">Vue Avatar SSO SDK</a></li>
+        </ul>
+      </div>
+      <div class="download-card">
+        <div class="download-title">WEB4 SDKS</div>
+        <ul class="download-list">
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web4-api-client" target="_blank">Web4 API Client</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web4-python-sdk" target="_blank">Web4 Python SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web4-rust-sdk" target="_blank">Web4 Rust SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web4-unity-sdk" target="_blank">Web4 Unity SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web4-unreal-sdk" target="_blank">Web4 Unreal SDK</a></li>
+        </ul>
+      </div>
+      <div class="download-card">
+        <div class="download-title">WEB5 STAR SDKS</div>
+        <ul class="download-list">
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-api-client" target="_blank">Web5 STAR API Client</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-rust-sdk" target="_blank">Web5 STAR Rust SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-unity-sdk" target="_blank">Web5 STAR Unity SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-unreal-sdk" target="_blank">Web5 STAR Unreal SDK</a></li>
+        </ul>
+      </div>
+      <div class="download-card">
+        <div class="download-title">WEBUI DEVKITS</div>
+        <ul class="download-list">
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-webui-devkit-angular" target="_blank">Angular WebUI Devkit</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-webui-devkit-nextjs" target="_blank">Next.js WebUI Devkit</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-webui-devkit-react" target="_blank">React WebUI Devkit</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-webui-devkit-svelte" target="_blank">Svelte WebUI Devkit</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-webui-devkit-vanilla" target="_blank">Vanilla WebUI Devkit</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-webui-devkit-vue" target="_blank">Vue WebUI Devkit</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="download-note">The downloads folder also includes the OASIS WebUI Devkit guide. Together with the release builds, SDKs and NuGet packages, this gives founders a visible ecosystem of tools, APIs, games and developer surfaces already in motion.</p>
   </section>
 
   <div class="cta-band">
