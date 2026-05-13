@@ -330,7 +330,7 @@ body.test-mode-on .test-chain-note{display:block}
     <h1 class="hero-title">OASIS</h1>
     <div class="hero-sub">FOUNDER ACCESS</div>
     <p class="hero-desc">A new digital world is being built.<br><strong>A limited number of people will own the keys.</strong></p>
-    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">One API across chains · Web4 NFTs · STAR OAPPs · Our World access</p>
+    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">OGEngine · One API across chains · Web4 NFTs · STAR OAPPs · Our World access</p>
     <div class="supply-badge"><span class="supply-dot"></span>ONLY 170 FOUNDER SLOTS — EVER</div>
     <div class="scroll-cta">CHOOSE YOUR TIER<span class="scroll-arrow">↓</span></div>
   </section>
@@ -343,6 +343,7 @@ body.test-mode-on .test-chain-note{display:block}
       <div class="feature-item"><div class="feature-icon">🎮</div><div class="feature-title">STAR OAPPS</div><div class="feature-desc">The Web5 STAR layer powers games, metaverses, quests, missions, templates and reusable digital assets.</div></div>
       <div class="feature-item"><div class="feature-icon">🧠</div><div class="feature-title">AVATAR + KARMA</div><div class="feature-desc">A shared identity, wallet and reputation system follows users across OASIS-powered apps and worlds.</div></div>
       <div class="feature-item"><div class="feature-icon">⚙️</div><div class="feature-title">WEB4 NFTS</div><div class="feature-desc">OASIS NFTs can wrap cross-chain Web3 NFTs with shared metadata, replication and universal ownership context.</div></div>
+      <div class="feature-item"><div class="feature-icon">🕹</div><div class="feature-title">OGENGINE</div><div class="feature-desc">The Omniverse Game Engine runtime connects ODOOM, OQuake, Our World and future games to shared STAR quests and inventory.</div></div>
     </div>
   </section>
 
@@ -382,6 +383,41 @@ body.test-mode-on .test-chain-note{display:block}
       <a class="doc-link" href="https://www.oasisweb4.com/" target="_blank">OASIS WEB4 SITE</a>
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank">GITHUB REPO</a>
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank">TECHNICAL DOCS</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">OGENGINE: OMNIVERSE GAME RUNTIME</h2>
+    <span class="section-line"></span>
+    <div class="protocol-grid">
+      <div class="protocol-panel">
+        <div class="protocol-kicker">ODOOM / OQUAKE / OUR WORLD</div>
+        <div class="protocol-heading">OGEngine is the runtime contract that lets games share one avatar, one quest graph and one inventory.</div>
+        <p class="protocol-copy">The OASIS Omniverse docs describe OGEngine as the combined stack formed by <strong>Web4 OASIS API, Web5 STAR API and STARAPIClient</strong>. Games stay thin: they call shared <code>star_api_*</code> hooks while the client handles authentication, caching, queues, quest progress, inventory sync and NFT mint/add flows.</p>
+        <div class="provider-cloud">
+          <span class="provider-pill">ODOOM</span>
+          <span class="provider-pill">OQuake</span>
+          <span class="provider-pill">Our World</span>
+          <span class="provider-pill">STARAPIClient</span>
+          <span class="provider-pill">star_api_*</span>
+          <span class="provider-pill">GeoHotSpots</span>
+          <span class="provider-pill">Cross-game quests</span>
+          <span class="provider-pill">Inventory NFTs</span>
+        </div>
+      </div>
+      <div class="protocol-panel">
+        <div class="protocol-list">
+          <div class="protocol-point"><div class="protocol-num">01</div><div><div class="protocol-title">BEAM-IN SSO</div><div class="protocol-text">Players authenticate once with their OASIS/STAR avatar, then carry profile, quest and inventory state across games.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">02</div><div><div class="protocol-title">CROSS-GAME INVENTORY</div><div class="protocol-text">Keys, weapons, ammo, powerups and items can be synced through STAR and optionally minted as Web4 NFT inventory assets.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">03</div><div><div class="protocol-title">QUEST HANDOFFS</div><div class="protocol-text">Objectives can point to another game, OPortal, STAR CLI, a website, chat, or a linked GeoHotSpot in the real world.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">PORTABLE GAME HOOKS</div><div class="protocol-text">Future ports only need small gameplay hooks while STARAPIClient keeps API work, queues and cache logic reusable.</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="doc-links">
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/OASIS%20Omniverse" target="_blank">OASIS OMNIVERSE</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/OASIS%20Omniverse/Docs/OGEngine_Overview.md" target="_blank">OGENGINE OVERVIEW</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/OASIS%20Omniverse/Docs/ARCHITECTURE.md" target="_blank">OMNIVERSE ARCHITECTURE</a>
     </div>
   </section>
 
@@ -509,11 +545,12 @@ body.test-mode-on .test-chain-note{display:block}
     <button onclick="document.getElementById('tiers').scrollIntoView({behavior:'smooth'})" style="padding:18px 44px;background:linear-gradient(135deg,#b37800,#f0a500,#ffe066);color:#0a0500;border:none;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;box-shadow:0 4px 24px rgba(240,165,0,.4);transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 36px rgba(240,165,0,.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(240,165,0,.4)'">⚡ VIEW ALL TIERS</button>
     <div style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.06)">
       <div style="font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.2em;color:var(--text-dim);margin-bottom:20px">THIS IS JUST THE BEGINNING</div>
-      <p style="font-size:15px;color:var(--text-dim);max-width:560px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>Identity. Holons. Games. Worlds. Cross-chain NFTs. Business. Ownership.</p>
+      <p style="font-size:15px;color:var(--text-dim);max-width:600px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>OGEngine. Identity. Holons. Games. Worlds. Cross-chain NFTs. Business. Ownership.</p>
       <div class="ecosystem-bar">
         <div class="eco-item"><div class="eco-icon">🌍</div><span>OUR WORLD</span></div>
         <div class="eco-item"><div class="eco-icon">🎮</div><span>GAMES</span></div>
         <div class="eco-item"><div class="eco-icon">🧠</div><span>AI SYSTEMS</span></div>
+        <div class="eco-item"><div class="eco-icon">🕹</div><span>OGENGINE</span></div>
         <div class="eco-item"><div class="eco-icon">⚙️</div><span>HYPERDRIVE</span></div>
       </div>
       <div style="font-size:12px;color:var(--text-dim);margin-top:8px;font-family:'Share Tech Mono',monospace">WEB4 OASIS + WEB5 STAR INFRASTRUCTURE</div>
@@ -521,7 +558,7 @@ body.test-mode-on .test-chain-note{display:block}
   </div>
   <footer class="footer">
     <div class="footer-brand">OASIS</div>
-    <div>A next-generation ecosystem · Web4 OASIS · Web5 STAR · Avatars · Holons · Cross-chain NFTs</div>
+    <div>A next-generation ecosystem · OGEngine · Web4 OASIS · Web5 STAR · Avatars · Holons · Cross-chain NFTs</div>
     <div style="margin-top:8px;color:rgba(255,255,255,.2)">Founder NFTs may never be minted again. · This is just the beginning.</div>
     <div style="margin-top:12px;font-size:12px">Minting powered by <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none">THE OASIS</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank" style="color:var(--cyan);text-decoration:none">Docs</a> · Web4 OASIS + Web5 STAR Infrastructure</div>
   </footer>
