@@ -92,6 +92,27 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .feature-icon{font-size:36px;margin-bottom:14px}
 .feature-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--cyan);margin-bottom:8px}
 .feature-desc{font-size:14px;color:var(--text-dim);line-height:1.6}
+.protocol-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);gap:28px;max-width:1050px;margin:0 auto;align-items:stretch}
+.protocol-panel{background:rgba(10,21,53,.82);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:30px 28px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.protocol-kicker{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.2em;color:var(--cyan);margin-bottom:12px}
+.protocol-heading{font-family:'Orbitron',sans-serif;font-size:clamp(20px,3vw,30px);line-height:1.25;color:#fff;margin-bottom:14px;letter-spacing:.04em}
+.protocol-copy{font-size:16px;line-height:1.7;color:var(--text-dim);margin-bottom:22px}
+.protocol-copy strong{color:var(--gold-light)}
+.protocol-list{display:grid;gap:12px}
+.protocol-point{display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:start;padding:14px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.protocol-num{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--gold);letter-spacing:.12em}
+.protocol-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--cyan);margin-bottom:4px}
+.protocol-text{font-size:14px;color:var(--text-dim);line-height:1.55}
+.provider-cloud{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.provider-pill{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.035)}
+.utility-band{max-width:1050px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.utility-card{background:rgba(255,255,255,.025);border:1px solid rgba(240,165,0,.13);border-radius:12px;padding:22px 18px;min-height:190px}
+.utility-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--gold-light);margin-bottom:12px}
+.utility-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--cyan);margin-bottom:8px}
+.utility-text{font-size:14px;line-height:1.6;color:var(--text-dim)}
+.doc-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:28px auto 0}
+.doc-link{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--cyan);text-decoration:none;border:1px solid rgba(0,229,255,.22);border-radius:999px;padding:10px 14px;background:rgba(0,229,255,.05);transition:background .2s,border-color .2s,transform .2s}
+.doc-link:hover{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.42);transform:translateY(-2px)}
 
 /* ── TIER CARDS ── */
 .tiers-section{background:rgba(255,255,255,.01)}
@@ -276,7 +297,8 @@ body.test-mode-on .test-chain-note{display:block}
 .cta-band p{font-size:16px;color:var(--text-dim);margin-bottom:28px}
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:40px 20px;text-align:center;font-size:13px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:2}
 .footer-brand{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:.2em;margin-bottom:8px}
-@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}}
 .perk-section-title{font-size:11px;letter-spacing:.15em;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin:16px 0 8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(255,255,255,.15)}
 .genesis .perk-section-title{border-left-color:var(--gold)}
 .core .perk-section-title{border-left-color:var(--core)}
@@ -308,7 +330,7 @@ body.test-mode-on .test-chain-note{display:block}
     <h1 class="hero-title">OASIS</h1>
     <div class="hero-sub">FOUNDER ACCESS</div>
     <p class="hero-desc">A new digital world is being built.<br><strong>A limited number of people will own the keys.</strong></p>
-    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">Virtual worlds · Classic & modern games · AI-powered avatars · OGEngine Web4+Web5</p>
+    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">One API across chains · Web4 NFTs · STAR OAPPs · Our World access</p>
     <div class="supply-badge"><span class="supply-dot"></span>ONLY 170 FOUNDER SLOTS — EVER</div>
     <div class="scroll-cta">CHOOSE YOUR TIER<span class="scroll-arrow">↓</span></div>
   </section>
@@ -317,10 +339,49 @@ body.test-mode-on .test-chain-note{display:block}
     <h2 class="section-title">WHAT IS OASIS?</h2>
     <span class="section-line"></span>
     <div class="features-grid">
-      <div class="feature-item"><div class="feature-icon">🌍</div><div class="feature-title">VIRTUAL WORLDS</div><div class="feature-desc">Immersive digital worlds you'll actually own a piece of.</div></div>
-      <div class="feature-item"><div class="feature-icon">🎮</div><div class="feature-title">CLASSIC + MODERN GAMES</div><div class="feature-desc">Odoom, Oquake & next-gen game experiences in one ecosystem.</div></div>
-      <div class="feature-item"><div class="feature-icon">🧠</div><div class="feature-title">AI-POWERED AVATARS</div><div class="feature-desc">Intelligent AI systems and customizable avatar identities.</div></div>
-      <div class="feature-item"><div class="feature-icon">⚙️</div><div class="feature-title">OGENGINE</div><div class="feature-desc">Web4 + Web5 infrastructure powering the whole stack.</div></div>
+      <div class="feature-item"><div class="feature-icon">🌍</div><div class="feature-title">UNIVERSAL WEB4</div><div class="feature-desc">OASIS connects Web2, Web3, storage, cloud and blockchain providers through one abstraction layer.</div></div>
+      <div class="feature-item"><div class="feature-icon">🎮</div><div class="feature-title">STAR OAPPS</div><div class="feature-desc">The Web5 STAR layer powers games, metaverses, quests, missions, templates and reusable digital assets.</div></div>
+      <div class="feature-item"><div class="feature-icon">🧠</div><div class="feature-title">AVATAR + KARMA</div><div class="feature-desc">A shared identity, wallet and reputation system follows users across OASIS-powered apps and worlds.</div></div>
+      <div class="feature-item"><div class="feature-icon">⚙️</div><div class="feature-title">WEB4 NFTS</div><div class="feature-desc">OASIS NFTs can wrap cross-chain Web3 NFTs with shared metadata, replication and universal ownership context.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">THE INFRASTRUCTURE UNDER THE KEY</h2>
+    <span class="section-line"></span>
+    <div class="protocol-grid">
+      <div class="protocol-panel">
+        <div class="protocol-kicker">ONE API / ALL PROVIDERS</div>
+        <div class="protocol-heading">Founder NFTs are access keys into a wider Web4 and Web5 stack.</div>
+        <p class="protocol-copy">OASIS is positioned as a universal infrastructure layer for moving data, identity, assets and application logic across Web2 and Web3. The Founder NFT page now ties the sale directly to the core system: <strong>holons, HyperDrive, cross-chain NFTs, STAR OAPPs and avatar-based reputation.</strong></p>
+        <div class="provider-cloud">
+          <span class="provider-pill">Ethereum</span>
+          <span class="provider-pill">Solana</span>
+          <span class="provider-pill">Polygon</span>
+          <span class="provider-pill">Arbitrum</span>
+          <span class="provider-pill">Base</span>
+          <span class="provider-pill">Radix</span>
+          <span class="provider-pill">IPFS</span>
+          <span class="provider-pill">Arweave</span>
+          <span class="provider-pill">Holochain</span>
+          <span class="provider-pill">MongoDB</span>
+          <span class="provider-pill">AWS</span>
+          <span class="provider-pill">ThreeFold</span>
+        </div>
+      </div>
+      <div class="protocol-panel">
+        <div class="protocol-list">
+          <div class="protocol-point"><div class="protocol-num">01</div><div><div class="protocol-title">HOLONIC DATA</div><div class="protocol-text">Identity-first data objects can persist across providers instead of being locked to one chain, database or app.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">02</div><div><div class="protocol-title">HYPERDRIVE ROUTING</div><div class="protocol-text">Auto-failover, replication and load balancing route operations across available providers for resilience.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">03</div><div><div class="protocol-title">STAR CREATION LAYER</div><div class="protocol-text">Builders can create OAPPs, quests, missions, NFTs, GeoNFTs, runtimes and templates for the OASIS Omniverse.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">UNIFIED IDENTITY</div><div class="protocol-text">Avatar, wallet, keys and karma APIs give founders a persistent identity across games, tools and worlds.</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="doc-links">
+      <a class="doc-link" href="https://www.oasisweb4.com/" target="_blank">OASIS WEB4 SITE</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank">GITHUB REPO</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank">TECHNICAL DOCS</a>
     </div>
   </section>
 
@@ -405,6 +466,33 @@ body.test-mode-on .test-chain-note{display:block}
   </section>
 
   <section class="section">
+    <h2 class="section-title">WHAT THE FOUNDER NFT UNLOCKS</h2>
+    <span class="section-line"></span>
+    <div class="utility-band">
+      <div class="utility-card">
+        <div class="utility-tag">ACCESS</div>
+        <div class="utility-title">LIFETIME OASIS STATUS</div>
+        <div class="utility-text">A scarce founder identity designed to travel with your avatar across OASIS-powered apps, worlds and community spaces.</div>
+      </div>
+      <div class="utility-card">
+        <div class="utility-tag">BUILD</div>
+        <div class="utility-title">OAPP CREATION RIGHTS</div>
+        <div class="utility-text">Monthly OAPP, quest, mission and NFT allowances connect the tiers directly to the STAR creation and publishing layer.</div>
+      </div>
+      <div class="utility-card">
+        <div class="utility-tag">NFT</div>
+        <div class="utility-title">CROSS-CHAIN READY</div>
+        <div class="utility-text">OASIS NFT architecture is built for universal metadata, multi-chain deployment and future Web4 NFT wrapping.</div>
+      </div>
+      <div class="utility-card">
+        <div class="utility-tag">VOICE</div>
+        <div class="utility-title">ROADMAP INFLUENCE</div>
+        <div class="utility-text">Founder holders are positioned closest to early features, private feedback loops, presale access and ecosystem decisions.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
     <h2 class="section-title">WHY THIS MATTERS</h2>
     <span class="section-line"></span>
     <div class="why-grid">
@@ -421,21 +509,21 @@ body.test-mode-on .test-chain-note{display:block}
     <button onclick="document.getElementById('tiers').scrollIntoView({behavior:'smooth'})" style="padding:18px 44px;background:linear-gradient(135deg,#b37800,#f0a500,#ffe066);color:#0a0500;border:none;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;box-shadow:0 4px 24px rgba(240,165,0,.4);transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 36px rgba(240,165,0,.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(240,165,0,.4)'">⚡ VIEW ALL TIERS</button>
     <div style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.06)">
       <div style="font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.2em;color:var(--text-dim);margin-bottom:20px">THIS IS JUST THE BEGINNING</div>
-      <p style="font-size:15px;color:var(--text-dim);max-width:500px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>Games. Worlds. Avatars. AI. Business. Ownership.</p>
+      <p style="font-size:15px;color:var(--text-dim);max-width:560px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>Identity. Holons. Games. Worlds. Cross-chain NFTs. Business. Ownership.</p>
       <div class="ecosystem-bar">
         <div class="eco-item"><div class="eco-icon">🌍</div><span>OUR WORLD</span></div>
         <div class="eco-item"><div class="eco-icon">🎮</div><span>GAMES</span></div>
         <div class="eco-item"><div class="eco-icon">🧠</div><span>AI SYSTEMS</span></div>
-        <div class="eco-item"><div class="eco-icon">⚙️</div><span>OGENGINE</span></div>
+        <div class="eco-item"><div class="eco-icon">⚙️</div><span>HYPERDRIVE</span></div>
       </div>
-      <div style="font-size:12px;color:var(--text-dim);margin-top:8px;font-family:'Share Tech Mono',monospace">WEB4 + WEB5 INFRASTRUCTURE</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:8px;font-family:'Share Tech Mono',monospace">WEB4 OASIS + WEB5 STAR INFRASTRUCTURE</div>
     </div>
   </div>
   <footer class="footer">
     <div class="footer-brand">OASIS</div>
-    <div>A next-generation ecosystem · Games · Worlds · Avatars · AI · Ownership</div>
+    <div>A next-generation ecosystem · Web4 OASIS · Web5 STAR · Avatars · Holons · Cross-chain NFTs</div>
     <div style="margin-top:8px;color:rgba(255,255,255,.2)">Founder NFTs may never be minted again. · This is just the beginning.</div>
-    <div style="margin-top:12px;font-size:12px">Minting powered by <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none">THE OASIS</a> · OGEngine Web4+Web5 Infrastructure</div>
+    <div style="margin-top:12px;font-size:12px">Minting powered by <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none">THE OASIS</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank" style="color:var(--cyan);text-decoration:none">Docs</a> · Web4 OASIS + Web5 STAR Infrastructure</div>
   </footer>
 </div>
 
