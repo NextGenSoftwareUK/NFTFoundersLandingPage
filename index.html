@@ -86,7 +86,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .section{padding:80px 20px;position:relative}
 .section-title{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,36px);font-weight:700;letter-spacing:.1em;text-align:center;color:var(--gold);margin-bottom:12px}
 .section-line{display:block;width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);margin:0 auto 50px}
-.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;max-width:900px;margin:0 auto}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px;max-width:1100px;margin:0 auto}
 .feature-item{background:var(--bg-card);border:1px solid rgba(0,229,255,.1);border-radius:12px;padding:28px 20px;text-align:center;transition:transform .3s,border-color .3s,box-shadow .3s}
 .feature-item:hover{transform:translateY(-4px);border-color:rgba(0,229,255,.3);box-shadow:0 12px 40px rgba(0,229,255,.08)}
 .feature-icon{font-size:36px;margin-bottom:14px}
@@ -330,7 +330,7 @@ body.test-mode-on .test-chain-note{display:block}
     <h1 class="hero-title">OASIS</h1>
     <div class="hero-sub">FOUNDER ACCESS</div>
     <p class="hero-desc">A new digital world is being built.<br><strong>A limited number of people will own the keys.</strong></p>
-    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">OGEngine · One API across chains · Web4 NFTs · STAR OAPPs · Our World access</p>
+    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">OGEngine · STAR CLI/ODK · COSMIC ORM · Web4 NFTs · Our World access</p>
     <div class="supply-badge"><span class="supply-dot"></span>ONLY 170 FOUNDER SLOTS — EVER</div>
     <div class="scroll-cta">CHOOSE YOUR TIER<span class="scroll-arrow">↓</span></div>
   </section>
@@ -339,11 +339,14 @@ body.test-mode-on .test-chain-note{display:block}
     <h2 class="section-title">WHAT IS OASIS?</h2>
     <span class="section-line"></span>
     <div class="features-grid">
-      <div class="feature-item"><div class="feature-icon">🌍</div><div class="feature-title">UNIVERSAL WEB4</div><div class="feature-desc">OASIS connects Web2, Web3, storage, cloud and blockchain providers through one abstraction layer.</div></div>
+      <div class="feature-item"><div class="feature-icon">🌍</div><div class="feature-title">UNIVERSAL WEB4</div><div class="feature-desc">OASIS connects Web2, Web3, storage, cloud and blockchain providers through one HyperDrive-powered abstraction layer.</div></div>
       <div class="feature-item"><div class="feature-icon">🎮</div><div class="feature-title">STAR OAPPS</div><div class="feature-desc">The Web5 STAR layer powers games, metaverses, quests, missions, templates and reusable digital assets.</div></div>
       <div class="feature-item"><div class="feature-icon">🧠</div><div class="feature-title">AVATAR + KARMA</div><div class="feature-desc">A shared identity, wallet and reputation system follows users across OASIS-powered apps and worlds.</div></div>
       <div class="feature-item"><div class="feature-icon">⚙️</div><div class="feature-title">WEB4 NFTS</div><div class="feature-desc">OASIS NFTs can wrap cross-chain Web3 NFTs with shared metadata, replication and universal ownership context.</div></div>
       <div class="feature-item"><div class="feature-icon">🕹</div><div class="feature-title">OGENGINE</div><div class="feature-desc">The Omniverse Game Engine runtime connects ODOOM, OQuake, Our World and future games to shared STAR quests and inventory.</div></div>
+      <div class="feature-item"><div class="feature-icon">✨</div><div class="feature-title">STAR CLI + ODK</div><div class="feature-desc">Beam in, publish STARNET holons and generate OAPPs from DNA/templates with the low/no-code Light generator.</div></div>
+      <div class="feature-item"><div class="feature-icon">🧬</div><div class="feature-title">COSMIC ORM</div><div class="feature-desc">A universal ORM over Web2 and Web3 storage, using HyperDrive for provider routing, migration and auto-replication.</div></div>
+      <div class="feature-item"><div class="feature-icon">💼</div><div class="feature-title">UNIVERSAL WALLET</div><div class="feature-desc">One avatar-linked wallet layer for Web2, Web3, fiat, portfolio, DeFi and cross-chain asset management.</div></div>
     </div>
   </section>
 
@@ -354,8 +357,11 @@ body.test-mode-on .test-chain-note{display:block}
       <div class="protocol-panel">
         <div class="protocol-kicker">ONE API / ALL PROVIDERS</div>
         <div class="protocol-heading">Founder NFTs are access keys into a wider Web4 and Web5 stack.</div>
-        <p class="protocol-copy">OASIS is positioned as a universal infrastructure layer for moving data, identity, assets and application logic across Web2 and Web3. The Founder NFT page now ties the sale directly to the core system: <strong>holons, HyperDrive, cross-chain NFTs, STAR OAPPs and avatar-based reputation.</strong></p>
+        <p class="protocol-copy">OASIS is positioned as a universal infrastructure layer for moving data, identity, assets and application logic across Web2 and Web3. The Founder NFT page now ties the sale directly to the core system: <strong>holons, HyperDrive, COSMIC ORM, cross-chain NFTs, STAR OAPPs and avatar-based reputation.</strong></p>
         <div class="provider-cloud">
+          <span class="provider-pill">COSMIC ORM</span>
+          <span class="provider-pill">STAR CLI</span>
+          <span class="provider-pill">ODK Light</span>
           <span class="provider-pill">Ethereum</span>
           <span class="provider-pill">Solana</span>
           <span class="provider-pill">Polygon</span>
@@ -373,9 +379,9 @@ body.test-mode-on .test-chain-note{display:block}
       <div class="protocol-panel">
         <div class="protocol-list">
           <div class="protocol-point"><div class="protocol-num">01</div><div><div class="protocol-title">HOLONIC DATA</div><div class="protocol-text">Identity-first data objects can persist across providers instead of being locked to one chain, database or app.</div></div></div>
-          <div class="protocol-point"><div class="protocol-num">02</div><div><div class="protocol-title">HYPERDRIVE ROUTING</div><div class="protocol-text">Auto-failover, replication and load balancing route operations across available providers for resilience.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">02</div><div><div class="protocol-title">HYPERDRIVE ROUTING</div><div class="protocol-text">Auto-failover, auto-replication, load balancing and provider selection route operations across the strongest available path.</div></div></div>
           <div class="protocol-point"><div class="protocol-num">03</div><div><div class="protocol-title">STAR CREATION LAYER</div><div class="protocol-text">Builders can create OAPPs, quests, missions, NFTs, GeoNFTs, runtimes and templates for the OASIS Omniverse.</div></div></div>
-          <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">UNIFIED IDENTITY</div><div class="protocol-text">Avatar, wallet, keys and karma APIs give founders a persistent identity across games, tools and worlds.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">COSMIC ORM</div><div class="protocol-text">A single data abstraction layer can target Web2 databases, Web3 chains, files, cloud, IPFS and local storage without rewrites.</div></div></div>
         </div>
       </div>
     </div>
@@ -383,6 +389,11 @@ body.test-mode-on .test-chain-note{display:block}
       <a class="doc-link" href="https://www.oasisweb4.com/" target="_blank">OASIS WEB4 SITE</a>
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank">GITHUB REPO</a>
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank">TECHNICAL DOCS</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_COSMIC_ORM_DOCUMENTATION.md" target="_blank">COSMIC ORM</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/STAR_CLI_Comprehensive_Guide.md" target="_blank">STAR CLI GUIDE</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_UNIQUE_SELLING_PROPOSITIONS.md" target="_blank">USPS</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/INVESTOR_EVALUATION_GUIDE.md" target="_blank">INVESTOR GUIDE</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_TECHNOLOGY_SUMMARY_AND_USE_CASES.md" target="_blank">USE CASES</a>
     </div>
   </section>
 
@@ -399,6 +410,8 @@ body.test-mode-on .test-chain-note{display:block}
           <span class="provider-pill">OQuake</span>
           <span class="provider-pill">Our World</span>
           <span class="provider-pill">STARAPIClient</span>
+          <span class="provider-pill">STAR CLI</span>
+          <span class="provider-pill">ODK Light</span>
           <span class="provider-pill">star_api_*</span>
           <span class="provider-pill">GeoHotSpots</span>
           <span class="provider-pill">Cross-game quests</span>
@@ -418,6 +431,7 @@ body.test-mode-on .test-chain-note{display:block}
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/OASIS%20Omniverse" target="_blank">OASIS OMNIVERSE</a>
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/OASIS%20Omniverse/Docs/OGEngine_Overview.md" target="_blank">OGENGINE OVERVIEW</a>
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/OASIS%20Omniverse/Docs/ARCHITECTURE.md" target="_blank">OMNIVERSE ARCHITECTURE</a>
+      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/OASIS%20Omniverse/Docs/STAR_Quest_System_Developer_Guide.md" target="_blank">QUEST SYSTEM</a>
     </div>
   </section>
 
@@ -512,8 +526,8 @@ body.test-mode-on .test-chain-note{display:block}
       </div>
       <div class="utility-card">
         <div class="utility-tag">BUILD</div>
-        <div class="utility-title">OAPP CREATION RIGHTS</div>
-        <div class="utility-text">Monthly OAPP, quest, mission and NFT allowances connect the tiers directly to the STAR creation and publishing layer.</div>
+        <div class="utility-title">STAR ODK BUILDER FLOW</div>
+        <div class="utility-text">Monthly OAPP, quest, mission and NFT allowances connect the tiers to STAR CLI, Light generation, DNA templates and publishing.</div>
       </div>
       <div class="utility-card">
         <div class="utility-tag">NFT</div>
@@ -522,7 +536,7 @@ body.test-mode-on .test-chain-note{display:block}
       </div>
       <div class="utility-card">
         <div class="utility-tag">VOICE</div>
-        <div class="utility-title">ROADMAP INFLUENCE</div>
+        <div class="utility-title">ROADMAP + USP ACCESS</div>
         <div class="utility-text">Founder holders are positioned closest to early features, private feedback loops, presale access and ecosystem decisions.</div>
       </div>
     </div>
