@@ -1990,6 +1990,53 @@ function getPhantom() {
   return null;
 }
 
+
+// Silently attempt a trusted-only connect in the background.
+// If the user has connected before, this resolves instantly and
+// the wallet is ready before they even click the button.
+// If not trusted yet, it fails silently — no UI impact.
+async function preWarmPhantom() {
+  try {
+    const phantom = await waitForPhantom(5000); // shorter timeout for pre-warm
+    if (phantom.isConnected) return; // already connected, nothing to do
+
+    const resp = await phantom.connect({ onlyIfTrusted: true });
+    solPublicKey = resp.publicKey.toString();
+    solConnected = true;
+
+    // Update all UI as if the user clicked connect
+    document.getElementById('solDot').classList.add('on');
+    const addrEl = document.getElementById('solAddr');
+    addrEl.classList.add('connected');
+    addrEl.textContent = solPublicKey.slice(0,5) + '···' + solPublicKey.slice(-4);
+    document.getElementById('connectSolBtn').classList.add('done');
+    setSolBtnText('✓ Wallet Connected');
+    document.getElementById('solConfirm').disabled = false;
+    document.getElementById('stripeWalletAddr').value = solPublicKey;
+    document.getElementById('stripeSolAddr').textContent = solPublicKey.slice(0,6) + '···' + solPublicKey.slice(-4);
+    document.getElementById('stripeSolDot').style.background = 'var(--green)';
+    updateSolNetWarn();
+    updateOasisWalletUI();
+
+    // Attach listeners
+    phantom.on('disconnect', () => { resetSolUI(); solPublicKey = null; updateOasisWalletUI(); });
+    phantom.on('accountChanged', pk => {
+      if (pk) {
+        solPublicKey = pk.toString();
+        document.getElementById('solAddr').textContent = solPublicKey.slice(0,5) + '···' + solPublicKey.slice(-4);
+      } else {
+        solPublicKey = null;
+        resetSolUI();
+      }
+      updateOasisWalletUI();
+    });
+
+  } catch {
+    // Silently ignore — either not installed, not yet trusted, or still loading
+    // The user will just click the button manually as normal
+  }
+}
+
 // Wait for Phantom to inject into the page (handles slow extension startup)
 async function waitForPhantom(timeoutMs = PHANTOM_TIMEOUT) {
   return new Promise((resolve, reject) => {
@@ -3241,6 +3288,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   await loadConfig();
   updateOasisWalletUI();
+  preWarmPhantom();
   //initApp(); // whatever your current init function is called
 });
 
