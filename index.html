@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OASIS — Founder Access</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<script src="https://js.stripe.com/v3/"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://js.stripe.com/v3/" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js" ></script>
 <!-- Inline Buffer polyfill required by Solana web3.js in browser -->
 <script>
 !function(){if(typeof window.Buffer!=='undefined')return;
@@ -43,9 +43,9 @@ window.Buffer=B;
 }();
 </script>
 <!-- Solana web3.js for native SOL transfers via Phantom -->
-<script src="https://unpkg.com/@solana/web3.js@1.91.8/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/@solana/web3.js@1.91.8/lib/index.iife.min.js" defer></script>
 <!-- QR code library for BTC -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <style>
 :root{
   --gold:#f0a500;--gold-light:#ffd166;--gold-dim:#a06800;
@@ -3177,23 +3177,23 @@ async function mint(orderId, paymentSignature, wallet, email) {
 }
 
 
-const es = new EventSource("/api/sol-price-stream");
+// const es = new EventSource("/api/sol-price-stream");
 
-es.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-   const solPrice = Number(data.price);
-   const tier = TIERS[currentTier];
-   const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
-   const nftInSol = nftUsdPrice / solPrice;
+// es.onmessage = (event) => {
+//   const data = JSON.parse(event.data);
+//    const solPrice = Number(data.price);
+//    const tier = TIERS[currentTier];
+//    const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
+//    const nftInSol = nftUsdPrice / solPrice;
 
-  // SOL price display
-  document.getElementById("solPriceOASIS").innerText =
-    `$${solPrice.toFixed(2)} USD`;
+//   // SOL price display
+//   document.getElementById("solPriceOASIS").innerText =
+//     `$${solPrice.toFixed(2)} USD`;
 
-  // NFT price in SOL
-  document.getElementById("nftSolPrice").innerText =
-    `${nftInSol.toFixed(4)} SOL`;
-};
+//   // NFT price in SOL
+//   document.getElementById("nftSolPrice").innerText =
+//     `${nftInSol.toFixed(4)} SOL`;
+// };
 
 
 // let currentOrder = null;
@@ -3290,6 +3290,27 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateOasisWalletUI();
   preWarmPhantom();
   //initApp(); // whatever your current init function is called
+});
+
+// AFTER — waits until browser is idle
+window.addEventListener('load', () => {
+  // requestIdleCallback lets the browser finish rendering first
+  const start = () => {
+    const es = new EventSource("/api/sol-price-stream");
+    es.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const solPrice = Number(data.price);
+      const tier = TIERS[currentTier];
+      const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
+      const nftInSol = nftUsdPrice / solPrice;
+      document.getElementById("solPriceOASIS").innerText = `$${solPrice.toFixed(2)} USD`;
+      document.getElementById("nftSolPrice").innerText = `${nftInSol.toFixed(4)} SOL`;
+    };
+  };
+
+  'requestIdleCallback' in window
+    ? requestIdleCallback(start, { timeout: 3000 })
+    : setTimeout(start, 2000);
 });
 
 </script>
