@@ -1461,7 +1461,7 @@ const TREASURY_WALLETS = {
 const NFT_IMAGES = {
   genesis:   '<img src="img/nft-genesis.png" width="200" style="width:150px;">',
   core:      '<img src="img/nft-core.png" width="200" style="width:150px;">',
-  support6er: '<img src="img/nft-supporter.png" width="200" style="width:150px;">'
+  supporter: '<img src="img/nft-supporter.png" width="200" style="width:150px;">'
 };
 
 const NFT_IMAGE_URLS = {
@@ -3302,6 +3302,38 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
   if (sb) sb.style.display = 'block';
 })();
 
+// Detect Edge + tracking prevention and warn user
+async function checkEdgeTracking() {
+  const isEdge = navigator.userAgent.includes('Edg/');
+  if (!isEdge) return;
+  
+  try {
+    if (document.hasStorageAccess) {
+      const hasAccess = await document.hasStorageAccess();
+      if (!hasAccess) {
+        // Show a banner nudging them to use Chrome
+        const banner = document.createElement('div');
+        banner.style.cssText = `
+          position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+          background:#1a1a2e;border:1px solid var(--cyan);border-radius:8px;
+          padding:12px 20px;color:#fff;font-size:13px;z-index:9999;
+          text-align:center;max-width:420px;
+        `;
+        banner.innerHTML = `
+          ⚠ Edge's tracking prevention may slow wallet connections.
+          For best experience use 
+          <a href="https://www.google.com/chrome/" target="_blank" 
+             style="color:var(--cyan)">Chrome</a> 
+          or go to Edge Settings → Privacy → turn off Tracking Prevention for this site.
+          <span onclick="this.parentElement.remove()" 
+                style="float:right;cursor:pointer;margin-left:12px;opacity:.6">✕</span>
+        `;
+        document.body.appendChild(banner);
+      }
+    }
+  } catch { /* ignore */ }
+}
+
 //window.addEventListener('load', () => setTimeout(initStripe, 400));
 window.addEventListener('DOMContentLoaded', async () => {
   // console.log('NFT_IMAGES:', NFT_IMAGES);
@@ -3317,8 +3349,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
   updateOasisWalletUI();
   preWarmPhantom();
+  checkEdgeTracking();
   //initApp(); // whatever your current init function is called
 });
+
 
 // AFTER — waits until browser is idle
 window.addEventListener('load', () => {
