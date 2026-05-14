@@ -334,6 +334,27 @@ body.test-mode-on .test-chain-note{display:block}
 .ecosystem-bar{display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;padding:20px;max-width:700px;margin:0 auto}
 .eco-item{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em}
 .eco-icon{width:48px;height:48px;border-radius:12px;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.15);display:flex;align-items:center;justify-content:center;font-size:22px}
+
+.provider-group {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.provider-group-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.45;
+  margin-bottom: 0.35rem;
+  padding-left: 2px;
+}
+
+.provider-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 </style>
 </head>
 <body>
@@ -353,7 +374,7 @@ body.test-mode-on .test-chain-note{display:block}
     <h1 class="hero-title">OASIS</h1>
     <div class="hero-sub">FOUNDER ACCESS</div>
     <p class="hero-desc">A new digital world is being built.<br><strong>A limited number of people will own the keys.</strong></p>
-    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">OGEngine · STAR CLI/ODK · COSMIC ORM · Web4 NFTs · Our World access</p>
+    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">OGEngine · STAR CLI/ODK · COSMIC ORM · Web4 OASIS API · Web5 STAR API · Our World access</p>
     <div class="supply-badge"><span class="supply-dot"></span>ONLY 170 FOUNDER SLOTS — EVER</div>
     <div class="scroll-cta">CHOOSE YOUR TIER<span class="scroll-arrow">↓</span></div>
   </section>
@@ -373,52 +394,155 @@ body.test-mode-on .test-chain-note{display:block}
     </div>
   </section>
 
-  <section class="section">
-    <h2 class="section-title">THE INFRASTRUCTURE UNDER THE KEY</h2>
-    <span class="section-line"></span>
-    <div class="protocol-grid">
-      <div class="protocol-panel">
-        <div class="protocol-kicker">ONE API / ALL PROVIDERS</div>
-        <div class="protocol-heading">Founder NFTs are access keys into a wider Web4 and Web5 stack.</div>
-        <p class="protocol-copy">OASIS is positioned as a universal infrastructure layer for moving data, identity, assets and application logic across Web2 and Web3. The Founder NFT page now ties the sale directly to the core system: <strong>holons, HyperDrive, COSMIC ORM, cross-chain NFTs, STAR OAPPs and avatar-based reputation.</strong></p>
-        <div class="provider-cloud">
-          <span class="provider-pill">COSMIC ORM</span>
-          <span class="provider-pill">STAR CLI</span>
-          <span class="provider-pill">ODK Light</span>
-          <span class="provider-pill">Ethereum</span>
-          <span class="provider-pill">Solana</span>
-          <span class="provider-pill">Polygon</span>
-          <span class="provider-pill">Arbitrum</span>
-          <span class="provider-pill">Base</span>
-          <span class="provider-pill">Radix</span>
-          <span class="provider-pill">IPFS</span>
-          <span class="provider-pill">Arweave</span>
-          <span class="provider-pill">Holochain</span>
-          <span class="provider-pill">MongoDB</span>
-          <span class="provider-pill">AWS</span>
-          <span class="provider-pill">ThreeFold</span>
+<section class="section">
+  <h2 class="section-title">THE INFRASTRUCTURE UNDER THE KEY</h2>
+  <span class="section-line"></span>
+  <div class="protocol-grid">
+    <div class="protocol-panel">
+      <div class="protocol-kicker">ONE API / ALL PROVIDERS</div>
+      <div class="protocol-heading">Founder NFTs are access keys into a wider Web4 and Web5 stack.</div>
+      <p class="protocol-copy">OASIS is positioned as a universal infrastructure layer for moving data, identity, assets and application logic across Web2 and Web3. The Founder NFT page now ties the sale directly to the core system: <strong>holons, HyperDrive, COSMIC ORM, cross-chain NFTs, STAR OAPPs and avatar-based reputation.</strong></p>
+
+      <div class="provider-cloud">
+
+        <!-- Core -->
+        <div class="provider-group">
+          <div class="provider-group-label">CORE</div>
+          <div class="provider-pills">
+            <span class="provider-pill">COSMIC ORM</span>
+            <span class="provider-pill">STAR CLI/ODK</span>
+          </div>
         </div>
-      </div>
-      <div class="protocol-panel">
-        <div class="protocol-list">
-          <div class="protocol-point"><div class="protocol-num">01</div><div><div class="protocol-title">HOLONIC DATA</div><div class="protocol-text">Identity-first data objects can persist across providers instead of being locked to one chain, database or app.</div></div></div>
-          <div class="protocol-point"><div class="protocol-num">02</div><div><div class="protocol-title">HYPERDRIVE ROUTING</div><div class="protocol-text">Auto-failover, auto-replication, load balancing and provider selection route operations across the strongest available path.</div></div></div>
-          <div class="protocol-point"><div class="protocol-num">03</div><div><div class="protocol-title">STAR CREATION LAYER</div><div class="protocol-text">Builders can create OAPPs, quests, missions, NFTs, GeoNFTs, runtimes and templates for the OASIS Omniverse.</div></div></div>
-          <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">COSMIC ORM</div><div class="protocol-text">A single data abstraction layer can target Web2 databases, Web3 chains, files, cloud, IPFS and local storage without rewrites.</div></div></div>
+
+        <!-- Chains -->
+        <div class="provider-group">
+          <div class="provider-group-label">CHAINS</div>
+          <div class="provider-pills">
+            <span class="provider-pill">Solana</span>
+            <span class="provider-pill">Arbitrum</span>
+            <span class="provider-pill">Avalanche</span>
+            <span class="provider-pill">Base</span>
+            <span class="provider-pill">Ethereum</span>
+            <span class="provider-pill">Polygon</span>
+            <span class="provider-pill">EOSIO</span>
+            <span class="provider-pill">Telos</span>
+            <span class="provider-pill">SEEDS</span>
+            <span class="provider-pill">Loom</span>
+            <span class="provider-pill">TON</span>
+            <span class="provider-pill">Stellar</span>
+            <span class="provider-pill">BlockStack</span>
+            <span class="provider-pill">Hashgraph</span>
+            <span class="provider-pill">Elrond</span>
+            <span class="provider-pill">TRON</span>
+            <span class="provider-pill">Cosmos</span>
+            <span class="provider-pill">Rootstock</span>
+            <span class="provider-pill">ChainLink</span>
+            <span class="provider-pill">Cardano</span>
+            <span class="provider-pill">Polkadot</span>
+            <span class="provider-pill">Bitcoin</span>
+            <span class="provider-pill">NEAR</span>
+            <span class="provider-pill">Sui</span>
+            <span class="provider-pill">Aptos</span>
+            <span class="provider-pill">Optimism</span>
+            <span class="provider-pill">BNB Chain</span>
+            <span class="provider-pill">Fantom</span>
+            <span class="provider-pill">Starknet</span>
+            <span class="provider-pill">Aztec</span>
+            <span class="provider-pill">Miden</span>
+            <span class="provider-pill">Zcash</span>
+            <span class="provider-pill">Radix</span>
+            <span class="provider-pill">Telegram</span>
+            <span class="provider-pill">Monad</span>
+          </div>
         </div>
+
+        <!-- Web3 API -->
+        <div class="provider-group">
+          <div class="provider-group-label">WEB3 API</div>
+          <div class="provider-pills">
+            <span class="provider-pill">Moralis</span>
+          </div>
+        </div>
+
+        <!-- IPFS -->
+        <div class="provider-group">
+          <div class="provider-group-label">IPFS</div>
+          <div class="provider-pills">
+            <span class="provider-pill">IPFS</span>
+            <span class="provider-pill">Pinata</span>
+          </div>
+        </div>
+
+        <!-- Holochain -->
+        <div class="provider-group">
+          <div class="provider-group-label">HOLOCHAIN</div>
+          <div class="provider-pills">
+            <span class="provider-pill">Holochain</span>
+          </div>
+        </div>
+
+        <!-- Databases -->
+        <div class="provider-group">
+          <div class="provider-group-label">DATABASES</div>
+          <div class="provider-pills">
+            <span class="provider-pill">MongoDB</span>
+            <span class="provider-pill">Neo4j</span>
+            <span class="provider-pill">SQLLiteDB</span>
+            <span class="provider-pill">SQLServerDB</span>
+            <span class="provider-pill">OracleDB</span>
+          </div>
+        </div>
+
+        <!-- Clouds -->
+        <div class="provider-group">
+          <div class="provider-group-label">CLOUD</div>
+          <div class="provider-pills">
+            <span class="provider-pill">Google Cloud</span>
+            <span class="provider-pill">Azure Storage</span>
+            <span class="provider-pill">Azure CosmosDB</span>
+            <span class="provider-pill">AWS</span>
+          </div>
+        </div>
+
+        <!-- Other -->
+        <div class="provider-group">
+          <div class="provider-group-label">OTHER</div>
+          <div class="provider-pills">
+            <span class="provider-pill">Urbit</span>
+            <span class="provider-pill">ThreeFold</span>
+            <span class="provider-pill">PLAN</span>
+            <span class="provider-pill">HoloWeb</span>
+            <span class="provider-pill">SOLID</span>
+            <span class="provider-pill">ActivityPub</span>
+            <span class="provider-pill">Scuttlebutt</span>
+            <span class="provider-pill">Local File</span>
+          </div>
+        </div>
+
       </div>
     </div>
-    <div class="doc-links">
-      <a class="doc-link" href="https://www.oasisweb4.com/" target="_blank">OASIS WEB4 SITE</a>
-      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank">GITHUB REPO</a>
-      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank">TECHNICAL DOCS</a>
-      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_COSMIC_ORM_DOCUMENTATION.md" target="_blank">COSMIC ORM</a>
-      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/STAR_CLI_Comprehensive_Guide.md" target="_blank">STAR CLI GUIDE</a>
-      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_UNIQUE_SELLING_PROPOSITIONS.md" target="_blank">USPS</a>
-      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/INVESTOR_EVALUATION_GUIDE.md" target="_blank">INVESTOR GUIDE</a>
-      <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_TECHNOLOGY_SUMMARY_AND_USE_CASES.md" target="_blank">USE CASES</a>
+
+    <div class="protocol-panel">
+      <div class="protocol-list">
+        <div class="protocol-point"><div class="protocol-num">01</div><div><div class="protocol-title">HOLONIC DATA</div><div class="protocol-text">Identity-first data objects can persist across providers instead of being locked to one chain, database or app.</div></div></div>
+        <div class="protocol-point"><div class="protocol-num">02</div><div><div class="protocol-title">HYPERDRIVE ROUTING</div><div class="protocol-text">Auto-failover, auto-replication, load balancing and provider selection route operations across the strongest available path.</div></div></div>
+        <div class="protocol-point"><div class="protocol-num">03</div><div><div class="protocol-title">STAR CREATION LAYER</div><div class="protocol-text">Builders can create OAPPs, quests, missions, NFTs, GeoNFTs, runtimes and templates for the OASIS Omniverse.</div></div></div>
+        <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">COSMIC ORM</div><div class="protocol-text">A single data abstraction layer can target Web2 databases, Web3 chains, files, cloud, IPFS and local storage without rewrites.</div></div></div>
+      </div>
     </div>
-  </section>
+  </div>
+
+  <div class="doc-links">
+    <a class="doc-link" href="https://www.oasisweb4.com/" target="_blank">OASIS WEB4 SITE</a>
+    <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank">GITHUB REPO</a>
+    <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank">TECHNICAL DOCS</a>
+    <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_COSMIC_ORM_DOCUMENTATION.md" target="_blank">COSMIC ORM</a>
+    <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/STAR_CLI_Comprehensive_Guide.md" target="_blank">STAR CLI GUIDE</a>
+    <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_UNIQUE_SELLING_PROPOSITIONS.md" target="_blank">USPS</a>
+    <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/INVESTOR_EVALUATION_GUIDE.md" target="_blank">INVESTOR GUIDE</a>
+    <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_TECHNOLOGY_SUMMARY_AND_USE_CASES.md" target="_blank">USE CASES</a>
+  </div>
+</section>
 
   <section class="section">
     <h2 class="section-title">OGENGINE: OMNIVERSE GAME RUNTIME</h2>
@@ -759,7 +883,7 @@ body.test-mode-on .test-chain-note{display:block}
       <div style="font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.2em;color:var(--text-dim);margin-bottom:20px">THIS IS JUST THE BEGINNING</div>
       <p style="font-size:15px;color:var(--text-dim);max-width:600px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>OGEngine. Identity. Holons. Games. Worlds. Cross-chain NFTs. Business. Ownership.</p>
       <div class="ecosystem-bar">
-        <div class="eco-item"><div class="eco-icon">🌍</div><span>OUR WORLD</span></div>
+        <div class="eco-item"><div class="eco-icon">🌍</div><span><a href="https:///ourworldthegame.com">OUR WORLD</a></span></div>
         <div class="eco-item"><div class="eco-icon">🎮</div><span>GAMES</span></div>
         <div class="eco-item"><div class="eco-icon">🧠</div><span>AI SYSTEMS</span></div>
         <div class="eco-item"><div class="eco-icon">🕹</div><span>OGENGINE</span></div>
@@ -771,8 +895,9 @@ body.test-mode-on .test-chain-note{display:block}
   <footer class="footer">
     <div class="footer-brand">OASIS</div>
     <div>A next-generation ecosystem · OGEngine · Web4 OASIS · Web5 STAR · Avatars · Holons · Cross-chain NFTs</div>
-    <div style="margin-top:8px;color:rgba(255,255,255,.2)">Founder NFTs may never be minted again. · This is just the beginning.</div>
+    <div style="margin-top:8px;">Founder NFTs may never be minted again.</div>
     <div style="margin-top:12px;font-size:12px">Minting powered by <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none">THE OASIS</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank" style="color:var(--cyan);text-decoration:none">Docs</a> · Web4 OASIS + Web5 STAR Infrastructure</div>
+    <div style="margin-top:12px;font-size:12px"><a href="https://ourworldthegame.com" target="_blank" style="color:var(--cyan);text-decoration:none">Our World</a></div>
   </footer>
 </div>
 
