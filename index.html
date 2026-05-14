@@ -355,6 +355,45 @@ body.test-mode-on .test-chain-note{display:block}
   gap: 0.4rem;
 }
 
+.infra-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.infra-stat {
+  border: 1px solid rgba(0, 200, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  background: rgba(0, 200, 255, 0.04);
+}
+
+.infra-stat-num {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f5a623; /* your gold/amber accent */
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.infra-stat-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  opacity: 0.55;
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+}
+
+.infra-note {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  opacity: 0.5;
+  border-left: 2px solid rgba(0, 200, 255, 0.2);
+  padding-left: 0.75rem;
+}
+
 </style>
 </head>
 <body>
@@ -520,6 +559,29 @@ body.test-mode-on .test-chain-note{display:block}
         </div>
 
       </div>
+
+      <div class="infra-stats">
+        <div class="infra-stat">
+          <div class="infra-stat-num">500+</div>
+          <div class="infra-stat-label">Web4 & Web5 API Endpoints</div>
+        </div>
+        <div class="infra-stat">
+          <div class="infra-stat-num">50+</div>
+          <div class="infra-stat-label">Supported Providers</div>
+        </div>
+        <div class="infra-stat">
+          <div class="infra-stat-num">256K+</div>
+          <div class="infra-stat-label">NuGet Downloads</div>
+        </div>
+        <div class="infra-stat">
+          <div class="infra-stat-num">10yr</div>
+          <div class="infra-stat-label">Codebase in Development</div>
+        </div>
+      </div>
+
+  <div class="infra-note">
+    Live infrastructure: <strong>Web4 OASIS API</strong> handles identity, data, wallets, providers and HyperDrive routing. <strong>Web5 STAR API</strong> handles OAPPs, quests, missions, NFTs and STARNET publishing. Both are online now.
+  </div>
     </div>
 
     <div class="protocol-panel">
