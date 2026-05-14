@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     console.log("VERIFY BODY:", req.body);
 
     //const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
-    const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST);
     await ensureRedis();
 
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
