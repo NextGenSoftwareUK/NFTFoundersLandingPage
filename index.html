@@ -92,7 +92,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .feature-icon{font-size:36px;margin-bottom:14px}
 .feature-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--cyan);margin-bottom:8px}
 .feature-desc{font-size:14px;color:var(--text-dim);line-height:1.6}
-.protocol-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);gap:28px;max-width:1050px;margin:0 auto;align-items:stretch}
+/* .protocol-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);gap:28px;max-width:1050px;margin:0 auto;align-items:stretch} */
+.protocol-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
 .protocol-panel{background:rgba(10,21,53,.82);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:30px 28px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
 .protocol-kicker{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.2em;color:var(--cyan);margin-bottom:12px}
 .protocol-heading{font-family:'Orbitron',sans-serif;font-size:clamp(20px,3vw,30px);line-height:1.25;color:#fff;margin-bottom:14px;letter-spacing:.04em}
