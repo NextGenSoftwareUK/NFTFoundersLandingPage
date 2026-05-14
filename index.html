@@ -1522,28 +1522,44 @@ let evmProvider = null, evmSigner = null, walletConnected = false;
 
 // ── STRIPE ──
 function initStripe() {
+  if (stripeReady) return; // ← guard against double calls
+  
   try {
-    console.log("CFG.stripePk = ", CFG.stripePk);
     stripe = Stripe(CFG.stripePk);
     const els = stripe.elements({
-      appearance:{
-        theme:'night',
-        variables:{colorPrimary:'#00e5ff',colorBackground:'transparent',colorText:'#d0e4ff',colorDanger:'#ff4d4d',fontFamily:"'Rajdhani',sans-serif",borderRadius:'8px'}
+      appearance: {
+        theme: 'night',
+        variables: {
+          colorPrimary: '#00e5ff',
+          colorBackground: '#0d1117', // ← real hex, not 'transparent'
+          colorText: '#d0e4ff',
+          colorDanger: '#ff4d4d',
+          fontFamily: "'Rajdhani', sans-serif",
+          borderRadius: '8px'
+        }
       }
     });
 
     elements = els;
+    
+    // Clear the container before mounting
+    const container = document.getElementById('stripe-card-element');
+    container.innerHTML = ''; // ← fixes "contains child nodes" warning
+    
     cardElement = els.create('card', {
-      style:{base:{color:'#d0e4ff',fontFamily:"'Rajdhani',sans-serif",fontSize:'15px','::placeholder':{color:'#6a80a8'}},invalid:{color:'#ff4d4d'}}
+      style: {
+        base: { color: '#d0e4ff', fontFamily: "'Rajdhani', sans-serif", fontSize: '15px', '::placeholder': { color: '#6a80a8' } },
+        invalid: { color: '#ff4d4d' }
+      }
     });
-    cardElement.mount('#stripe-card-element');
+    cardElement.mount(container);
     cardElement.on('change', e => {
       document.getElementById('stripe-card-errors').textContent = e.error ? e.error.message : '';
     });
     stripeReady = true;
   } catch(e) {
     document.getElementById('stripe-card-element').innerHTML =
-      `<div style="font-size:12px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;padding:4px 0">⚠ Set CFG.stripePk to enable card payments.</div>`;
+      `<div style="font-size:12px;color:var(--text-dim);padding:4px 0">⚠ Stripe not configured.</div>`;
   }
 }
 
@@ -2169,7 +2185,7 @@ async function handleFiatPayment() {
     //   return;
     // }
 
-    console.log("Publishable key:", CFG.stripePk);
+    //console.log("Publishable key:", CFG.stripePk);
     console.log("email:", email);
     console.log("wallet:", wallet);
 
@@ -3039,7 +3055,7 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
   if (sb) sb.style.display = 'block';
 })();
 
-window.addEventListener('load', () => setTimeout(initStripe, 400));
+//window.addEventListener('load', () => setTimeout(initStripe, 400));
 window.addEventListener('DOMContentLoaded', async () => {
   // console.log('NFT_IMAGES:', NFT_IMAGES);
   // console.log('TIERS:', TIERS);
