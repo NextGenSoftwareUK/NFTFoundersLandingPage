@@ -1846,6 +1846,133 @@ async function switchChain(chainInfo) {
 }
 
 // ── SOLANA / PHANTOM ──
+// let solConnected = false;
+// let solPublicKey = null;
+
+// const SOL_CLUSTER = TEST_MODE ? 'devnet' : 'mainnet-beta';
+// const SOL_RPC     = TEST_MODE
+//   ? 'https://rpc.ankr.com/solana_devnet'
+//   : 'https://rpc.ankr.com/solana';
+
+// function getPhantom() {
+//   if ('phantom' in window) return window.phantom?.solana;
+//   if ('solana'  in window && window.solana?.isPhantom) return window.solana;
+//   return null;
+// }
+
+// function updateSolNetWarn() {
+//   const warn = document.getElementById('solNetWarn');
+//   if (!solConnected) { warn.style.display = 'none'; return; }
+//   // Phantom reports network via connection — just show cluster info
+//   const cluster = TEST_MODE ? 'Devnet' : 'Mainnet';
+//   warn.style.display = 'none'; // Phantom auto-handles network; show only on error
+//   document.getElementById('solNet').textContent = cluster;
+// }
+
+// async function connectPhantom() {
+//   const errEl    = document.getElementById('solError');
+//   const btnInner = document.getElementById('connectSolInner');
+//   const btnInnerOASIS = document.getElementById('oasisSolInner');
+//   const btnInnerStripe = document.getElementById('connectStripeSolInner');
+
+//   errEl.textContent = '';
+//   btnInner.innerHTML = '<span class="spinner"></span>Connecting...';
+//   btnInnerOASIS.innerHTML = '<span class="spinner"></span>Connecting...';
+//   btnInnerStripe.innerHTML = '<span class="spinner"></span>Connecting...';
+
+//   if (location.protocol === 'file:') {
+//     btnInner.textContent = '👻 Connect Phantom';
+//     btnInnerOASIS.textContent = '👻 Connect Phantom';
+//     btnInnerStripe.textContent = '👻 Connect Phantom';
+//     errEl.innerHTML = '⚠ <strong>Local file detected.</strong> Phantom cannot inject into file:// pages. Serve via http:// or https://.';
+//     return;
+//   }
+
+//   const phantom = getPhantom();
+//   if (!phantom) {
+//     btnInner.textContent = '👻 Connect Phantom';
+//     btnInnerOASIS.textContent = '👻 Connect Phantom';
+//     btnInnerStripe.textContent = '👻 Connect Phantom';
+//     errEl.innerHTML = '👻 Phantom not detected. <a href="https://phantom.app/download" target="_blank" style="color:var(--cyan)">Install Phantom →</a> then refresh.';
+//     return;
+//   }
+
+//   try {
+//     //const resp = await phantom.connect();
+
+//     let resp;
+//     try 
+//     {
+//       resp = await phantom.connect({ onlyIfTrusted: true });
+//     } 
+//     catch 
+//     {
+//       resp = await phantom.connect();
+//     }
+
+//     solPublicKey = resp.publicKey.toString();
+//     solConnected = true;
+
+//     // Update UI
+//     document.getElementById('solDot').classList.add('on');
+//     const addrEl = document.getElementById('solAddr');
+//     addrEl.classList.add('connected');
+//     addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4);
+//     updateSolNetWarn();
+
+//     const btn = document.getElementById('connectSolBtn');
+//     btn.classList.add('done');
+//     btnInner.textContent = '✓ Wallet Connected';
+//     btnInnerOASIS.textContent = '✓ Wallet Connected';
+//     btnInnerStripe.textContent = '✓ Wallet Connected';
+//     document.getElementById('solConfirm').disabled = false;
+
+//     document.getElementById('stripeWalletAddr').value = solPublicKey;
+//     document.getElementById('stripeSolAddr').textContent = solPublicKey.slice(0,6)+'···'+solPublicKey.slice(-4);
+//     document.getElementById('stripeSolDot').style.background = 'var(--green)';
+//     document.getElementById('connectStripeSolInner').textContent = '✓ Phantom Connected';
+
+//     // Listen for disconnect
+// phantom.on('disconnect', () => {
+//   resetSolUI();
+//   solPublicKey = null; 
+//   updateOasisWalletUI();
+// });
+
+// phantom.on('accountChanged', pk => 
+// {
+//   if (pk) 
+//   {
+//     solPublicKey = pk.toString();
+//     addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4);
+//   } else 
+//   {
+//     solPublicKey = null;
+//     resetSolUI();
+//   }
+//   updateOasisWalletUI();
+// });
+
+//   } catch(e) {
+//     btnInner.textContent = '👻 Connect Phantom';
+//     errEl.textContent = e.code === 4001 ? 'Connection rejected.' : 'Error: ' + (e.message || 'Unknown');
+//   }
+
+//   updateOasisWalletUI();
+// }
+
+// function resetSolUI() {
+//   solConnected = false; solPublicKey = null;
+//   document.getElementById('solDot').classList.remove('on');
+//   document.getElementById('solAddr').classList.remove('connected');
+//   document.getElementById('solAddr').textContent = 'No wallet connected';
+//   document.getElementById('solNet').textContent = '';
+//   document.getElementById('connectSolBtn').classList.remove('done');
+//   document.getElementById('connectSolInner').textContent = '👻 Connect Phantom';
+//   document.getElementById('solConfirm').disabled = true;
+// }
+
+// ── SOLANA / PHANTOM ──
 let solConnected = false;
 let solPublicKey = null;
 
@@ -1854,121 +1981,166 @@ const SOL_RPC     = TEST_MODE
   ? 'https://rpc.ankr.com/solana_devnet'
   : 'https://rpc.ankr.com/solana';
 
+const PHANTOM_TIMEOUT = 10000;
+const MAX_RETRIES = 5;
+
 function getPhantom() {
   if ('phantom' in window) return window.phantom?.solana;
   if ('solana'  in window && window.solana?.isPhantom) return window.solana;
   return null;
 }
 
+// Wait for Phantom to inject into the page (handles slow extension startup)
+async function waitForPhantom(timeoutMs = PHANTOM_TIMEOUT) {
+  return new Promise((resolve, reject) => {
+    const phantom = getPhantom();
+    if (phantom) return resolve(phantom);
+
+    const interval = setInterval(() => {
+      const p = getPhantom();
+      if (p) {
+        clearInterval(interval);
+        clearTimeout(timer);
+        resolve(p);
+      }
+    }, 100);
+
+    const timer = setTimeout(() => {
+      clearInterval(interval);
+      reject(new Error('Phantom not found. Is it installed?'));
+    }, timeoutMs);
+  });
+}
+
+// Connect with retry + exponential backoff (fixes "Receiving end does not exist" errors)
+async function connectPhantomWithRetry(attempt = 0) {
+  const phantom = await waitForPhantom();
+
+  try {
+    // Try silent connect first (if site already trusted)
+    let resp;
+    try {
+      resp = await phantom.connect({ onlyIfTrusted: true });
+    } catch {
+      resp = await phantom.connect();
+    }
+    return { phantom, resp };
+
+  } catch(e) {
+    const isConnectionError =
+      e.message?.includes('Could not establish connection') ||
+      e.message?.includes('Receiving end does not exist');
+
+    if (isConnectionError && attempt < MAX_RETRIES) {
+      const delay = Math.min(300 * 2 ** attempt, 5000); // 300 → 600 → 1200 → 2400 → 5000ms
+      console.warn(`[PHANTOM] Service worker not ready, retrying in ${delay}ms... (attempt ${attempt + 1}/${MAX_RETRIES})`);
+      await new Promise(r => setTimeout(r, delay));
+      return connectPhantomWithRetry(attempt + 1);
+    }
+
+    throw e; // Rethrow user rejections or non-connection errors immediately
+  }
+}
+
 function updateSolNetWarn() {
   const warn = document.getElementById('solNetWarn');
   if (!solConnected) { warn.style.display = 'none'; return; }
-  // Phantom reports network via connection — just show cluster info
   const cluster = TEST_MODE ? 'Devnet' : 'Mainnet';
-  warn.style.display = 'none'; // Phantom auto-handles network; show only on error
+  warn.style.display = 'none';
   document.getElementById('solNet').textContent = cluster;
 }
 
-async function connectPhantom() {
-  const errEl    = document.getElementById('solError');
-  const btnInner = document.getElementById('connectSolInner');
-  const btnInnerOASIS = document.getElementById('oasisSolInner');
-  const btnInnerStripe = document.getElementById('connectStripeSolInner');
+// Helper to set all three "Connect Phantom" button labels at once
+function setSolBtnText(text) {
+  document.getElementById('connectSolInner').textContent    = text;
+  document.getElementById('oasisSolInner').textContent      = text;
+  document.getElementById('connectStripeSolInner').textContent = text;
+}
 
+function setSolBtnSpinner(text) {
+  const html = `<span class="spinner"></span>${text}`;
+  document.getElementById('connectSolInner').innerHTML         = html;
+  document.getElementById('oasisSolInner').innerHTML           = html;
+  document.getElementById('connectStripeSolInner').innerHTML   = html;
+}
+
+async function connectPhantom() {
+  const errEl = document.getElementById('solError');
   errEl.textContent = '';
-  btnInner.innerHTML = '<span class="spinner"></span>Connecting...';
-  btnInnerOASIS.innerHTML = '<span class="spinner"></span>Connecting...';
-  btnInnerStripe.innerHTML = '<span class="spinner"></span>Connecting...';
+  setSolBtnSpinner('Connecting...');
 
   if (location.protocol === 'file:') {
-    btnInner.textContent = '👻 Connect Phantom';
-    btnInnerOASIS.textContent = '👻 Connect Phantom';
-    btnInnerStripe.textContent = '👻 Connect Phantom';
+    setSolBtnText('👻 Connect Phantom');
     errEl.innerHTML = '⚠ <strong>Local file detected.</strong> Phantom cannot inject into file:// pages. Serve via http:// or https://.';
     return;
   }
 
-  const phantom = getPhantom();
-  if (!phantom) {
-    btnInner.textContent = '👻 Connect Phantom';
-    btnInnerOASIS.textContent = '👻 Connect Phantom';
-    btnInnerStripe.textContent = '👻 Connect Phantom';
-    errEl.innerHTML = '👻 Phantom not detected. <a href="https://phantom.app/download" target="_blank" style="color:var(--cyan)">Install Phantom →</a> then refresh.';
-    return;
-  }
-
   try {
-    //const resp = await phantom.connect();
-
-    let resp;
-    try 
-    {
-      resp = await phantom.connect({ onlyIfTrusted: true });
-    } 
-    catch 
-    {
-      resp = await phantom.connect();
-    }
+    const { phantom, resp } = await connectPhantomWithRetry();
 
     solPublicKey = resp.publicKey.toString();
     solConnected = true;
 
-    // Update UI
+    // Update wallet status UI
     document.getElementById('solDot').classList.add('on');
     const addrEl = document.getElementById('solAddr');
     addrEl.classList.add('connected');
-    addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4);
+    addrEl.textContent = solPublicKey.slice(0,5) + '···' + solPublicKey.slice(-4);
     updateSolNetWarn();
 
-    const btn = document.getElementById('connectSolBtn');
-    btn.classList.add('done');
-    btnInner.textContent = '✓ Wallet Connected';
-    btnInnerOASIS.textContent = '✓ Wallet Connected';
-    btnInnerStripe.textContent = '✓ Wallet Connected';
+    document.getElementById('connectSolBtn').classList.add('done');
+    setSolBtnText('✓ Wallet Connected');
     document.getElementById('solConfirm').disabled = false;
 
-    document.getElementById('stripeWalletAddr').value = solPublicKey;
-    document.getElementById('stripeSolAddr').textContent = solPublicKey.slice(0,6)+'···'+solPublicKey.slice(-4);
-    document.getElementById('stripeSolDot').style.background = 'var(--green)';
-    document.getElementById('connectStripeSolInner').textContent = '✓ Phantom Connected';
+    // Sync Stripe panel wallet display
+    document.getElementById('stripeWalletAddr').value            = solPublicKey;
+    document.getElementById('stripeSolAddr').textContent         = solPublicKey.slice(0,6) + '···' + solPublicKey.slice(-4);
+    document.getElementById('stripeSolDot').style.background     = 'var(--green)';
 
-    // Listen for disconnect
-phantom.on('disconnect', () => {
-  resetSolUI();
-  solPublicKey = null; 
-  updateOasisWalletUI();
-});
+    // Wallet event listeners
+    phantom.on('disconnect', () => {
+      resetSolUI();
+      solPublicKey = null;
+      updateOasisWalletUI();
+    });
 
-phantom.on('accountChanged', pk => 
-{
-  if (pk) 
-  {
-    solPublicKey = pk.toString();
-    addrEl.textContent = solPublicKey.slice(0,5)+'···'+solPublicKey.slice(-4);
-  } else 
-  {
-    solPublicKey = null;
-    resetSolUI();
-  }
-  updateOasisWalletUI();
-});
+    phantom.on('accountChanged', pk => {
+      if (pk) {
+        solPublicKey = pk.toString();
+        const addrEl = document.getElementById('solAddr');
+        addrEl.textContent = solPublicKey.slice(0,5) + '···' + solPublicKey.slice(-4);
+      } else {
+        solPublicKey = null;
+        resetSolUI();
+      }
+      updateOasisWalletUI();
+    });
 
   } catch(e) {
-    btnInner.textContent = '👻 Connect Phantom';
-    errEl.textContent = e.code === 4001 ? 'Connection rejected.' : 'Error: ' + (e.message || 'Unknown');
+    setSolBtnText('👻 Connect Phantom');
+
+    if (e.message?.includes('Phantom not found')) {
+      errEl.innerHTML = '👻 Phantom not detected. <a href="https://phantom.app/download" target="_blank" style="color:var(--cyan)">Install Phantom →</a> then refresh.';
+    } else if (e.code === 4001) {
+      errEl.textContent = 'Connection rejected.';
+    } else {
+      errEl.textContent = 'Error: ' + (e.message || 'Unknown');
+    }
   }
 
   updateOasisWalletUI();
 }
 
 function resetSolUI() {
-  solConnected = false; solPublicKey = null;
+  solConnected = false;
+  solPublicKey = null;
   document.getElementById('solDot').classList.remove('on');
-  document.getElementById('solAddr').classList.remove('connected');
-  document.getElementById('solAddr').textContent = 'No wallet connected';
+  const addrEl = document.getElementById('solAddr');
+  addrEl.classList.remove('connected');
+  addrEl.textContent = 'No wallet connected';
   document.getElementById('solNet').textContent = '';
   document.getElementById('connectSolBtn').classList.remove('done');
-  document.getElementById('connectSolInner').textContent = '👻 Connect Phantom';
+  setSolBtnText('👻 Connect Phantom');
   document.getElementById('solConfirm').disabled = true;
 }
 
