@@ -6,6 +6,30 @@
 <meta http-equiv="Permissions-Policy" content="compute-pressure=()">
 <title>OASIS — Founder Access</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script>
+  // Prevent Phantom from spamming MetaMask bridge attempts
+  // This must run BEFORE phantom/solana scripts inject
+  window.addEventListener('load', () => {
+    if (window.phantom?.solana) {
+      // Suppress the MetaMask bridge noise
+      window.phantom.solana._metamask = { isUnlocked: () => Promise.resolve(false) };
+    }
+  });
+
+// Add this early in your DOMContentLoaded handler
+window.addEventListener('unhandledrejection', (event) => {
+  const msg = event.reason?.message || '';
+  if (
+    msg.includes('MetaMask extension not found') ||
+    msg.includes('Failed to connect to MetaMask') ||
+    msg.includes('Receiving end does not exist')
+  ) {
+    event.preventDefault(); // stops it logging + re-throwing
+  }
+});
+
+</script>
+
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js" ></script>
 <!-- Inline Buffer polyfill required by Solana web3.js in browser -->
@@ -3315,26 +3339,6 @@ window.addEventListener('load', () => {
 });
 
 
-  // Prevent Phantom from spamming MetaMask bridge attempts
-  // This must run BEFORE phantom/solana scripts inject
-  window.addEventListener('load', () => {
-    if (window.phantom?.solana) {
-      // Suppress the MetaMask bridge noise
-      window.phantom.solana._metamask = { isUnlocked: () => Promise.resolve(false) };
-    }
-  });
-
-// Add this early in your DOMContentLoaded handler
-window.addEventListener('unhandledrejection', (event) => {
-  const msg = event.reason?.message || '';
-  if (
-    msg.includes('MetaMask extension not found') ||
-    msg.includes('Failed to connect to MetaMask') ||
-    msg.includes('Receiving end does not exist')
-  ) {
-    event.preventDefault(); // stops it logging + re-throwing
-  }
-});
 
 
 
