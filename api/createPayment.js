@@ -46,7 +46,7 @@ export default async function handler(req, res) {
       testMode
     } = req.body;
 
-    testMode = true; //TODO: REMEMBER TO REMOVE AFTER!!!!
+    //testMode = true; //TODO: REMEMBER TO REMOVE AFTER!!!!
     const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
 
     console.log("Stripe mode:", testMode ? "TEST" : "LIVE");
