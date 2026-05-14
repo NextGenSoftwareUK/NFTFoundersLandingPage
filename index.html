@@ -2014,18 +2014,18 @@ const PHANTOM_TIMEOUT = 10000;
 const MAX_RETRIES = 5;
 
 // ── SUPPRESS METAMASK BRIDGE NOISE ──
-window.addEventListener('unhandledrejection', (event) => {
-  const msg = event.reason?.message || '';
-  if (
-    msg.includes('MetaMask extension not found') ||
-    msg.includes('Failed to connect to MetaMask') ||
-    msg.includes('Receiving end does not exist') ||
-    msg.includes('message channel closed') ||
-    msg.includes('undefined is not valid JSON')
-  ) {
-    event.preventDefault();
-  }
-});
+// window.addEventListener('unhandledrejection', (event) => {
+//   const msg = event.reason?.message || '';
+//   if (
+//     msg.includes('MetaMask extension not found') ||
+//     msg.includes('Failed to connect to MetaMask') ||
+//     msg.includes('Receiving end does not exist') ||
+//     msg.includes('message channel closed') ||
+//     msg.includes('undefined is not valid JSON')
+//   ) {
+//     event.preventDefault();
+//   }
+// });
 
 function getPhantom() {
   if ('phantom' in window) return window.phantom?.solana;
@@ -2116,6 +2116,47 @@ function setSolBtnSpinner(text) {
   document.getElementById('connectSolInner').innerHTML          = html;
   document.getElementById('oasisSolInner').innerHTML            = html;
   document.getElementById('connectStripeSolInner').innerHTML    = html;
+}
+
+// Silent pre-warm on page load — if user has connected before,
+// this resolves instantly so wallet is ready before they click anything
+async function preWarmPhantom() {
+  try {
+    const phantom = await waitForPhantom(5000);
+    if (phantom.isConnected) return;
+
+    const resp = await phantom.connect({ onlyIfTrusted: true });
+    solPublicKey = resp.publicKey.toString();
+    solConnected = true;
+
+    document.getElementById('solDot').classList.add('on');
+    const addrEl = document.getElementById('solAddr');
+    addrEl.classList.add('connected');
+    addrEl.textContent = solPublicKey.slice(0,5) + '···' + solPublicKey.slice(-4);
+    document.getElementById('connectSolBtn').classList.add('done');
+    setSolBtnText('✓ Wallet Connected');
+    document.getElementById('solConfirm').disabled = false;
+    document.getElementById('stripeWalletAddr').value            = solPublicKey;
+    document.getElementById('stripeSolAddr').textContent         = solPublicKey.slice(0,6) + '···' + solPublicKey.slice(-4);
+    document.getElementById('stripeSolDot').style.background     = 'var(--green)';
+    updateSolNetWarn();
+    updateOasisWalletUI();
+
+    phantom.on('disconnect', () => { resetSolUI(); solPublicKey = null; updateOasisWalletUI(); });
+    phantom.on('accountChanged', pk => {
+      if (pk) {
+        solPublicKey = pk.toString();
+        document.getElementById('solAddr').textContent = solPublicKey.slice(0,5) + '···' + solPublicKey.slice(-4);
+      } else {
+        solPublicKey = null;
+        resetSolUI();
+      }
+      updateOasisWalletUI();
+    });
+
+  } catch {
+    // Silently ignore — user hasn't connected before or Phantom isn't installed
+  }
 }
 
 async function connectPhantom() {
