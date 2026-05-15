@@ -132,6 +132,80 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   50%{filter:drop-shadow(0 0 35px rgba(0,229,255,.9)) drop-shadow(0 0 80px rgba(0,229,255,.4)) drop-shadow(0 0 120px rgba(0,229,255,.15))}
 }
 
+/* ── GLOBAL GLOW HOVER EFFECTS ── */
+
+/* All buttons */
+.mint-btn:hover,
+.confirm-btn:hover:not(:disabled),
+.chain-switch-btn:hover,
+.success-close:hover,
+.doc-link:hover,
+.proof-link:hover,
+.copy-btn:hover {
+  filter:drop-shadow(0 0 8px rgba(0,229,255,.6)) drop-shadow(0 0 20px rgba(0,229,255,.3));
+  transition:filter .3s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+/* Genesis tier button keeps gold glow */
+.genesis .mint-btn:hover {
+  filter:drop-shadow(0 0 8px rgba(240,165,0,.7)) drop-shadow(0 0 20px rgba(240,165,0,.35));
+}
+
+/* Core tier button keeps blue glow */
+.core .mint-btn:hover {
+  filter:drop-shadow(0 0 8px rgba(100,170,255,.7)) drop-shadow(0 0 20px rgba(100,170,255,.35));
+}
+
+/* Supporter tier button keeps green glow */
+.supporter .mint-btn:hover {
+  filter:drop-shadow(0 0 8px rgba(0,204,68,.7)) drop-shadow(0 0 20px rgba(0,204,68,.35));
+}
+
+/* All anchor links */
+a:hover {
+  filter:drop-shadow(0 0 6px rgba(0,229,255,.5));
+  transition:filter .3s ease;
+}
+
+/* Nav / footer links — subtler */
+.footer a:hover,
+.modal-terms a:hover,
+.download-list a:hover {
+  filter:drop-shadow(0 0 5px rgba(0,229,255,.4));
+}
+
+/* Coin selector buttons */
+.coin-btn:hover,
+.coin-btn.active {
+  filter:drop-shadow(0 0 8px rgba(0,229,255,.35));
+}
+
+/* Tier cards */
+.tier-card.genesis:hover {
+  filter:drop-shadow(0 0 20px rgba(240,165,0,.3));
+}
+.tier-card.core:hover {
+  filter:drop-shadow(0 0 20px rgba(100,170,255,.3));
+}
+.tier-card.supporter:hover {
+  filter:drop-shadow(0 0 20px rgba(0,204,68,.3));
+}
+
+/* Feature, why, proof cards */
+.feature-item:hover,
+.why-card:hover,
+.proof-card:hover {
+  filter:drop-shadow(0 0 12px rgba(0,229,255,.15));
+}
+
+/* Smooth transition on everything interactive */
+button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
+  transition:filter .3s ease, transform .2s ease;
+}
+
+
+
+
 /* ── SECTIONS ── */
 .section{padding:80px 20px;position:relative}
 
