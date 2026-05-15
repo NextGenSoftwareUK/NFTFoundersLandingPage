@@ -104,7 +104,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 @keyframes ringPulse{0%,100%{box-shadow:0 0 30px rgba(0,229,255,.4),inset 0 0 20px rgba(0,229,255,.1)}50%{box-shadow:0 0 60px rgba(0,229,255,.7),inset 0 0 30px rgba(0,229,255,.2)}}
 
 /* ↓ CHANGED: hero title now cyan→white gradient instead of white→gold */
-.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(52px,10vw,110px);font-weight:900;letter-spacing:.12em;line-height:1;background:linear-gradient(180deg,#ffffff 0%,var(--cyan) 60%,rgba(0,180,220,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:fadeUp .8s ease both}
+/* .hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(52px,10vw,110px);font-weight:900;letter-spacing:.12em;line-height:1;background:linear-gradient(180deg,#ffffff 0%,var(--cyan) 60%,rgba(0,180,220,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:fadeUp .8s ease both} */
+.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(52px,10vw,110px);font-weight:900;letter-spacing:.12em;line-height:1;background:linear-gradient(180deg,#ffffff 0%,var(--cyan) 60%,rgba(0,180,220,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:fadeUp .8s ease both, titleGlow 3s ease-in-out infinite}
 
 /* ↓ CHANGED: sub stays cyan — already correct */
 .hero-sub{font-family:'Orbitron',sans-serif;font-size:clamp(13px,2vw,18px);letter-spacing:.35em;color:var(--cyan);margin-bottom:32px;animation:fadeUp .8s .15s ease both}
@@ -126,6 +127,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 @keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes spinCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes titleGlow{
+  0%,100%{filter:drop-shadow(0 0 18px rgba(0,229,255,.5)) drop-shadow(0 0 40px rgba(0,229,255,.2))}
+  50%{filter:drop-shadow(0 0 35px rgba(0,229,255,.9)) drop-shadow(0 0 80px rgba(0,229,255,.4)) drop-shadow(0 0 120px rgba(0,229,255,.15))}
+}
 
 /* ── SECTIONS ── */
 .section{padding:80px 20px;position:relative}
