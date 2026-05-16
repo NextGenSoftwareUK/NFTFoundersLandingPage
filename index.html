@@ -162,6 +162,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 }
 
 /* All anchor links */
+
+a {
+  color: var(--cyan);
+  text-decoration: none;
+  transition: filter .3s ease, color .3s ease;
+}
+
 a:hover {
   filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.8)) drop-shadow(0 0 40px rgba(0,229,255,.4));
   transition:filter .3s ease;
