@@ -467,6 +467,98 @@ body.test-mode-on .test-chain-note{display:block}
 .infra-stat-label{font-size:.65rem;letter-spacing:.1em;opacity:.55;margin-top:.3rem;text-transform:uppercase}
 .infra-note{margin-top:1rem;font-size:.75rem;line-height:1.6;opacity:.5;border-left:2px solid rgba(0,200,255,.2);padding-left:.75rem}
 
+/* ── INFOGRAPHIC GRID ── */
+.infographic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.infographic-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0,229,255,.12);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: zoom-in;
+  transition: transform .3s, border-color .3s, box-shadow .3s;
+  position: relative;
+}
+
+.infographic-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,229,255,.35);
+  box-shadow: 0 12px 40px rgba(0,229,255,.12);
+  filter: drop-shadow(0 0 12px rgba(0,229,255,.2));
+}
+
+.infographic-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+  transition: opacity .3s;
+}
+
+.infographic-card:hover img {
+  opacity: .85;
+}
+
+/* Zoom hint overlay on hover */
+.infographic-card::after {
+  content: '🔍 CLICK TO EXPAND';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.5);
+  color: var(--cyan);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .15em;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.infographic-card:hover::after {
+  opacity: 1;
+}
+
+.infographic-label {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(0,229,255,.08);
+}
+
+.infographic-tag {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: var(--cyan);
+  margin-bottom: 4px;
+}
+
+.infographic-title {
+  display: block;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  letter-spacing: .06em;
+  color: var(--heading-sub);
+  line-height: 1.4;
+}
+
+/* Lightbox open state */
+#lightbox.open {
+  display: flex !important;
+  animation: fadeIn .2s ease;
+}
+
+@media(max-width:900px) { .infographic-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:600px) { .infographic-grid { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 <body>
@@ -800,6 +892,87 @@ body.test-mode-on .test-chain-note{display:block}
       <a class="doc-link" href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/OASIS%20Omniverse/Docs/STAR_Quest_System_Developer_Guide.md" target="_blank">QUEST SYSTEM</a>
     </div>
   </section>
+
+  <!-- Add this section after your features/what-is-oasis section -->
+<section class="section">
+  <h2 class="section-title">THE TECHNOLOGY</h2>
+  <span class="section-line"></span>
+  <p style="text-align:center;color:var(--text-dim);max-width:600px;margin:0 auto 40px;font-size:15px;line-height:1.7">
+    Dive deeper into the OASIS stack — the infrastructure, protocols and 
+    ecosystems your Founder NFT gives you access to.
+  </p>
+
+  <div class="infographic-grid">
+    <div class="infographic-card" onclick="openLightbox('img/oland.png')">
+      <img src="img/oland.jpg" alt="OLAND — Programmable Digital Space" loading="lazy">
+      <div class="infographic-label">
+        <span class="infographic-tag">OLAND</span>
+        <span class="infographic-title">Programmable Digital Space</span>
+      </div>
+    </div>
+
+    <div class="infographic-card" onclick="openLightbox('img/starnet.png')">
+      <img src="img/starnet.jpg" alt="STARNET — Web5 App/Asset Store" loading="lazy">
+      <div class="infographic-label">
+        <span class="infographic-tag">STARNET</span>
+        <span class="infographic-title">Web5 App & Asset Store Ecosystem</span>
+      </div>
+    </div>
+
+    <div class="infographic-card" onclick="openLightbox('img/ogengine.png')">
+      <img src="img/ogengine.jpg" alt="OGEngine — The OASIS Game Engine" loading="lazy">
+      <div class="infographic-label">
+        <span class="infographic-tag">OGENGINE</span>
+        <span class="infographic-title">The OASIS Game Engine</span>
+      </div>
+    </div>
+
+    <div class="infographic-card" onclick="openLightbox('img/smartbricks.png')">
+      <img src="img/smartbricks.png" alt="Smart Bricks — Web5 STARNET" loading="lazy">
+      <div class="infographic-label">
+        <span class="infographic-tag">SMART BRICKS</span>
+        <span class="infographic-title">Modular Intelligent Holons</span>
+      </div>
+    </div>
+
+    <div class="infographic-card" onclick="openLightbox('img/web4layer.png')">
+      <img src="img/web4.jpg" alt="OASIS = WEB4" loading="lazy">
+      <div class="infographic-label">
+        <span class="infographic-tag">WEB4</span>
+        <span class="infographic-title">The Layer Above Everything</span>
+      </div>
+    </div>
+
+    <div class="infographic-card" onclick="openLightbox('img/web4web5stack.png')">
+      <img src="img/web5.jpg" alt="The Web4 + Web5 Stack" loading="lazy">
+      <div class="infographic-label">
+        <span class="infographic-tag">WEB4 + WEB5</span>
+        <span class="infographic-title">Unifying Web2 + Web3 Into One Living System</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox overlay -->
+<div id="lightbox" onclick="closeLightbox()" style="
+  display:none;position:fixed;inset:0;z-index:2000;
+  background:rgba(1,4,18,.96);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;padding:20px;cursor:zoom-out;
+">
+  <img id="lightboxImg" src="" alt="" style="
+    max-width:90vw;max-height:90vh;
+    border-radius:12px;
+    border:1px solid rgba(0,229,255,.2);
+    box-shadow:0 0 60px rgba(0,229,255,.2);
+    object-fit:contain;
+  ">
+  <button onclick="closeLightbox()" style="
+    position:fixed;top:20px;right:24px;
+    background:none;border:none;color:#fff;
+    font-size:32px;cursor:pointer;opacity:.7;
+    line-height:1;
+  ">✕</button>
+</div>
 
   <section class="section tiers-section" id="tiers">
     <h2 class="section-title">CHOOSE YOUR FOUNDER TIER</h2>
@@ -3557,7 +3730,22 @@ window.addEventListener('load', () => {
 });
 
 
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src = src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
 
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
 
 
 </script>
