@@ -1422,41 +1422,41 @@ body.test-mode-on .test-chain-note{display:block}
         </div>
 
         <!-- Coming soon notice -->
-      <div
-        id="oasisComingSoon"
-        class="coming-soon-box"
-        style="
-          display:block;
-          margin-bottom:14px;
-          background:rgba(255,180,0,.08);
-          border:1px solid rgba(255,180,0,.2);
-          color:#ffd166;
-          border-radius:10px;
-          padding:12px 14px;
-          font-size:12px;
-          line-height:1.6;
-          font-family:'Share Tech Mono',monospace
-        "
-      >
-        ⚡ Ethereum + Arbitrum minting is currently being finalized.<br>
-        Solana minting is live now via OASIS.
-      </div>
+        <div
+          id="oasisComingSoon"
+          class="coming-soon-box"
+          style="
+            display:block;
+            margin-bottom:14px;
+            background:rgba(255,180,0,.08);
+            border:1px solid rgba(255,180,0,.2);
+            color:#ffd166;
+            border-radius:10px;
+            padding:12px 14px;
+            font-size:12px;
+            line-height:1.6;
+            font-family:'Share Tech Mono',monospace
+          "
+        >
+          ⚡ Ethereum + Arbitrum minting is currently being finalized.<br>
+          Solana minting is live now via OASIS.
+        </div>
 
-      <!-- Treasury wallet -->
-      <div
-        style="
-          margin-bottom:14px;
-          background:rgba(0,229,255,.05);
-          border:1px solid rgba(0,229,255,.12);
-          border-radius:10px;
-          padding:12px 14px;
-          font-size:11px;
-          line-height:1.7;
-          font-family:'Share Tech Mono',monospace;
-          color:var(--text-dim);
-          word-break:break-all
-        "
-      >
+        <!-- Treasury wallet -->
+        <div
+          style="
+            margin-bottom:14px;
+            background:rgba(0,229,255,.05);
+            border:1px solid rgba(0,229,255,.12);
+            border-radius:10px;
+            padding:12px 14px;
+            font-size:11px;
+            line-height:1.7;
+            font-family:'Share Tech Mono',monospace;
+            color:var(--text-dim);
+            word-break:break-all
+          "
+        >
         <div style="color:var(--cyan);font-size:12px;margin-bottom:4px">
           OFFICIAL OASIS TREASURY
         </div>
@@ -1496,7 +1496,7 @@ body.test-mode-on .test-chain-note{display:block}
         </div>
       </div><!-- /panelOasis -->
 
-      <div class="modal-terms">By minting you agree to our <a href="TermsOfService.md" target="_blank">Terms of Service</a>, <a href="PrivacyPolicy.md" target="_blank">Privacy Policy</a> and <a href="Disclaimer.md" target="_blank">Disclaimer</a>.<br>Founder NFTs may never be minted again.</div>
+      <div class="modal-terms">By minting you agree to our <a href="TermsOfService.md" target="_blank">Terms of Service</a>, <a href="PrivacyPolicy.md" target="_blank">Privacy Policy</a> and <a href="Disclaimer.md" target="_blank">Disclaimer</a>.<br><checkbox id="chkConfirm">I agree to the Terms of Service and understand these NFTs are digital collectibles, not financial products.</checkbox><br>Founder NFTs may never be minted again.</div>
     </div>
   </div>
 </div>
@@ -2908,6 +2908,7 @@ async function connectOasisPhantom() {
 }
 
 async function handleOasisMint() {
+  const chkConfirm = document.getElementById("chkConfirm");
   const errEl  = document.getElementById('oasisError');
   const btn    = document.getElementById('oasisConfirm');
   const wallet = document.getElementById('oasisWalletAddr').value.trim();
