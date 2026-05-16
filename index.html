@@ -1492,11 +1492,11 @@ body.test-mode-on .test-chain-note{display:block}
 
         <!-- Powered by badge -->
         <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace">
-          POWERED BY <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none;font-weight:700">THE OASIS</a> · OGEngine Web4+Web5
+          POWERED BY <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none;font-weight:700">THE OASIS</a>
         </div>
       </div><!-- /panelOasis -->
 
-      <div class="modal-terms">By minting you agree to our <a href="TermsOfService.md" target="_blank">Terms of Service</a>, <a href="PrivacyPolicy.md" target="_blank">Privacy Policy</a> and <a href="Disclaimer.md" target="_blank">Disclaimer</a>.<br><checkbox id="chkConfirm">I agree to the Terms of Service and understand these NFTs are digital collectibles, not financial products.</checkbox><br>Founder NFTs may never be minted again.</div>
+      <div class="modal-terms" style="font-size: 14px;"><br>By minting you agree to our <a href="TermsOfService.md" target="_blank">Terms of Service</a>, <a href="PrivacyPolicy.md" target="_blank">Privacy Policy</a> and <a href="Disclaimer.md" target="_blank">Disclaimer</a>.<br><checkbox id="chkConfirm">I agree to the Terms of Service and understand these NFTs are digital collectibles, not financial products.</checkbox><br><br>Founder NFTs may never be minted again.</div>
     </div>
   </div>
 </div>
@@ -2916,6 +2916,13 @@ async function handleOasisMint() {
   let order = null;
   let sig = null;
   errEl.textContent = '';
+
+  console.log("chkConfirm=", chkConfirm)
+
+  if (!chkConfirm.checked) {
+    errEl.textContent = 'You must agree to the Terms of Service.';
+    return;
+  }
 
   if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
   if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; return; }
