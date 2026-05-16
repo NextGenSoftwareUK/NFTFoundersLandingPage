@@ -1485,10 +1485,10 @@ body.test-mode-on .test-chain-note{display:block}
           <span class="price-label">NFT PRICE (SOL)</span>
           <span class="price-value" id="nftSolPrice" style="color:#00e5ff">SOL</span>
         </div>
-        <div class="field-error" id="oasisError"></div>
         <button class="confirm-btn" id="oasisConfirm"
           style="background:linear-gradient(135deg,#003a6e,#005fa3,#00b4d8);color:#e0f7ff;"
           onclick="handleOasisMint()">🌀 MINT WITH OASIS</button>
+          <div style="display:none;" class="field-error" id="oasisError"></div>
       </div><!-- /panelOasis -->
 
      <div class="modal-terms" style="font-size: 14px;">
@@ -1714,6 +1714,8 @@ function openModal(tier) {
   document.getElementById('evmError').textContent = '';
   document.getElementById('solError').textContent = '';
   document.getElementById('oasisError').textContent = '';
+  document.getElementById('oasisError').style.display = "none";
+
   document.getElementById('oasisStatus').style.display = 'none';
   document.getElementById('oasisWalletAddr').value = '';
   document.getElementById('oasisEmail').value = '';
@@ -2940,11 +2942,21 @@ async function handleOasisMint() {
 
   if (!chkConfirm.checked) {
     errEl.textContent = 'You must agree to the Terms of Service.';
+    errEl.style.display = "block";
     return;
   }
 
-  if (!wallet) { errEl.textContent = 'Please enter your wallet address.'; return; }
-  if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; return; }
+  if (!wallet) 
+  { 
+    errEl.textContent = 'Please enter your wallet address.'; 
+    errEl.style.display = "block";
+    return; 
+  }
+  if (!email || !email.includes('@')) { 
+    errEl.textContent = 'Please enter a valid email.'; 
+    errEl.style.display = "block";
+    return; 
+  }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>CONNECTING TO OASIS...';
@@ -3252,6 +3264,7 @@ async function handleOasisMint() {
 
   } catch(e) {
     errEl.textContent = 'Mint failed: ' + (e.message || 'Unknown error');
+    errEl.style.display = "block";
     btn.disabled = false;
     btn.textContent = '🌀 MINT WITH OASIS';
     setOasisStatus('❌ ' + (e.message || 'Mint failed'), 'var(--red)');
@@ -3270,6 +3283,7 @@ async function mint(orderId, paymentSignature, wallet, email) {
   // const wallet = document.getElementById('oasisWalletAddr').value.trim();
   // const email  = document.getElementById('oasisEmail').value.trim();
   errEl.textContent = '';
+  errEl.style.display = "none";
 
   const tier  = TIERS[currentTier];
   const chain = OASIS_CHAINS[currentOasisChain];
@@ -3338,6 +3352,7 @@ async function mint(orderId, paymentSignature, wallet, email) {
 
   } catch(e) {
     errEl.textContent = 'Mint failed: ' + (e.message || 'Unknown error');
+    errEl.style.display = "block";
     btn.disabled = false;
     btn.textContent = '🌀 MINT WITH OASIS';
     setOasisStatus('❌ ' + (e.message || 'Mint failed'), 'var(--red)');
