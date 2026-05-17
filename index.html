@@ -441,9 +441,23 @@ body.test-mode-on .test-chain-note{display:block}
 
 /* ↓ CHANGED: footer-brand was gold, now cyan */
 .footer-brand{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--cyan);letter-spacing:.2em;margin-bottom:8px}
+.footer-tagline{max-width:900px;margin:0 auto;color:var(--text-dim)}
+.footer-socials{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:22px auto 26px}
+.footer-social{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:38px;padding:0 14px;border:1px solid rgba(0,229,255,.22);border-radius:999px;background:rgba(0,229,255,.055);color:var(--cyan);font-size:12px;letter-spacing:.08em;text-decoration:none}
+.footer-social:hover{background:rgba(0,229,255,.13);border-color:rgba(0,229,255,.45);transform:translateY(-2px)}
+.footer-grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:24px;max-width:980px;margin:0 auto 22px;text-align:left}
+.footer-heading{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.16em;color:var(--heading);margin-bottom:10px}
+.footer-links{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.footer-links a{color:var(--text-dim);text-decoration:none}
+.footer-links a:hover{color:var(--cyan)}
+.footer-note{margin-top:8px;color:var(--text-dim)}
+.footer-legal{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px;font-size:12px}
+.footer-legal a{color:var(--cyan);text-decoration:none}
+.footer-copy{margin-top:14px;font-size:12px;color:rgba(232,246,255,.6)}
 
 @media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}.video-grid{grid-template-columns:1fr}.proof-grid{grid-template-columns:1fr}.download-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.download-grid{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}}
+@media(max-width:900px){.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));text-align:center}}
+@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.download-grid{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}.footer-grid{grid-template-columns:1fr}.footer-social{flex:1 1 130px}}
 .perk-section-title{font-size:11px;letter-spacing:.15em;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin:16px 0 8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(255,255,255,.15)}
 .genesis .perk-section-title{border-left-color:var(--gold)}
 .core .perk-section-title{border-left-color:var(--core)}
@@ -1286,11 +1300,66 @@ body.test-mode-on .test-chain-note{display:block}
   </div>
   <footer class="footer">
     <div class="footer-brand">OASIS</div>
-    <div>A next-generation ecosystem · OGEngine · Web4 OASIS · Web5 STAR · Avatars · Holons · Cross-chain NFTs</div>
-    <div style="margin-top:8px;">Founder NFTs may never be minted again.</div>
-    <div style="margin-top:12px;font-size:12px">Minting powered by <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none">THE OASIS</a></div>
-    <div style="margin-top:12px;font-size:12px"><a href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank">Gitup Repro</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/THE_OASIS_COMPREHENSIVE_WHITEPAPER.md" target="_blank">OASIS Whitepaper</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs" target="_blank" style="color:var(--cyan);text-decoration:none">Docs</a> · <a href="https://ourworldthegame.com" target="_blank" style="color:var(--cyan);text-decoration:none">Our World</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OUR_WORLD_WHITEPAPER.md" target="_blank">Our World Whitepaper</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/DEVELOPER_DOCUMENTATION_INDEX.md" target="_blank">Developer Index</a> · <a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs/Devs/API%20Documentation" target="_blank">API Reference</a></div>
-    <div class="modal-terms">By minting you agree to our <a href="TermsOfService.html" target="_blank">Terms of Service</a>, <a href="PrivacyPolicy.html" target="_blank">Privacy Policy</a> and <a href="Disclaimer.html" target="_blank">Disclaimer</a>.</div>
+    <div class="footer-tagline">A next-generation ecosystem for OGEngine, Web4 OASIS, Web5 STAR, avatars, holons and cross-chain NFTs.</div>
+    <div class="footer-note">Founder NFTs may never be minted again.</div>
+
+    <div class="footer-socials" aria-label="OASIS community links">
+      <a class="footer-social" href="https://x.com/oasisweb4" target="_blank" rel="noopener">X</a>
+      <a class="footer-social" href="https://discord.gg/RU6Z8YJ" target="_blank" rel="noopener">Discord</a>
+      <a class="footer-social" href="https://t.me/oasisweb4chat" target="_blank" rel="noopener">Telegram</a>
+      <a class="footer-social" href="https://www.youtube.com/channel/UC0_O4RwdY3lq1m3-K-njUxA" target="_blank" rel="noopener">YouTube</a>
+      <a class="footer-social" href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank" rel="noopener">GitHub</a>
+    </div>
+
+    <div class="footer-grid">
+      <div>
+        <div class="footer-heading">BUILD</div>
+        <ul class="footer-links">
+          <li><a href="https://www.oasisweb4.com/" target="_blank" rel="noopener">OASIS Web4</a></li>
+          <li><a href="https://oasis-web4.gitbook.io/oasis-web4-docs/" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs/Devs/API%20Documentation" target="_blank" rel="noopener">API Reference</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/DEVELOPER_DOCUMENTATION_INDEX.md" target="_blank" rel="noopener">Developer Index</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">READ</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/THE_OASIS_COMPREHENSIVE_WHITEPAPER.md" target="_blank" rel="noopener">OASIS Whitepaper</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OUR_WORLD_WHITEPAPER.md" target="_blank" rel="noopener">Our World Whitepaper</a></li>
+          <li><a href="https://www.oasisweb4.com/holonic-architecture" target="_blank" rel="noopener">Holonic Architecture</a></li>
+          <li><a href="https://www.ourworldthegame.com/blog" target="_blank" rel="noopener">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">ECOSYSTEM</div>
+        <ul class="footer-links">
+          <li><a href="https://ourworldthegame.com" target="_blank" rel="noopener">Our World</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank" rel="noopener">GitHub Repo</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/OASIS%20Omniverse" target="_blank" rel="noopener">OASIS Omniverse</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK" target="_blank" rel="noopener">STAR ODK</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">SUPPORT</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/issues" target="_blank" rel="noopener">Report an Issue</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/discussions" target="_blank" rel="noopener">Discussions</a></li>
+          <li><a href="mailto:enquiries@nextgensoftware.co.uk">Contact</a></li>
+          <li><a href="https://www.nextgensoftware.co.uk/" target="_blank" rel="noopener">NextGen Software</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="font-size:12px">Minting powered by <a href="https://www.oasisweb4.com/" target="_blank" rel="noopener">THE OASIS</a></div>
+    <div class="footer-legal">
+      <a href="TermsOfService.html" target="_blank">Terms of Service</a>
+      <span>&middot;</span>
+      <a href="PrivacyPolicy.html" target="_blank">Privacy Policy</a>
+      <span>&middot;</span>
+      <a href="Disclaimer.html" target="_blank">Disclaimer</a>
+    </div>
+    <div class="modal-terms">By minting you agree to our Terms of Service, Privacy Policy and Disclaimer.</div>
+    <div class="footer-copy">&copy; 2026 OASIS. All rights reserved.</div>
   </footer>
 </div>
 
