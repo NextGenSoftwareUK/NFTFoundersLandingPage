@@ -13,6 +13,12 @@
   "redirects": [
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.oasisfoundernfts.icu"
+        }
+      ],
       "destination": "https://founders.oasisomniverse.one/$1",
       "permanent": true
     }
