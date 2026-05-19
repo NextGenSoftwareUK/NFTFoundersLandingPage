@@ -2,7 +2,7 @@
   "name": "Genesis Founder NFT",
   "symbol": "OASIS",
   "description": "OASIS Founder Access NFT — Genesis Founder",
-  "image": "https://www.oasisfoundernfts.icu/img/nft-genesis-wallet.png",
+  "image": "https://founders.oasisomniverse.one/img/nft-genesis-wallet.png",
   "seller_fee_basis_points": 0,
   "attributes": [
     { "trait_type": "Tier", "value": "Genesis Founder" },
@@ -11,7 +11,7 @@
   "properties": {
     "files": [
       {
-        "uri": "https://www.oasisfoundernfts.icu/img/nft-genesis-wallet.png",
+        "uri": "https://founders.oasisomniverse.one/img/nft-genesis-wallet.png",
         "type": "image/png"
       }
     ],

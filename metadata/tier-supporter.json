@@ -2,7 +2,7 @@
   "name": "Early Supporters NFT",
   "symbol": "OASIS",
   "description": "OASIS Founder Access NFT — Early Supporter",
-  "image": "https://www.oasisfoundernfts.icu/img/nft-supporter-wallet.png",
+  "image": "https://founders.oasisomniverse.one/img/nft-supporter-wallet.png",
   "seller_fee_basis_points": 0,
   "attributes": [
     { "trait_type": "Tier", "value": "Early Supporter" },
@@ -11,7 +11,7 @@
   "properties": {
     "files": [
       {
-        "uri": "https://www.oasisfoundernfts.icu/img/nft-supporter-wallet.png",
+        "uri": "https://founders.oasisomniverse.one/img/nft-supporter-wallet.png",
         "type": "image/png"
       }
     ],

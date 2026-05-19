@@ -2,7 +2,7 @@
   "name": "Core Builder NFT",
   "symbol": "OASIS",
   "description": "OASIS Founder Access NFT — Core Builder",
-  "image": "https://www.oasisfoundernfts.icu/img/nft-core-wallet.png",
+  "image": "https://founders.oasisomniverse.one/img/nft-core-wallet.png",
   "seller_fee_basis_points": 0,
   "attributes": [
     { "trait_type": "Tier", "value": "Core Builder" },
@@ -11,7 +11,7 @@
   "properties": {
     "files": [
       {
-        "uri": "https://www.oasisfoundernfts.icu/img/nft-core-wallet.png",
+        "uri": "https://founders.oasisomniverse.one/img/nft-core-wallet.png",
         "type": "image/png"
       }
     ],
