@@ -143,6 +143,7 @@ export default async function handler(req, res) {
       : String(payload.OffChainProvider);
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
+    payload.CollectionPublicKey = "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs";
 
     // Force server-side values
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
