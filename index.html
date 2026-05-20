@@ -256,11 +256,10 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .faq-item summary{list-style:none;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--heading);display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
 .faq-item summary::-webkit-details-marker{display:none}
 .faq-item summary::after{content:'+';color:var(--cyan);font-size:18px;line-height:1;flex-shrink:0;transition:transform .25s ease,color .25s ease}
-.faq-item[open] summary::after{content:'-'}
-.faq-answer-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
-.faq-item[open] .faq-answer-wrap{grid-template-rows:1fr}
-.faq-answer{overflow:hidden;margin-top:0;font-size:14px;line-height:1.7;color:var(--text-dim);opacity:.95;transition:opacity .25s ease}
-.faq-item:not([open]) .faq-answer{opacity:0}
+.faq-item[open] summary::after{content:'-';transform:rotate(180deg)}
+.faq-answer-wrap{max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .25s ease}
+.faq-item[open] .faq-answer-wrap{opacity:1}
+.faq-answer{margin-top:0;font-size:14px;line-height:1.7;color:var(--text-dim);opacity:.95}
 .faq-answer-inner{min-height:0;padding-top:12px}
 .faq-answer strong{color:var(--heading)}
 .faq-more{display:flex;justify-content:center;margin-top:28px}
@@ -1436,6 +1435,39 @@ body.test-mode-on .test-chain-note{display:block}
     <div class="footer-copy">&copy; 2026 OASIS. All rights reserved.</div>
   </footer>
 </div>
+
+<script>
+  (function() {
+    const items = document.querySelectorAll('.faq-item');
+    const sync = (item) => {
+      const wrap = item.querySelector('.faq-answer-wrap');
+      if (!wrap) return;
+      if (item.open) {
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+        wrap.style.opacity = '1';
+      } else {
+        wrap.style.maxHeight = '0px';
+        wrap.style.opacity = '0';
+      }
+    };
+
+    items.forEach((item) => {
+      sync(item);
+      item.addEventListener('toggle', () => {
+        sync(item);
+        if (item.open) {
+          requestAnimationFrame(() => sync(item));
+        }
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      items.forEach((item) => {
+        if (item.open) sync(item);
+      });
+    });
+  })();
+</script>
 
 
 <!-- ════════════════════════════════════════ MINT MODAL ════ -->

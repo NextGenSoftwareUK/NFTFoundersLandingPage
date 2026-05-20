@@ -28,7 +28,8 @@
     .wrap{max-width:1040px;margin:0 auto;padding:40px 20px 64px}
     .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}
     .brand{font-family:'Orbitron',sans-serif;letter-spacing:.18em;color:var(--cyan);font-size:18px;font-weight:700}
-    .back{color:var(--cyan);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em}
+    .back{color:var(--cyan);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;transition:filter .25s ease,color .25s ease,transform .25s ease}
+    .back:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.8)) drop-shadow(0 0 40px rgba(0,229,255,.4));transform:translateY(-1px)}
     .hero{padding:18px 0 28px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:28px}
     h1{font-family:'Orbitron',sans-serif;font-size:clamp(28px,4vw,44px);line-height:1.15;margin:0 0 14px;color:var(--heading)}
     .intro{max-width:820px;color:var(--dim);font-size:17px;margin:0}
@@ -283,7 +284,6 @@
     </section>
 
     <div class="footer">
-      <span>Need the shorter version? The founder page still carries the quick FAQ.</span>
       <a href="index.html">Return to the founder page</a>
     </div>
   </div>

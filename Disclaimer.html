@@ -1,84 +1,96 @@
-<!-- NFT RISK DISCLAIMER -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Risk Disclaimer | Oasis Founder NFTs</title>
+  <title>Risk Disclaimer | OASIS Founder NFTs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0b0b0f;
-      color: #f5f5f5;
-      line-height: 1.7;
-      max-width: 900px;
-      margin: auto;
-      padding: 40px 20px;
+    :root{
+      --bg:#050816;
+      --panel:rgba(10,21,53,.86);
+      --line:rgba(0,229,255,.16);
+      --cyan:#00e5ff;
+      --heading:#f4fbff;
+      --text:#e8f6ff;
+      --dim:#a8bfd0;
+      --warn:#ffd166;
     }
-    h1, h2 {
-      color: #00e5ff;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(0,229,255,.08), transparent 28%),
+        linear-gradient(180deg,#030611 0%,#050816 100%);
+      color:var(--text);
+      font-family:'Rajdhani',sans-serif;
+      line-height:1.7;
+    }
+    a{color:var(--cyan);text-decoration:none;transition:filter .25s ease,color .25s ease,transform .25s ease}
+    a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.8)) drop-shadow(0 0 40px rgba(0,229,255,.4));transform:translateY(-1px)}
+    .wrap{max-width:1040px;margin:0 auto;padding:40px 20px 64px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+    .brand{font-family:'Orbitron',sans-serif;letter-spacing:.18em;color:var(--cyan);font-size:18px;font-weight:700}
+    .back{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em}
+    .hero{padding:18px 0 28px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:28px}
+    h1{font-family:'Orbitron',sans-serif;font-size:clamp(28px,4vw,44px);line-height:1.15;margin:0 0 14px;color:var(--heading)}
+    .intro{max-width:820px;color:var(--dim);font-size:17px;margin:0}
+    section{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
+    h2{font-family:'Orbitron',sans-serif;font-size:20px;letter-spacing:.08em;color:var(--heading);margin:0 0 12px}
+    p{margin:0 0 12px}
+    ul{margin:0 0 12px 18px;padding:0}
+    li{margin:0 0 6px}
+    .note{color:var(--warn);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.06em}
+    .footer{margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:14px}
+    @media(max-width:700px){
+      .wrap{padding:24px 14px 40px}
+      section{padding:18px 16px}
     }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">OASIS</div>
+      <a class="back" href="index.html">Back to founder page</a>
+    </div>
 
-<h1>NFT & Blockchain Risk Disclaimer</h1>
+    <div class="hero">
+      <h1>NFT & Blockchain Risk Disclaimer</h1>
+      <p class="intro">Purchasing, holding or using NFTs involves significant risk. This page summarizes the main risks in a clear, plain-language format.</p>
+    </div>
 
-<p><strong>Last Updated:</strong> May 2026</p>
+    <section>
+      <h2>Risks Include</h2>
+      <ul>
+        <li>Cryptocurrency volatility</li>
+        <li>Loss of asset value</li>
+        <li>Smart contract vulnerabilities</li>
+        <li>Regulatory uncertainty</li>
+        <li>Cyberattacks</li>
+        <li>Wallet compromise</li>
+        <li>Marketplace liquidity issues</li>
+        <li>Tax obligations</li>
+        <li>Blockchain network failures</li>
+      </ul>
+    </section>
 
-<p>
-Purchasing, holding, or using NFTs involves significant risk.
-</p>
+    <section>
+      <h2>Nature of the NFTs</h2>
+      <p>Oasis Founder NFTs are intended as digital collectibles and ecosystem participation assets.</p>
+      <p>They are not investments, securities, shares, profit-sharing agreements or financial instruments.</p>
+    </section>
 
-<h2>Risks Include</h2>
+    <section>
+      <h2>No Guarantees</h2>
+      <p class="note">No guarantee is made regarding future utility, resale value, profitability, ecosystem development timelines or market performance.</p>
+      <p>Users should only participate using funds they can afford to lose.</p>
+    </section>
 
-<ul>
-  <li>Cryptocurrency volatility</li>
-  <li>Loss of asset value</li>
-  <li>Smart contract vulnerabilities</li>
-  <li>Regulatory uncertainty</li>
-  <li>Cyberattacks</li>
-  <li>Wallet compromise</li>
-  <li>Marketplace liquidity issues</li>
-  <li>Tax obligations</li>
-  <li>Blockchain network failures</li>
-</ul>
-
-<h2>Nature of the NFTs</h2>
-
-<p>
-Oasis Founder NFTs are intended as digital collectibles
-and ecosystem participation assets.
-</p>
-
-<p>
-They are not:
-</p>
-
-<ul>
-  <li>Investments</li>
-  <li>Securities</li>
-  <li>Shares</li>
-  <li>Profit-sharing agreements</li>
-  <li>Financial instruments</li>
-</ul>
-
-<!-- <h2>No Guarantees</h2> -->
-
-<!-- <p>
-No guarantee is made regarding:
-</p>
-
-<ul>
- <li>Future utility</li> 
-  <li>Resale value</li>
-  <li>Profitability</li>
-  <li>Ecosystem development timelines</li>
-</ul> -->
-
-<!-- <p>
-Users should only participate using funds they can afford to lose.
-</p> -->
-
+    <div class="footer">
+      <span>Last updated: May 2026</span>
+      <a href="FoundersFAQ.html">Read the full detailed FAQ</a>
+    </div>
+  </div>
 </body>
 </html>
