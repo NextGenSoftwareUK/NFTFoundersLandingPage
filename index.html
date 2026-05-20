@@ -251,6 +251,14 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .utility-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--heading-sub);margin-bottom:12px}
 .utility-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--cyan);margin-bottom:8px}
 .utility-text{font-size:14px;line-height:1.6;color:var(--text-dim)}
+.faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:1100px;margin:0 auto}
+.faq-item{background:rgba(255,255,255,.025);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:18px 18px 16px}
+.faq-item summary{list-style:none;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--heading);display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';color:var(--cyan);font-size:18px;line-height:1;flex-shrink:0}
+.faq-item[open] summary::after{content:'-'}
+.faq-answer{margin-top:12px;font-size:14px;line-height:1.7;color:var(--text-dim)}
+.faq-answer strong{color:var(--heading)}
 .doc-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:28px auto 0}
 .doc-link{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--cyan);text-decoration:none;border:1px solid rgba(0,229,255,.22);border-radius:999px;padding:10px 14px;background:rgba(0,229,255,.05);transition:background .2s,border-color .2s,transform .2s}
 .doc-link:hover{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.42);transform:translateY(-2px)}
@@ -457,7 +465,7 @@ body.test-mode-on .test-chain-note{display:block}
 
 @media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}.video-grid{grid-template-columns:1fr}.proof-grid{grid-template-columns:1fr}.download-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));text-align:center}}
-@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.download-grid{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}.footer-grid{grid-template-columns:1fr}.footer-social{flex:1 1 130px}}
+@media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.faq-grid{grid-template-columns:1fr}.download-grid{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}.footer-grid{grid-template-columns:1fr}.footer-social{flex:1 1 130px}}
 .perk-section-title{font-size:11px;letter-spacing:.15em;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin:16px 0 8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(255,255,255,.15)}
 .genesis .perk-section-title{border-left-color:var(--gold)}
 .core .perk-section-title{border-left-color:var(--core)}
@@ -1105,6 +1113,54 @@ body.test-mode-on .test-chain-note{display:block}
   </section>
 
   <section class="section">
+    <h2 class="section-title">FREQUENTLY ASKED QUESTIONS</h2>
+    <span class="section-line"></span>
+    <p style="text-align:center;color:var(--text-dim);max-width:760px;margin:0 auto 34px;font-size:15px;line-height:1.7">A quick guide to Founder Access, the current ecosystem, and how the collection works today.</p>
+    <div class="faq-grid">
+      <details class="faq-item" open>
+        <summary>What is OASIS Founder Access?</summary>
+        <div class="faq-answer">OASIS Founder Access is a limited digital founder program for early supporters, builders, creators and contributors. It is designed to provide access, recognition, perks and participation across the expanding OASIS ecosystem.</div>
+      </details>
+      <details class="faq-item">
+        <summary>How many Founder tiers are there?</summary>
+        <div class="faq-answer">There are 3 limited tiers: <strong>Genesis Founder</strong> (20), <strong>Core Builder</strong> (50) and <strong>Early Supporter</strong> (100).</div>
+      </details>
+      <details class="faq-item">
+        <summary>What is OASIS?</summary>
+        <div class="faq-answer">OASIS is a connected digital ecosystem spanning apps, games, avatars, AI systems, APIs, creator economies, digital ownership and interoperable infrastructure for Omniverse-style experiences.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What is already built and operational?</summary>
+        <div class="faq-answer">Core systems are already live, including OGEngine, NFT systems, GeoNFT systems, OAPP infrastructure, STARNET, avatar systems, APIs, backend infrastructure, Smart Bricks architecture, ODOOM, OQUAKE and the basic Omniverse framework.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What is currently in development?</summary>
+        <div class="faq-answer">Active expansion includes OPORTAL, Our World MVP, enhanced AI systems, creator tooling, additional integrations, advanced Omniverse systems, gameplay expansion, social systems and deeper Founder utility.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What is an OAPP?</summary>
+        <div class="faq-answer">OAPPs are applications built on OASIS infrastructure. Founder tiers include expanded monthly creation allowances for ecosystem apps, tools, services, experiences and integrations.</div>
+      </details>
+      <details class="faq-item">
+        <summary>How do the Founder NFTs work?</summary>
+        <div class="faq-answer">Founder NFTs act as digital access passes. They are minted on Solana, stored in the connected wallet, and linked to the holder’s OASIS avatar through a wrapped Web4 integration layer.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What chain, wallet and payment methods are supported?</summary>
+        <div class="faq-answer">Current minting support is on <strong>Solana</strong> with <strong>Phantom</strong> wallet auto-connect. Purchases can be made with crypto or through Stripe card payments, with broader chain and wallet support planned over time.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What happens after purchase?</summary>
+        <div class="faq-answer">After purchase, the NFT is delivered to your wallet. If the email is new, an OASIS avatar account is created, the wrapped Web4 link is attached, and you receive a secure activation email for first login.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is this an investment product?</summary>
+        <div class="faq-answer">No. Founder Access is a digital access and community program. It does not guarantee profits, token value, market performance or any financial return.</div>
+      </details>
+    </div>
+  </section>
+
+  <section class="section">
     <h2 class="section-title">WHY THIS MATTERS</h2>
     <span class="section-line"></span>
     <div class="why-grid">
@@ -1307,279 +1363,7 @@ body.test-mode-on .test-chain-note{display:block}
       <div style="font-size:12px;color:var(--text-dim);margin-top:8px;font-family:'Share Tech Mono',monospace">WEB4 OASIS + WEB5 STAR INFRASTRUCTURE</div>
     </div>
   </div>
-  <section id="faq" class="py-24 px-6 max-w-6xl mx-auto text-white">
-  <div class="text-center mb-16">
-    <h2 class="text-5xl font-bold mb-6">Frequently Asked Questions</h2>
-    <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-      Everything you need to know about the OASIS Founders Collection,
-      onboarding process, ecosystem access, and future integrations.
-    </p>
-  </div>
 
-  <div class="space-y-8">
-
-    <!-- FAQ ITEM -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">What is the OASIS Founders Collection?</h3>
-      <p class="text-gray-300 leading-8">
-        The OASIS Founders Collection is a limited digital founder program designed
-        to provide early supporters, creators, builders, and contributors with
-        access, recognition, perks, and participation across the expanding OASIS ecosystem.
-      </p>
-
-      <div class="mt-6 overflow-x-auto">
-        <table class="w-full border-collapse">
-          <thead>
-            <tr class="border-b border-white/10">
-              <th class="text-left py-3">Tier</th>
-              <th class="text-left py-3">Supply</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-b border-white/5">
-              <td class="py-3">Genesis Founder</td>
-              <td class="py-3">20 Only</td>
-            </tr>
-            <tr class="border-b border-white/5">
-              <td class="py-3">Core Builder</td>
-              <td class="py-3">50 Only</td>
-            </tr>
-            <tr>
-              <td class="py-3">Early Supporter</td>
-              <td class="py-3">100 Only</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">What is already built and operational?</h3>
-
-      <p class="text-gray-300 leading-8 mb-6">
-        Core components of the OASIS ecosystem are already built, released,
-        and operational including:
-      </p>
-
-      <div class="grid md:grid-cols-2 gap-4 text-gray-300">
-        <ul class="space-y-2">
-          <li>• OGEngine</li>
-          <li>• NFT systems</li>
-          <li>• GeoNFT systems</li>
-          <li>• OAPP infrastructure</li>
-          <li>• STARNET ecosystem framework</li>
-        </ul>
-
-        <ul class="space-y-2">
-          <li>• Avatar systems</li>
-          <li>• APIs & backend infrastructure</li>
-          <li>• Smart Bricks architecture</li>
-          <li>• ODOOM & OQUAKE integrations</li>
-          <li>• Basic Omniverse ecosystem framework</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">What is currently in development?</h3>
-
-      <div class="grid md:grid-cols-2 gap-4 text-gray-300">
-        <ul class="space-y-2">
-          <li>• OPORTAL</li>
-          <li>• Our World MVP</li>
-          <li>• Expanded AI systems</li>
-          <li>• Enhanced creator tooling</li>
-        </ul>
-
-        <ul class="space-y-2">
-          <li>• Advanced Omniverse systems</li>
-          <li>• Expanded gameplay systems</li>
-          <li>• Expanded social systems</li>
-          <li>• Deeper Founder NFT integrations</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">How do the Founder NFTs work?</h3>
-
-      <p class="text-gray-300 leading-8 mb-6">
-        Founder NFTs function as digital Founder access passes within the OASIS ecosystem.
-      </p>
-
-      <div class="space-y-4 text-gray-300 leading-8">
-        <p>
-          • NFTs are currently minted on the Solana blockchain
-        </p>
-
-        <p>
-          • NFTs are stored within the holder’s connected Web3 wallet
-        </p>
-
-        <p>
-          • NFTs are also linked to the user’s avatar through a wrapped Web4 NFT layer
-        </p>
-
-        <p>
-          • This hybrid architecture bridges traditional Web3 ownership with deeper
-          Web4 ecosystem integrations across avatars, apps, AI systems, games,
-          creator tooling, permissions, rewards, and future Omniverse functionality
-        </p>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">Which blockchain and wallets are supported?</h3>
-
-      <div class="space-y-6 text-gray-300">
-
-        <div>
-          <h4 class="text-lg font-semibold text-white mb-2">Current Support</h4>
-          <ul class="space-y-2">
-            <li>• Solana blockchain</li>
-            <li>• Phantom wallet auto-connect integration</li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-lg font-semibold text-white mb-2">Planned Multi-Chain Expansion</h4>
-          <ul class="space-y-2">
-            <li>• Ethereum</li>
-            <li>• Arbitrum</li>
-            <li>• Polygon</li>
-            <li>• Base</li>
-            <li>• Additional chains over time</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">How does purchasing work?</h3>
-
-      <div class="space-y-4 text-gray-300 leading-8">
-        <p>
-          Founder NFTs can currently be purchased using:
-        </p>
-
-        <ul class="space-y-2">
-          <li>• Cryptocurrency payments</li>
-          <li>• Card payments through Stripe integration</li>
-        </ul>
-
-        <p>
-          This allows both crypto-native users and traditional users
-          to participate more easily.
-        </p>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">What happens after purchase?</h3>
-
-      <div class="space-y-8 text-gray-300">
-
-        <div>
-          <h4 class="text-xl font-semibold text-white mb-4">New Users</h4>
-
-          <div class="space-y-4 leading-8">
-            <p>1. Complete your Founder NFT purchase</p>
-            <p>2. An OASIS Avatar account is automatically created using your email address</p>
-            <p>3. Your Founder NFT is delivered to your connected Web3 wallet</p>
-            <p>4. A wrapped Web4 NFT is linked to your OASIS Avatar identity</p>
-            <p>5. You receive an email with your secure activation link</p>
-            <p>6. You create your own password securely during first login</p>
-            <p>7. Your account will be ready for OPORTAL and future ecosystem access</p>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-xl font-semibold text-white mb-4">Existing OASIS Users</h4>
-
-          <div class="space-y-4 leading-8">
-            <p>• No new avatar account is created</p>
-            <p>• Your Founder NFT links to your existing avatar</p>
-            <p>• Founder status attaches to your existing ecosystem identity</p>
-            <p>• Your Web3 NFT remains inside your connected wallet</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">Where are the NFTs stored?</h3>
-
-      <div class="space-y-6 text-gray-300">
-
-        <div>
-          <h4 class="text-lg font-semibold text-white mb-2">Web3 NFT Layer</h4>
-          <p class="leading-8">
-            The NFT is stored within the holder’s connected blockchain wallet.
-          </p>
-        </div>
-
-        <div>
-          <h4 class="text-lg font-semibold text-white mb-2">Web4 Avatar Layer</h4>
-          <p class="leading-8">
-            A wrapped Web4 NFT layer links the Founder NFT to the user’s
-            OASIS Avatar identity, enabling future integrations across:
-          </p>
-
-          <ul class="space-y-2 mt-4">
-            <li>• OPORTAL</li>
-            <li>• Avatars</li>
-            <li>• Games</li>
-            <li>• AI systems</li>
-            <li>• Creator tooling</li>
-            <li>• Digital identity</li>
-            <li>• Permissions & rewards</li>
-            <li>• Omniverse ecosystem functionality</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">Are all features available immediately?</h3>
-
-      <p class="text-gray-300 leading-8">
-        No. Some Founder benefits and systems are already operational today
-        through existing OASIS infrastructure, while additional utility,
-        gameplay systems, creator tooling, AI systems, integrations,
-        social systems, and Omniverse features will continue expanding
-        progressively over time.
-      </p>
-    </div>
-
-    <!-- FAQ -->
-    <div class="bg-black/30 border border-white/10 rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4">Is this an investment product?</h3>
-
-      <p class="text-gray-300 leading-8 mb-4">
-        No. The OASIS Founders Collection is intended as a digital access,
-        participation, and community program within the OASIS ecosystem.
-      </p>
-
-      <p class="text-gray-300 leading-8">
-        Purchasing a Founder NFT does not guarantee financial returns,
-        profits, investment performance, token appreciation,
-        or future market value.
-      </p>
-    </div>
-
-  </div>
-</section>
   <footer class="footer">
     <div class="footer-brand">OASIS</div>
     <div class="footer-tagline">A next-generation ecosystem for OGEngine, Web4 OASIS, Web5 STAR, avatars, holons and cross-chain NFTs.</div>
