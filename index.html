@@ -257,6 +257,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .faq-item summary::-webkit-details-marker{display:none}
 .faq-item summary::after{content:'+';color:var(--cyan);font-size:18px;line-height:1;flex-shrink:0;transition:transform .25s ease,color .25s ease}
 .faq-item[open] summary::after{content:'-';transform:rotate(180deg)}
+.faq-item > :not(summary){display:block !important}
 .faq-answer-wrap{max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .25s ease}
 .faq-item[open] .faq-answer-wrap{opacity:1}
 .faq-answer{margin-top:0;font-size:14px;line-height:1.7;color:var(--text-dim);opacity:.95}
@@ -1438,7 +1439,7 @@ body.test-mode-on .test-chain-note{display:block}
 
 <script>
   (function() {
-    const items = document.querySelectorAll('.faq-item');
+    const items = Array.from(document.querySelectorAll('.faq-item'));
     const sync = (item) => {
       const wrap = item.querySelector('.faq-answer-wrap');
       if (!wrap) return;
@@ -1451,14 +1452,49 @@ body.test-mode-on .test-chain-note{display:block}
       }
     };
 
-    items.forEach((item) => {
-      sync(item);
-      item.addEventListener('toggle', () => {
-        sync(item);
-        if (item.open) {
-          requestAnimationFrame(() => sync(item));
-        }
+    const expand = (item) => {
+      const wrap = item.querySelector('.faq-answer-wrap');
+      if (!wrap) return;
+      item.open = true;
+      wrap.style.maxHeight = '0px';
+      wrap.style.opacity = '0';
+      wrap.offsetHeight;
+      requestAnimationFrame(() => {
+        wrap.style.maxHeight = wrap.scrollHeight + 'px';
+        wrap.style.opacity = '1';
       });
+    };
+
+    const collapse = (item) => {
+      const wrap = item.querySelector('.faq-answer-wrap');
+      if (!wrap) return;
+      wrap.style.maxHeight = wrap.scrollHeight + 'px';
+      wrap.style.opacity = '1';
+      wrap.offsetHeight;
+      requestAnimationFrame(() => {
+        wrap.style.maxHeight = '0px';
+        wrap.style.opacity = '0';
+      });
+      const finish = (event) => {
+        if (event.propertyName !== 'max-height') return;
+        item.open = false;
+      };
+      wrap.addEventListener('transitionend', finish, { once: true });
+    };
+
+    items.forEach((item) => {
+      const summary = item.querySelector('summary');
+      if (summary) {
+        summary.addEventListener('click', (event) => {
+          event.preventDefault();
+          if (item.open) {
+            collapse(item);
+          } else {
+            expand(item);
+          }
+        });
+      }
+      sync(item);
     });
 
     window.addEventListener('resize', () => {
