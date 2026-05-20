@@ -255,10 +255,17 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .faq-item{background:rgba(255,255,255,.025);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:18px 18px 16px}
 .faq-item summary{list-style:none;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--heading);display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
 .faq-item summary::-webkit-details-marker{display:none}
-.faq-item summary::after{content:'+';color:var(--cyan);font-size:18px;line-height:1;flex-shrink:0}
+.faq-item summary::after{content:'+';color:var(--cyan);font-size:18px;line-height:1;flex-shrink:0;transition:transform .25s ease,color .25s ease}
 .faq-item[open] summary::after{content:'-'}
-.faq-answer{margin-top:12px;font-size:14px;line-height:1.7;color:var(--text-dim)}
+.faq-answer-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.faq-item[open] .faq-answer-wrap{grid-template-rows:1fr}
+.faq-answer{overflow:hidden;margin-top:0;font-size:14px;line-height:1.7;color:var(--text-dim);opacity:.95;transition:opacity .25s ease}
+.faq-item:not([open]) .faq-answer{opacity:0}
+.faq-answer-inner{min-height:0;padding-top:12px}
 .faq-answer strong{color:var(--heading)}
+.faq-more{display:flex;justify-content:center;margin-top:28px}
+.faq-more a{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border:1px solid rgba(0,229,255,.22);border-radius:999px;background:rgba(0,229,255,.05);color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;text-decoration:none;transition:background .2s,border-color .2s,transform .2s}
+.faq-more a:hover{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.42);transform:translateY(-2px)}
 .doc-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:28px auto 0}
 .doc-link{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--cyan);text-decoration:none;border:1px solid rgba(0,229,255,.22);border-radius:999px;padding:10px 14px;background:rgba(0,229,255,.05);transition:background .2s,border-color .2s,transform .2s}
 .doc-link:hover{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.42);transform:translateY(-2px)}
@@ -1119,45 +1126,46 @@ body.test-mode-on .test-chain-note{display:block}
     <div class="faq-grid">
       <details class="faq-item" open>
         <summary>What is OASIS Founder Access?</summary>
-        <div class="faq-answer">OASIS Founder Access is a limited digital founder program for early supporters, builders, creators and contributors. It is designed to provide access, recognition, perks and participation across the expanding OASIS ecosystem.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">OASIS Founder Access is a limited digital founder program for early supporters, builders, creators and contributors. It is designed to provide access, recognition, perks and participation across the expanding OASIS ecosystem.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>How many Founder tiers are there?</summary>
-        <div class="faq-answer">There are 3 limited tiers: <strong>Genesis Founder</strong> (20), <strong>Core Builder</strong> (50) and <strong>Early Supporter</strong> (100).</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">There are 3 limited tiers: <strong>Genesis Founder</strong> (20), <strong>Core Builder</strong> (50) and <strong>Early Supporter</strong> (100).</div></div></div>
       </details>
       <details class="faq-item">
         <summary>What is OASIS?</summary>
-        <div class="faq-answer">OASIS is a connected digital ecosystem spanning apps, games, avatars, AI systems, APIs, creator economies, digital ownership and interoperable infrastructure for Omniverse-style experiences.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">OASIS is a connected digital ecosystem spanning apps, games, avatars, AI systems, APIs, creator economies, digital ownership and interoperable infrastructure for Omniverse-style experiences.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>What is already built and operational?</summary>
-        <div class="faq-answer">Core systems are already live, including OGEngine, NFT systems, GeoNFT systems, OAPP infrastructure, STARNET, avatar systems, APIs, backend infrastructure, Smart Bricks architecture, ODOOM, OQUAKE and the basic Omniverse framework.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">Core systems are already live, including OGEngine, NFT systems, GeoNFT systems, OAPP infrastructure, STARNET, avatar systems, APIs, backend infrastructure, Smart Bricks architecture, ODOOM, OQUAKE and the basic Omniverse framework.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>What is currently in development?</summary>
-        <div class="faq-answer">Active expansion includes OPORTAL, Our World MVP, enhanced AI systems, creator tooling, additional integrations, advanced Omniverse systems, gameplay expansion, social systems and deeper Founder utility.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">Active expansion includes OPORTAL, Our World MVP, enhanced AI systems, creator tooling, additional integrations, advanced Omniverse systems, gameplay expansion, social systems and deeper Founder utility.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>What is an OAPP?</summary>
-        <div class="faq-answer">OAPPs are applications built on OASIS infrastructure. Founder tiers include expanded monthly creation allowances for ecosystem apps, tools, services, experiences and integrations.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">OAPPs are applications built on OASIS infrastructure. Founder tiers include expanded monthly creation allowances for ecosystem apps, tools, services, experiences and integrations.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>How do the Founder NFTs work?</summary>
-        <div class="faq-answer">Founder NFTs act as digital access passes. They are minted on Solana, stored in the connected wallet, and linked to the holder’s OASIS avatar through a wrapped Web4 integration layer.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">Founder NFTs act as digital access passes. They are minted on Solana, stored in the connected wallet, and linked to the holder’s OASIS avatar through a wrapped Web4 integration layer.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>What chain, wallet and payment methods are supported?</summary>
-        <div class="faq-answer">Current minting support is on <strong>Solana</strong> with <strong>Phantom</strong> wallet auto-connect. Purchases can be made with crypto or through Stripe card payments, with broader chain and wallet support planned over time.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">Current minting support is on <strong>Solana</strong> with <strong>Phantom</strong> wallet auto-connect. Purchases can be made with crypto or through Stripe card payments, with broader chain and wallet support planned over time.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>What happens after purchase?</summary>
-        <div class="faq-answer">After purchase, the NFT is delivered to your wallet. If the email is new, an OASIS avatar account is created, the wrapped Web4 link is attached, and you receive a secure activation email for first login.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">After purchase, the NFT is delivered to your wallet. If the email is new, an OASIS avatar account is created, the wrapped Web4 link is attached, and you receive a secure activation email for first login.</div></div></div>
       </details>
       <details class="faq-item">
         <summary>Is this an investment product?</summary>
-        <div class="faq-answer">No. Founder Access is a digital access and community program. It does not guarantee profits, token value, market performance or any financial return.</div>
+        <div class="faq-answer-wrap"><div class="faq-answer"><div class="faq-answer-inner">No. Founder Access is a digital access and community program. It does not guarantee profits, token value, market performance or any financial return.</div></div></div>
       </details>
     </div>
+    <div class="faq-more"><a href="FoundersFAQ.html" target="_blank" rel="noopener">Read the full detailed FAQ and participant guide</a></div>
   </section>
 
   <section class="section">
