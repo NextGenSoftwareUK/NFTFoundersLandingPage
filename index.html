@@ -1471,15 +1471,11 @@ body.test-mode-on .test-chain-note{display:block}
       wrap.style.maxHeight = wrap.scrollHeight + 'px';
       wrap.style.opacity = '1';
       wrap.offsetHeight;
+      item.open = false;
       requestAnimationFrame(() => {
         wrap.style.maxHeight = '0px';
         wrap.style.opacity = '0';
       });
-      const finish = (event) => {
-        if (event.propertyName !== 'max-height') return;
-        item.open = false;
-      };
-      wrap.addEventListener('transitionend', finish, { once: true });
     };
 
     items.forEach((item) => {
