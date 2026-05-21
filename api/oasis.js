@@ -1,4 +1,5 @@
 //import { kv } from '@vercel/kv';
+const crypto = require("crypto");
 const { createClient } = require("redis");
 const redis = createClient({ url: process.env.REDIS_URL });
 
@@ -11,6 +12,225 @@ let redisReady = null;
 async function ensureRedis() {
   if (!redisReady) redisReady = redis.connect();
   return redisReady;
+}
+
+const ACTIVATION_PORTAL_URL = "https://portal.oasisomniverse.one/activate";
+const ACTIVATION_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+function randomString(length = 24) {
+  return crypto.randomBytes(length).toString("hex").slice(0, length);
+}
+
+function randomPassword(length = 20) {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%";
+  const bytes = crypto.randomBytes(length);
+  let out = "";
+  for (let i = 0; i < length; i += 1) {
+    out += alphabet[bytes[i] % alphabet.length];
+  }
+  return out;
+}
+
+function usernameFromEmail(email) {
+  const local = String(email || "")
+    .split("@")[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, "")
+    .replace(/[._-]+/g, "")
+    .slice(0, 16) || "oasis";
+  return `${local}-${randomString(6)}`;
+}
+
+async function readResponseBody(response) {
+  const text = await response.text();
+  try {
+    return { text, json: JSON.parse(text) };
+  } catch {
+    return { text, json: null };
+  }
+}
+
+function extractAvatar(data) {
+  return data?.result?.result?.avatar
+    || data?.result?.avatar
+    || data?.avatar
+    || data?.result
+    || null;
+}
+
+function extractJwtToken(data) {
+  return data?.result?.result?.jwtToken
+    || data?.result?.jwtToken
+    || data?.jwtToken
+    || data?.token
+    || null;
+}
+
+function extractVerificationToken(data, avatar) {
+  return data?.result?.verificationToken
+    || data?.result?.result?.verificationToken
+    || data?.verificationToken
+    || avatar?.verificationToken
+    || null;
+}
+
+async function oasisJsonFetch(apiUrl, path, { method = "GET", token, body } = {}) {
+  const response = await fetch(`${apiUrl}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  const payload = await readResponseBody(response);
+  return { response, ...payload };
+}
+
+async function lookupAvatarByEmail({ apiUrl, token, email }) {
+  const { response, json, text } = await oasisJsonFetch(apiUrl, `/api/Avatar/get-by-email/${encodeURIComponent(email)}`, {
+    token
+  });
+
+  if (response.status === 404) return null;
+
+  if (!response.ok) {
+    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
+    if (/not found/i.test(msg)) return null;
+    throw new Error(`Avatar lookup failed (${response.status}): ${msg}`);
+  }
+
+  const avatar = extractAvatar(json);
+  if (avatar?.avatarId || avatar?.id) return avatar;
+
+  return null;
+}
+
+async function registerAvatar({ apiUrl, email, username, password }) {
+  const payload = {
+    username,
+    email,
+    password,
+    confirmPassword: password,
+    firstName: "Founder",
+    lastName: "User",
+    title: "Mx",
+    avatarType: "User",
+    acceptTerms: true,
+    privacyMode: false
+  };
+
+  const { response, json, text } = await oasisJsonFetch(apiUrl, "/api/Avatar/register", {
+    method: "POST",
+    body: payload
+  });
+
+  if (!response.ok) {
+    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
+    throw new Error(`Avatar registration failed (${response.status}): ${msg}`);
+  }
+
+  const avatar = extractAvatar(json);
+  const jwtToken = extractJwtToken(json);
+  const verificationToken = extractVerificationToken(json, avatar);
+
+  if (!avatar?.avatarId && !avatar?.id) {
+    throw new Error("Avatar registration succeeded but no avatar ID was returned");
+  }
+
+  return {
+    avatar,
+    jwtToken,
+    verificationToken,
+    username,
+    email,
+    password
+  };
+}
+
+function buildWeb4NFT({ payload, mintResult, avatarId, email, createdNewAvatar }) {
+  const minted = mintResult?.result?.web3NFTs?.[0] || {};
+  const now = new Date().toISOString();
+
+  return {
+    ...minted,
+    //importedByAvatarId: avatarId,
+    // The avatar-facing NFT queries key off MintedByAvatarId, so we re-home the record here.
+    mintedByAvatarId: avatarId, //TODO: This is needed for now so the API returns nfts for that avatar but in future the mintedBy should be the OASIS system account that ACTUALLY minted the nft, the users avatar should be set in currentOwnerAvatarId instead.
+    modifiedByAvatarId: avatarId,
+    sendToAvatarAfterMintingId: avatarId,
+    sendToAvatarAfterMintingUsername: email,
+    currentOwnerAvatarId: avatarId,
+    lastPurchasedByAvatarId: avatarId,
+    lastSoldByAvatarId: payload.MintedByAvatarId,
+    title: payload.Title || minted.title,
+    description: payload.Description || minted.description,
+    symbol: payload.Symbol || minted.symbol,
+    onChainProvider: payload.OnChainProvider,
+    offChainProvider: payload.OffChainProvider,
+    nftStandardType: payload.NFTStandardType,
+    nftOffChainMetaType: payload.NFTOffChainMetaType,
+    jsonMetaDataURL: payload.JSONMetaDataURL || payload.JsonMetaDataURL || minted.jsonMetaDataURL,
+    imageUrl: payload.ImageUrl || payload.imageUrl || minted.imageUrl,
+    thumbnailUrl: payload.ThumbnailUrl || payload.thumbnailUrl || minted.thumbnailUrl,
+    metaData: {
+      ...(minted.metaData || {}),
+      ...(payload.MetaData || {}),
+      email,
+      mintingAvatarId: payload.MintedByAvatarId,
+      linkedAvatarId: avatarId,
+      createdNewAvatar,
+      mintTransactionHash: minted.mintTransactionHash || null,
+      sendNFTTransactionHash: minted.sendNFTTransactionHash || null
+    },
+    tags: Array.from(new Set([...(minted.tags || []), "founder", "web4", createdNewAvatar ? "activation-required" : "existing-avatar"])),
+    importedOn: now,
+    modifiedOn: now,
+    mintedOn: minted.mintedOn || now
+  };
+}
+
+async function importWeb4NFT({ apiUrl, token, avatarId, nft }) {
+  const { response, json, text } = await oasisJsonFetch(apiUrl, `/api/Nft/import-web4-nft/${encodeURIComponent(avatarId)}`, {
+    method: "POST",
+    token,
+    body: nft
+  });
+
+  if (!response.ok) {
+    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
+    throw new Error(`Web4 NFT import failed (${response.status}): ${msg}`);
+  }
+
+  return json;
+}
+
+async function storeActivationRecord({ email, username, activationKey, avatarId, verificationToken, tempPassword, testMode }) {
+  const record = {
+    email,
+    username,
+    activationKey,
+    avatarId,
+    verificationToken,
+    tempPassword,
+    testMode,
+    createdAt: Date.now()
+  };
+
+  await redis.set(`avatar-activation:${activationKey}`, JSON.stringify(record), {
+    EX: ACTIVATION_TTL_SECONDS
+  });
+
+  return record;
+}
+
+function buildActivationUrl({ email, activationKey }) {
+  const url = new URL(ACTIVATION_PORTAL_URL);
+  url.searchParams.set("email", email);
+  url.searchParams.set("key", activationKey);
+  return url.toString();
 }
 
 export default async function handler(req, res) {
@@ -202,7 +422,122 @@ export default async function handler(req, res) {
     }
 
     // =========================
-    // 8. SAVE SUCCESS
+    // 8. RESOLVE AVATAR + LINK WEB4 NFT
+    // =========================
+
+    const recipientEmail = String(order.email || payload.MetaData?.email || "").trim();
+    const avatarProvision = {
+      createdNewAvatar: false,
+      avatarId: null,
+      activationUrl: null,
+      activationKey: null,
+      warning: null,
+      linked: false
+    };
+
+    if (recipientEmail) {
+      try {
+        const existingAvatar = await lookupAvatarByEmail({
+          apiUrl: OASIS_CFG.apiUrl,
+          token,
+          email: recipientEmail
+        });
+
+        let avatar = existingAvatar;
+        let tempPassword = null;
+        let verificationToken = null;
+        let createdNewAvatar = false;
+
+        if (!avatar) {
+          createdNewAvatar = true;
+          const baseUsername = usernameFromEmail(recipientEmail);
+
+          let lastRegisterError = null;
+          for (let attempt = 0; attempt < 3; attempt += 1) {
+            const password = randomPassword(20);
+            const username = attempt === 0 ? baseUsername : `${baseUsername}-${attempt + 1}`;
+
+            try {
+              const registration = await registerAvatar({
+                apiUrl: OASIS_CFG.apiUrl,
+                email: recipientEmail,
+                username,
+                password
+              });
+
+              avatar = registration.avatar;
+              tempPassword = registration.password;
+              verificationToken = registration.verificationToken;
+              break;
+            } catch (regErr) {
+              lastRegisterError = regErr;
+              if (!/duplicate|exists|already/i.test(String(regErr?.message || regErr))) {
+                throw regErr;
+              }
+            }
+          }
+
+          if (!avatar) {
+            throw lastRegisterError || new Error("Avatar registration failed");
+          }
+        }
+
+        const avatarId = avatar.avatarId || avatar.id;
+        if (!avatarId) {
+          throw new Error("Avatar ID missing after lookup/registration");
+        }
+
+        const web4NFT = buildWeb4NFT({
+          payload,
+          mintResult: result,
+          avatarId,
+          email: recipientEmail,
+          createdNewAvatar
+        });
+
+        if (result?.result?.web3NFTs?.length > 0) {
+          result.result.web3NFTs[0] = web4NFT; //Why are overriding the web3 nft with a web4 nft?!
+        }
+
+        await importWeb4NFT({
+          apiUrl: OASIS_CFG.apiUrl,
+          token,
+          avatarId,
+          nft: web4NFT
+        });
+
+        avatarProvision.createdNewAvatar = createdNewAvatar;
+        avatarProvision.avatarId = avatarId;
+        avatarProvision.linked = true;
+
+        if (createdNewAvatar) {
+          const activationKey = crypto.randomUUID();
+          const activationUrl = buildActivationUrl({
+            email: recipientEmail,
+            activationKey
+          });
+
+          await storeActivationRecord({
+            email: recipientEmail,
+            username: avatar?.username || null,
+            activationKey,
+            avatarId,
+            verificationToken,
+            tempPassword,
+            testMode
+          });
+
+          avatarProvision.activationKey = activationKey;
+          avatarProvision.activationUrl = activationUrl;
+        }
+      } catch (avatarErr) {
+        console.warn("Avatar provisioning failed after mint:", avatarErr);
+        avatarProvision.warning = avatarErr?.message || String(avatarErr);
+      }
+    }
+
+    // =========================
+    // 9. SAVE SUCCESS
     // =========================
 
     order.used = true;
@@ -214,6 +549,11 @@ export default async function handler(req, res) {
 
     order.paymentSignature = payload.MetaData.paymentSignature || null;
     order.email = payload.MetaData.email || null;
+    order.avatarId = avatarProvision.avatarId || null;
+    order.avatarCreated = avatarProvision.createdNewAvatar;
+    order.avatarActivationKey = avatarProvision.activationKey || null;
+    order.avatarActivationUrl = avatarProvision.activationUrl || null;
+    order.avatarProvisionWarning = avatarProvision.warning || null;
 
     order.lockReleasedAt = Date.now();
     order.oasisResponse = mintText;
@@ -229,7 +569,12 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      result
+      result,
+      avatarCreated: avatarProvision.createdNewAvatar,
+      avatarId: avatarProvision.avatarId,
+      activationUrl: avatarProvision.activationUrl,
+      activationKey: avatarProvision.activationKey,
+      avatarProvisionWarning: avatarProvision.warning
     });
 
   } catch (e) {
