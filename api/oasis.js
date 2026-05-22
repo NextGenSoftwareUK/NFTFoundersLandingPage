@@ -151,30 +151,30 @@ async function registerAvatar({ apiUrl, email, username, password }) {
 }
 
 function buildWeb4NFT({ payload, mintResult, avatarId, email, createdNewAvatar }) {
-  const minted = mintResult?.result?.web3NFTs?.[0] || {};
+  const minted = mintResult?.result || {};
+  const primaryWeb3NFT = minted?.web3NFTs?.[0] || {};
   const now = new Date().toISOString();
 
   return {
     ...minted,
-    //importedByAvatarId: avatarId,
     // The avatar-facing NFT queries key off MintedByAvatarId, so we re-home the record here.
-    mintedByAvatarId: avatarId, //TODO: This is needed for now so the API returns nfts for that avatar but in future the mintedBy should be the OASIS system account that ACTUALLY minted the nft, the users avatar should be set in currentOwnerAvatarId instead.
+    mintedByAvatarId: avatarId,
     modifiedByAvatarId: avatarId,
     sendToAvatarAfterMintingId: avatarId,
     sendToAvatarAfterMintingUsername: email,
     currentOwnerAvatarId: avatarId,
     lastPurchasedByAvatarId: avatarId,
     lastSoldByAvatarId: payload.MintedByAvatarId,
-    title: payload.Title || minted.title,
-    description: payload.Description || minted.description,
-    symbol: payload.Symbol || minted.symbol,
+    title: payload.Title || minted.title || primaryWeb3NFT.title,
+    description: payload.Description || minted.description || primaryWeb3NFT.description,
+    symbol: payload.Symbol || minted.symbol || primaryWeb3NFT.symbol,
     onChainProvider: payload.OnChainProvider,
     offChainProvider: payload.OffChainProvider,
     nftStandardType: payload.NFTStandardType,
     nftOffChainMetaType: payload.NFTOffChainMetaType,
-    jsonMetaDataURL: payload.JSONMetaDataURL || payload.JsonMetaDataURL || minted.jsonMetaDataURL,
-    imageUrl: payload.ImageUrl || payload.imageUrl || minted.imageUrl,
-    thumbnailUrl: payload.ThumbnailUrl || payload.thumbnailUrl || minted.thumbnailUrl,
+    jsonMetaDataURL: payload.JSONMetaDataURL || payload.JsonMetaDataURL || minted.jsonMetaDataURL || primaryWeb3NFT.jsonMetaDataURL,
+    imageUrl: payload.ImageUrl || payload.imageUrl || minted.imageUrl || primaryWeb3NFT.imageUrl,
+    thumbnailUrl: payload.ThumbnailUrl || payload.thumbnailUrl || minted.thumbnailUrl || primaryWeb3NFT.thumbnailUrl,
     metaData: {
       ...(minted.metaData || {}),
       ...(payload.MetaData || {}),
@@ -182,18 +182,19 @@ function buildWeb4NFT({ payload, mintResult, avatarId, email, createdNewAvatar }
       mintingAvatarId: payload.MintedByAvatarId,
       linkedAvatarId: avatarId,
       createdNewAvatar,
-      mintTransactionHash: minted.mintTransactionHash || null,
-      sendNFTTransactionHash: minted.sendNFTTransactionHash || null
+      mintTransactionHash: primaryWeb3NFT.mintTransactionHash || minted.mintTransactionHash || null,
+      sendNFTTransactionHash: primaryWeb3NFT.sendNFTTransactionHash || minted.sendNFTTransactionHash || null
     },
-    tags: Array.from(new Set([...(minted.tags || []), "founder", "web4", createdNewAvatar ? "activation-required" : "existing-avatar"])),
+    tags: Array.from(new Set([...(minted.tags || []), ...(primaryWeb3NFT.tags || []), "founder", "web4", createdNewAvatar ? "activation-required" : "existing-avatar"])),
     importedOn: now,
     modifiedOn: now,
-    mintedOn: minted.mintedOn || now
+    mintedOn: minted.mintedOn || primaryWeb3NFT.mintedOn || now
   };
 }
 
-async function importWeb4NFT({ apiUrl, token, avatarId, nft }) {
-  const { response, json, text } = await oasisJsonFetch(apiUrl, `/api/Nft/import-web4-nft/${encodeURIComponent(avatarId)}`, {
+async function updateWeb4NFT({ apiUrl, token, providerType, nft }) {
+  const providerQuery = providerType ? `?providerType=${encodeURIComponent(providerType)}` : "";
+  const { response, json, text } = await oasisJsonFetch(apiUrl, `/api/Nft/update-web4-nft${providerQuery}`, {
     method: "POST",
     token,
     body: nft
@@ -201,7 +202,7 @@ async function importWeb4NFT({ apiUrl, token, avatarId, nft }) {
 
   if (!response.ok) {
     const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
-    throw new Error(`Web4 NFT import failed (${response.status}): ${msg}`);
+    throw new Error(`Web4 NFT update failed (${response.status}): ${msg}`);
   }
 
   return json;
@@ -495,16 +496,36 @@ export default async function handler(req, res) {
           createdNewAvatar
         });
 
-        if (result?.result?.web3NFTs?.length > 0) {
-          result.result.web3NFTs[0] = web4NFT; //Why are overriding the web3 nft with a web4 nft?!
-        }
+        const updateRequest = {
+          id: web4NFT.id || result?.result?.id,
+          mintedByAvatarId: avatarId,
+          modifiedByAvatarId: avatarId,
+          currentOwnerAvatarId: avatarId,
+          previousOwnerAvatarId: payload.MintedByAvatarId,
+          title: web4NFT.title,
+          description: web4NFT.description,
+          imageUrl: web4NFT.imageUrl,
+          thumbnailUrl: web4NFT.thumbnailUrl,
+          metaData: web4NFT.metaData,
+          tags: web4NFT.tags,
+          price: web4NFT.price,
+          discount: web4NFT.discount,
+          royaltyPercentage: web4NFT.royaltyPercentage,
+          lastSoldByAvatarId: payload.MintedByAvatarId,
+          lastPurchasedByAvatarId: avatarId,
+          providerType: payload.OffChainProvider
+        };
 
-        await importWeb4NFT({
+        const updatedWeb4NFT = await updateWeb4NFT({
           apiUrl: OASIS_CFG.apiUrl,
           token,
-          avatarId,
-          nft: web4NFT
+          providerType: payload.OffChainProvider,
+          nft: updateRequest
         });
+
+        if (updatedWeb4NFT?.result) {
+          result.result = updatedWeb4NFT.result;
+        }
 
         avatarProvision.createdNewAvatar = createdNewAvatar;
         avatarProvision.avatarId = avatarId;
