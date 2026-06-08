@@ -2,12 +2,12 @@
   "name": "OASIS Founders Collection",
   "symbol": "OASISFNDR",
   "description": "OASIS Founder Access NFTs",
-  "image": "https://www.oasisfoundernfts.icu/img/nft-founder-collection.png",
+  "image": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
   "seller_fee_basis_points": 0,
   "properties": {
     "files": [
       {
-        "uri": "https://www.oasisfoundernfts.icu/img/nft-founder-collection.png",
+        "uri": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
         "type": "image/png"
       }
     ],
