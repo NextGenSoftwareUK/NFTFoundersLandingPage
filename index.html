@@ -507,6 +507,9 @@ body.test-mode-on .test-chain-note{display:block}
 .infographic-card--hero {
   grid-column: 1 / -1;
 }
+.infographic-card--hero { cursor: default !important; }
+.infographic-card--hero::after { display: none !important; }
+.infographic-card--hero:hover { transform: none; box-shadow: none; filter: none; border-color: rgba(0,229,255,.12); }
 .infographic-card--hero img {
   height: auto !important;
   max-height: none !important;
@@ -940,7 +943,7 @@ body.test-mode-on .test-chain-note{display:block}
   </p>
 
   <div class="infographic-grid">
-    <div class="infographic-card infographic-card--hero" onclick="openLightbox('img/ECOSYSTEM.jpg')">
+    <div class="infographic-card infographic-card--hero" style="cursor:default">
       <img src="img/ECOSYSTEM.jpg" alt="OASIS Ecosystem" loading="lazy">
       <div class="infographic-label">
         <span class="infographic-tag">ECOSYSTEM</span>
