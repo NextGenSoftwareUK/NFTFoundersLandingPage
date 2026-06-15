@@ -120,7 +120,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 /* ↓ CHANGED: supply dot was gold, now cyan */
 .supply-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:blink 1.2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.scroll-cta{margin-top:48px;font-size:13px;letter-spacing:.2em;color:var(--text-dim);animation:fadeUp .8s .6s ease both}
+.scroll-cta{margin-top:48px;font-size:13px;letter-spacing:.2em;color:#a8bfd8;animation:fadeUp .8s .6s ease both}
 .scroll-arrow{animation:bounce 2s ease-in-out infinite;display:block;margin-top:8px;font-size:20px}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -229,7 +229,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .protocol-panel{background:rgba(10,21,53,.82);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:30px 28px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
 .protocol-kicker{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.2em;color:var(--cyan);margin-bottom:12px}
 .protocol-heading{font-family:'Orbitron',sans-serif;font-size:clamp(20px,3vw,30px);line-height:1.25;color:var(--heading);margin-bottom:14px;letter-spacing:.04em}
-.protocol-copy{font-size:16px;line-height:1.7;color:var(--text-dim);margin-bottom:22px}
+.protocol-copy{font-size:16px;line-height:1.7;color:#a8bfd8;margin-bottom:22px}
 
 /* ↓ CHANGED: protocol-copy strong was gold-light, now white */
 .protocol-copy strong{color:var(--heading)}
@@ -250,7 +250,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 /* ↓ CHANGED: utility-tag was gold-light, now heading-sub */
 .utility-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--heading-sub);margin-bottom:12px}
 .utility-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--cyan);margin-bottom:8px}
-.utility-text{font-size:14px;line-height:1.6;color:var(--text-dim)}
+.utility-text{font-size:14px;line-height:1.6;color:#a8bfd8}
 .faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:1100px;margin:0 auto}
 .faq-item{background:rgba(255,255,255,.025);border:1px solid rgba(0,229,255,.12);border-radius:12px;padding:18px 18px 16px}
 .faq-item summary{list-style:none;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--heading);display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
@@ -260,7 +260,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .faq-item > :not(summary){display:block !important}
 .faq-answer-wrap{max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .25s ease}
 .faq-item.is-open .faq-answer-wrap{opacity:1}
-.faq-answer{margin-top:0;font-size:14px;line-height:1.7;color:var(--text-dim);opacity:.95}
+.faq-answer{margin-top:0;font-size:14px;line-height:1.7;color:#a8bfd8;opacity:.95}
 .faq-answer-inner{min-height:0;padding-top:12px}
 .faq-answer strong{color:var(--heading)}
 .faq-more{display:flex;justify-content:center;margin-top:28px}
@@ -289,7 +289,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .supporter .tier-badge{background:rgba(0,204,68,.1);color:var(--supporter);border:1px solid rgba(0,204,68,.25)}
 .tier-name{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;letter-spacing:.08em;margin-bottom:6px}
 .genesis .tier-name{color:var(--genesis)}.core .tier-name{color:var(--core)}.supporter .tier-name{color:#88ffaa}
-.tier-supply{font-size:13px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:24px}
+.tier-supply{font-size:13px;color:#a8bfd8;font-family:'Share Tech Mono',monospace;margin-bottom:24px}
 .tier-perks{list-style:none;margin-bottom:28px}
 .tier-perks li{font-size:14px;color:var(--text);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:10px}
 .tier-perks li:last-child{border-bottom:none}
@@ -298,7 +298,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .stat-box{background:rgba(0,0,0,.3);border-radius:8px;padding:12px;text-align:center}
 .stat-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;margin-bottom:2px}
 .genesis .stat-val{color:var(--genesis)}.core .stat-val{color:var(--core)}.supporter .stat-val{color:#88ffaa}
-.stat-label{font-size:11px;color:var(--text-dim);letter-spacing:.1em}
+.stat-label{font-size:11px;color:#a8bfd8;letter-spacing:.1em}
 .mint-btn{width:100%;padding:16px 24px;border:none;border-radius:10px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
 .mint-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.1);transform:translateX(-100%);transition:transform .4s}
 .mint-btn:hover::before{transform:translateX(0)}.mint-btn:hover{transform:translateY(-2px)}.mint-btn:active{transform:scale(.98)}
@@ -327,19 +327,19 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .modal-header{padding:28px 28px 0;display:flex;align-items:flex-start;justify-content:space-between}
 .modal-tier-badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:.15em;margin-bottom:12px}
 .modal-title{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700}
-.modal-close{background:none;border:none;color:var(--text-dim);font-size:24px;cursor:pointer;line-height:1;padding:4px;transition:color .2s}
+.modal-close{background:none;border:none;color:#a8bfd8;font-size:24px;cursor:pointer;line-height:1;padding:4px;transition:color .2s}
 .modal-close:hover{color:var(--text)}
 .modal-body{padding:20px 28px 28px}
-.modal-summary{background:rgba(0,0,0,.3);border-radius:10px;padding:16px;margin-bottom:20px;font-size:14px;color:var(--text-dim);display:flex;gap:20px;flex-wrap:wrap}
+.modal-summary{background:rgba(0,0,0,.3);border-radius:10px;padding:16px;margin-bottom:20px;font-size:14px;color:#a8bfd8;display:flex;gap:20px;flex-wrap:wrap}
 .modal-summary strong{color:var(--text);font-size:15px}
 .pay-tabs{display:flex;margin-bottom:24px;border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
-.pay-tab{flex:1;padding:12px 8px;background:transparent;border:none;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s,color .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.pay-tab{flex:1;padding:12px 8px;background:transparent;border:none;color:#a8bfd8;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s,color .2s;display:flex;align-items:center;justify-content:center;gap:6px}
 .pay-tab.active{background:rgba(0,229,255,.12);color:var(--cyan)}
 .pay-tab:not(.active):hover{background:rgba(255,255,255,.04)}
 .pay-panel{display:none;animation:fadeIn .2s ease}
 .pay-panel.active{display:block}
 .form-group{margin-bottom:16px}
-.form-label{display:block;font-size:12px;letter-spacing:.15em;color:var(--text-dim);margin-bottom:7px;font-family:'Share Tech Mono',monospace}
+.form-label{display:block;font-size:12px;letter-spacing:.15em;color:#a8bfd8;margin-bottom:7px;font-family:'Share Tech Mono',monospace}
 .form-input{width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;transition:border-color .2s,box-shadow .2s;outline:none}
 .form-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
 #stripe-card-element{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:13px 14px;transition:border-color .2s}
@@ -362,15 +362,15 @@ body.test-mode-on .test-chain-note{display:block}
 .coin-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)}
 .coin-btn.active{border-color:var(--cyan);background:rgba(0,229,255,.08)}
 .coin-icon{font-size:22px;margin-bottom:4px}
-.coin-label{font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:.05em}
-.coin-sub{font-size:10px;color:var(--text-dim);opacity:.6;margin-top:2px;font-family:'Share Tech Mono',monospace}
+.coin-label{font-size:11px;color:#a8bfd8;font-family:'Share Tech Mono',monospace;letter-spacing:.05em}
+.coin-sub{font-size:10px;color:#a8bfd8;opacity:.6;margin-top:2px;font-family:'Share Tech Mono',monospace}
 .chain-panel{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px;margin-bottom:16px}
 .wallet-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .wallet-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--text-dim);transition:background .3s,box-shadow .3s}
 .wallet-dot.on{background:var(--green);box-shadow:0 0 8px rgba(0,224,122,.5)}
-.wallet-addr{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;transition:color .3s}
+.wallet-addr{font-family:'Share Tech Mono',monospace;font-size:13px;color:#a8bfd8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;transition:color .3s}
 .wallet-addr.connected{color:var(--cyan)}
-.wallet-chain-tag{font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;flex-shrink:0;background:rgba(255,255,255,.07);border-radius:4px;padding:2px 7px}
+.wallet-chain-tag{font-size:11px;color:#a8bfd8;font-family:'Share Tech Mono',monospace;flex-shrink:0;background:rgba(255,255,255,.07);border-radius:4px;padding:2px 7px}
 .chain-switch-btn{width:100%;padding:11px;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);border-radius:9px;color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;cursor:pointer;transition:background .2s,border-color .2s;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .chain-switch-btn:hover{background:rgba(0,229,255,.13);border-color:rgba(0,229,255,.35)}
 .chain-switch-btn.done{border-color:rgba(0,224,122,.4);color:var(--green);background:rgba(0,224,122,.06)}
@@ -383,9 +383,9 @@ body.test-mode-on .test-chain-note{display:block}
 .copy-btn{padding:11px 16px;background:rgba(0,229,255,.1);border:none;border-left:1px solid rgba(255,255,255,.1);color:var(--cyan);font-size:12px;font-family:'Share Tech Mono',monospace;cursor:pointer;transition:background .2s;white-space:nowrap;flex-shrink:0}
 .copy-btn:hover{background:rgba(0,229,255,.2)}
 .copy-btn.copied{color:var(--green)}
-.qr-note{font-size:12px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.6;margin-bottom:14px}
+.qr-note{font-size:12px;color:#a8bfd8;font-family:'Share Tech Mono',monospace;line-height:1.6;margin-bottom:14px}
 .price-row{display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.3);border-radius:8px;padding:13px 16px;margin-bottom:16px}
-.price-label{font-size:13px;color:var(--text-dim)}
+.price-label{font-size:13px;color:#a8bfd8}
 .price-value{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700}
 .confirm-btn{width:100%;padding:17px;border:none;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;transition:transform .2s,opacity .2s;position:relative;overflow:hidden}
 .confirm-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);transform:translateX(-100%);transition:transform .4s}
@@ -396,7 +396,7 @@ body.test-mode-on .test-chain-note{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
 .field-error{color:var(--red);font-size:12px;margin-top:8px;font-family:'Share Tech Mono',monospace;min-height:18px;text-align:center}
 .net-warn{background:rgba(255,100,0,.1);border:1px solid rgba(255,100,0,.3);border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:12px;color:#ff9944;font-family:'Share Tech Mono',monospace;display:none}
-.modal-terms{text-align:center;font-size:12px;color:var(--text-dim);margin-top:12px;line-height:1.5}
+.modal-terms{text-align:center;font-size:12px;color:#a8bfd8;margin-top:12px;line-height:1.5}
 .modal-terms a{color:var(--cyan);text-decoration:none}
 
 /* ── SUCCESS ── */
@@ -405,8 +405,8 @@ body.test-mode-on .test-chain-note{display:block}
 .success-modal{background:var(--bg-card);border-radius:20px;width:100%;max-width:440px;padding:48px 36px;text-align:center;border:1px solid rgba(0,229,255,.25);box-shadow:0 30px 80px rgba(0,0,0,.8);animation:slideUp .4s cubic-bezier(.22,.61,.36,1)}
 .success-ring{width:80px;height:80px;border-radius:50%;margin:0 auto 24px;background:rgba(0,229,255,.1);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 0 40px rgba(0,229,255,.3);animation:ringPulse 2s ease-in-out infinite}
 .success-title{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:700;color:var(--cyan);margin-bottom:12px}
-.success-desc{font-size:15px;color:var(--text-dim);line-height:1.6;margin-bottom:12px}
-.success-tx{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);word-break:break-all;background:rgba(0,0,0,.3);border-radius:8px;padding:10px;margin-bottom:24px;display:none;line-height:1.6}
+.success-desc{font-size:15px;color:#a8bfd8;line-height:1.6;margin-bottom:12px}
+.success-tx{font-family:'Share Tech Mono',monospace;font-size:11px;color:#a8bfd8;word-break:break-all;background:rgba(0,0,0,.3);border-radius:8px;padding:10px;margin-bottom:24px;display:none;line-height:1.6}
 .success-close{padding:14px 36px;background:linear-gradient(135deg,#007acc,#00e5ff);color:#000;border:none;border-radius:10px;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:transform .2s,box-shadow .2s}
 .success-close:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,255,.4)}
 
@@ -417,7 +417,7 @@ body.test-mode-on .test-chain-note{display:block}
 
 /* ↓ CHANGED: why-title was gold, now cyan */
 .why-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--cyan);margin-bottom:8px}
-.why-text{font-size:14px;color:var(--text-dim);line-height:1.6}
+.why-text{font-size:14px;color:#a8bfd8;line-height:1.6}
 .video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;max-width:1100px;margin:0 auto}
 .video-card{background:rgba(10,21,53,.82);border:1px solid rgba(0,229,255,.14);border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18)}
 .video-frame{position:relative;aspect-ratio:16/9;background:#020610}
@@ -446,12 +446,12 @@ body.test-mode-on .test-chain-note{display:block}
 .download-list{list-style:none;display:grid;gap:8px}
 .download-list a{color:var(--text);font-size:13px;line-height:1.35;text-decoration:none}
 .download-list a:hover{color:var(--cyan)}
-.download-note{max-width:900px;margin:28px auto 0;text-align:center;color:var(--text-dim);font-size:14px;line-height:1.7}
+.download-note{max-width:900px;margin:28px auto 0;text-align:center;color:#a8bfd8;font-size:14px;line-height:1.7}
 
 /* ↓ CHANGED: cta-band gradient was gold→cyan, now cyan→white→cyan */
 .cta-band{background:linear-gradient(135deg,rgba(0,229,255,.06),rgba(255,255,255,.04));border-top:1px solid rgba(0,229,255,.15);border-bottom:1px solid rgba(0,229,255,.1);padding:60px 20px;text-align:center}
 .cta-band h2{font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,28px);font-weight:700;letter-spacing:.1em;margin-bottom:10px;background:linear-gradient(90deg,var(--cyan),#ffffff,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.cta-band p{font-size:16px;color:var(--text-dim);margin-bottom:28px}
+.cta-band p{font-size:16px;color:#a8bfd8;margin-bottom:28px}
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:40px 20px;text-align:center;font-size:13px;color:#a8bfd8;font-family:'Share Tech Mono',monospace;line-height:2}
 
 /* ↓ CHANGED: footer-brand was gold, now cyan */
@@ -460,10 +460,10 @@ body.test-mode-on .test-chain-note{display:block}
 .footer-socials{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:22px auto 26px}
 .footer-social{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:38px;padding:0 14px;border:1px solid rgba(0,229,255,.22);border-radius:999px;background:rgba(0,229,255,.055);color:var(--cyan);font-size:12px;letter-spacing:.08em;text-decoration:none}
 .footer-social:hover{background:rgba(0,229,255,.13);border-color:rgba(0,229,255,.45);transform:translateY(-2px)}
-.footer-grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:24px;max-width:980px;margin:0 auto 22px;text-align:left}
-.footer-heading{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.16em;color:var(--heading);margin-bottom:10px}
-.footer-links{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.footer-links a{color:#a8bfd8;text-decoration:none}
+.footer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;max-width:1280px;margin:3.5rem auto 22px;text-align:left}
+.footer-heading{font-family:'Orbitron',sans-serif;font-size:.72rem;letter-spacing:.14em;color:var(--gold);margin-bottom:10px}
+.footer-links{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.footer-links a{color:#a8bfd8;text-decoration:none;font-size:13px}
 .footer-links a:hover{color:var(--cyan)}
 .footer-note{margin-top:8px;color:#a8bfd8}
 .footer-legal{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px;font-size:12px}
@@ -473,7 +473,7 @@ body.test-mode-on .test-chain-note{display:block}
 @media(max-width:900px){.protocol-grid{grid-template-columns:1fr}.utility-band{grid-template-columns:repeat(2,minmax(0,1fr))}.video-grid{grid-template-columns:1fr}.proof-grid{grid-template-columns:1fr}.download-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));text-align:center}}
 @media(max-width:600px){.tiers-grid{grid-template-columns:1fr}.coin-grid{grid-template-columns:repeat(3,1fr)}.utility-band{grid-template-columns:1fr}.faq-grid{grid-template-columns:1fr}.download-grid{grid-template-columns:1fr}.protocol-panel{padding:24px 20px}.protocol-point{grid-template-columns:1fr}.doc-link{width:100%;text-align:center}.footer-grid{grid-template-columns:1fr}.footer-social{flex:1 1 130px}}
-.perk-section-title{font-size:11px;letter-spacing:.15em;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin:16px 0 8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(255,255,255,.15)}
+.perk-section-title{font-size:11px;letter-spacing:.15em;color:#a8bfd8;font-family:'Share Tech Mono',monospace;margin:16px 0 8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(255,255,255,.15)}
 .genesis .perk-section-title{border-left-color:var(--gold)}
 .core .perk-section-title{border-left-color:var(--core)}
 .supporter .perk-section-title{border-left-color:#00cc44}
@@ -481,9 +481,9 @@ body.test-mode-on .test-chain-note{display:block}
 .genesis .tier-includes{background:rgba(240,165,0,.12);color:var(--gold);border:1px solid rgba(240,165,0,.3)}
 .core .tier-includes{background:rgba(160,196,255,.08);color:var(--core);border:1px solid rgba(160,196,255,.2)}
 .supporter .tier-includes{background:rgba(0,204,68,.08);color:#88ffaa;border:1px solid rgba(0,204,68,.2)}
-.tier-aura{margin-top:10px;padding:9px 14px;border-radius:8px;font-size:12px;color:var(--text-dim);line-height:1.5;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.tier-aura{margin-top:10px;padding:9px 14px;border-radius:8px;font-size:12px;color:#a8bfd8;line-height:1.5;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 .ecosystem-bar{display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;padding:20px;max-width:700px;margin:0 auto}
-.eco-item{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em}
+.eco-item{display:flex;flex-direction:column;align-items:center;gap:8px;color:#a8bfd8;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em}
 .eco-icon{width:48px;height:48px;border-radius:12px;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.15);display:flex;align-items:center;justify-content:center;font-size:22px}
 .provider-group{width:100%;margin-bottom:.75rem}
 .provider-group-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;opacity:.45;margin-bottom:.35rem;padding-left:2px}
@@ -599,6 +599,7 @@ body.test-mode-on .test-chain-note{display:block}
 @media(max-width:900px) { .infographic-grid { grid-template-columns: repeat(2,1fr); } }
 @media(max-width:600px) { .infographic-grid { grid-template-columns: 1fr; } }
 
+a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.8)) drop-shadow(0 0 40px rgba(0,229,255,.4))}
 </style>
 </head>
 <body>
@@ -661,7 +662,7 @@ body.test-mode-on .test-chain-note{display:block}
     <h1 class="hero-title">OASIS</h1>
     <div class="hero-sub">FOUNDER ACCESS</div>
     <p class="hero-desc">A new digital world is being built.<br><strong>A limited number of people will own the keys.</strong></p>
-    <p class="hero-desc" style="font-size:15px;color:var(--text-dim);margin-top:4px;">OGEngine · STAR CLI/ODK · COSMIC ORM · <a href="https://api.web4.oasisomniverse.one" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85">Web4 OASIS API</a> · <a href="https://api.starnet.oasisomniverse.one" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85">Web5 STAR API</a> · Our World access</p>
+    <p class="hero-desc" style="font-size:15px;color:#a8bfd8;margin-top:4px;">OGEngine · STAR CLI/ODK · COSMIC ORM · <a href="https://api.web4.oasisomniverse.one" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85">Web4 OASIS API</a> · <a href="https://api.starnet.oasisomniverse.one" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85">Web5 STAR API</a> · Our World access</p>
     <div class="supply-badge"><span class="supply-dot"></span>ONLY 170 FOUNDER SLOTS — EVER</div>
     <div class="scroll-cta">CHOOSE YOUR TIER<span class="scroll-arrow">↓</span></div>
   </section>
@@ -937,7 +938,7 @@ body.test-mode-on .test-chain-note{display:block}
 <section class="section">
   <h2 class="section-title">THE TECHNOLOGY</h2>
   <span class="section-line"></span>
-  <p style="text-align:center;color:var(--text-dim);max-width:600px;margin:0 auto 40px;font-size:15px;line-height:1.7">
+  <p style="text-align:center;color:#a8bfd8;max-width:600px;margin:0 auto 40px;font-size:15px;line-height:1.7">
     Dive deeper into the OASIS stack — the infrastructure, protocols and 
     ecosystems your Founder NFT gives you access to.
   </p>
@@ -1156,7 +1157,7 @@ body.test-mode-on .test-chain-note{display:block}
   <section class="section">
     <h2 class="section-title">FREQUENTLY ASKED QUESTIONS</h2>
     <span class="section-line"></span>
-    <p style="text-align:center;color:var(--text-dim);max-width:760px;margin:0 auto 34px;font-size:15px;line-height:1.7">A quick guide to Founder Access, the current ecosystem, and how the collection works today.</p>
+    <p style="text-align:center;color:#a8bfd8;max-width:760px;margin:0 auto 34px;font-size:15px;line-height:1.7">A quick guide to Founder Access, the current ecosystem, and how the collection works today.</p>
     <div class="faq-grid">
       <details class="faq-item" open>
         <summary>What is OASIS Founder Access?</summary>
@@ -1441,8 +1442,8 @@ body.test-mode-on .test-chain-note{display:block}
     <p>170 slots. Three tiers. One chance to be early.</p>
     <button onclick="document.getElementById('tiers').scrollIntoView({behavior:'smooth'})" style="padding:18px 44px;background:linear-gradient(135deg,#b37800,#f0a500,#ffe066);color:#0a0500;border:none;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;box-shadow:0 4px 24px rgba(240,165,0,.4);transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 36px rgba(240,165,0,.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(240,165,0,.4)'">⚡ VIEW ALL TIERS</button>
     <div style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.06)">
-      <div style="font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.2em;color:var(--text-dim);margin-bottom:20px">THIS IS JUST THE BEGINNING</div>
-      <p style="font-size:15px;color:var(--text-dim);max-width:600px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>OGEngine. Identity. Holons. Games. Worlds. Cross-chain NFTs. Business. Ownership.</p>
+      <div style="font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.2em;color:#a8bfd8;margin-bottom:20px">THIS IS JUST THE BEGINNING</div>
+      <p style="font-size:15px;color:#a8bfd8;max-width:600px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>OGEngine. Identity. Holons. Games. Worlds. Cross-chain NFTs. Business. Ownership.</p>
       <div class="ecosystem-bar">
         <div class="eco-item"><div class="eco-icon">🌍</div><span><a href="https:///ourworldthegame.com" target="_blank">OUR WORLD</a></span></div>
         <div class="eco-item"><div class="eco-icon">🎮</div><span>GAMES</span></div>
@@ -1450,7 +1451,7 @@ body.test-mode-on .test-chain-note{display:block}
         <div class="eco-item"><div class="eco-icon">🕹</div><span>OGENGINE</span></div>
         <div class="eco-item"><div class="eco-icon">⚙️</div><span>HYPERDRIVE</span></div>
       </div>
-      <div style="font-size:12px;color:var(--text-dim);margin-top:8px;font-family:'Share Tech Mono',monospace">WEB4 OASIS + WEB5 STAR INFRASTRUCTURE</div>
+      <div style="font-size:12px;color:#a8bfd8;margin-top:8px;font-family:'Share Tech Mono',monospace">WEB4 OASIS + WEB5 STAR INFRASTRUCTURE</div>
     </div>
   </div>
 
@@ -1469,27 +1470,10 @@ body.test-mode-on .test-chain-note{display:block}
 
     <div class="footer-grid">
       <div>
-        <div class="footer-heading">BUILD</div>
-        <ul class="footer-links">
-          <li><a href="https://www.oasisweb4.com/" target="_blank" rel="noopener">OASIS Web4</a></li>
-          <li><a href="https://oasis-web4.gitbook.io/oasis-web4-docs/" target="_blank" rel="noopener">Documentation</a></li>
-          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs/Devs/API%20Documentation" target="_blank" rel="noopener">API Reference</a></li>
-          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/DEVELOPER_DOCUMENTATION_INDEX.md" target="_blank" rel="noopener">Developer Index</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-heading">READ</div>
-        <ul class="footer-links">
-          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/THE_OASIS_COMPREHENSIVE_WHITEPAPER.md" target="_blank" rel="noopener">OASIS Whitepaper</a></li>
-          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OUR_WORLD_WHITEPAPER.md" target="_blank" rel="noopener">Our World Whitepaper</a></li>
-          <li><a href="https://www.oasisweb4.com/holonic-architecture" target="_blank" rel="noopener">Holonic Architecture</a></li>
-          <li><a href="https://www.ourworldthegame.com/blog" target="_blank" rel="noopener">Blog</a></li>
-        </ul>
-      </div>
-      <div>
         <div class="footer-heading">ECOSYSTEM</div>
         <ul class="footer-links">
           <li><a href="https://oasisomniverse.one" target="_blank" rel="noopener">OASIS Omniverse</a></li>
+          <li><a href="https://web4.oasisomniverse.one" target="_blank" rel="noopener">Web4</a></li>
           <li><a href="https://oportal.oasisomniverse.one" target="_blank" rel="noopener">OPORTAL</a></li>
           <li><a href="https://starnet.oasisomniverse.one" target="_blank" rel="noopener">STARNET</a></li>
           <li><a href="https://ogengine.oasisomniverse.one" target="_blank" rel="noopener">OGEngine</a></li>
@@ -1497,7 +1481,48 @@ body.test-mode-on .test-chain-note{display:block}
           <li><a href="https://odoom.oasisomniverse.one" target="_blank" rel="noopener">ODOOM</a></li>
           <li><a href="https://oquake.oasisomniverse.one" target="_blank" rel="noopener">OQuake</a></li>
           <li><a href="https://holonet.oasisomniverse.one" target="_blank" rel="noopener">HoloNET</a></li>
-          <li><a href="https://web4.oasisomniverse.one" target="_blank" rel="noopener">Web4</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">BUILD</div>
+        <ul class="footer-links">
+          <li><a href="https://api.web4.oasisomniverse.one/swagger" target="_blank" rel="noopener">Web4 OASIS API</a></li>
+          <li><a href="https://api.starnet.oasisomniverse.one/swagger" target="_blank" rel="noopener">Web5 STARNET API</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-ODK-Runtime-v3.5.0" target="_blank" rel="noopener">STAR CLI/ODK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-API-CLIENT-v1.0.0" target="_blank" rel="noopener">STAR API Client</a></li>
+          <li><a href="https://www.nuget.org/profiles/dellams" target="_blank" rel="noopener">NuGet (50 pkgs)</a></li>
+          <li><a href="https://oasis-web4.gitbook.io/oasis-web4-docs/" target="_blank" rel="noopener">GitBook Docs</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/Docs/Devs/API%20Documentation" target="_blank" rel="noopener">API Reference</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/DEVELOPER_DOCUMENTATION_INDEX.md" target="_blank" rel="noopener">Developer Index</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">READ</div>
+        <ul class="footer-links">
+          <li><a href="https://oasisomniverse.one#flightmap" target="_blank" rel="noopener">Flight Map</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/THE_OASIS_COMPREHENSIVE_WHITEPAPER.md" target="_blank" rel="noopener">Whitepaper</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OUR_WORLD_WHITEPAPER.md" target="_blank" rel="noopener">Our World Whitepaper</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/INVESTOR_EVALUATION_GUIDE.md" target="_blank" rel="noopener">Investor Guide</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/GETTING_STARTED_INDEX.md" target="_blank" rel="noopener">Getting Started</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/STAR_CLI_Comprehensive_Guide.md" target="_blank" rel="noopener">STAR CLI Guide</a></li>
+          <li><a href="https://www.oasisweb4.com/holonic-architecture" target="_blank" rel="noopener">Holonic Architecture</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/WIKI_DOCUMENTATION_INDEX.md" target="_blank" rel="noopener">Wiki</a></li>
+          <li><a href="https://www.ourworldthegame.com/blog" target="_blank" rel="noopener">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">COMMUNITY</div>
+        <ul class="footer-links">
+          <li><a href="https://discord.gg/q9gMKU6" target="_blank" rel="noopener">Discord</a></li>
+          <li><a href="https://t.me/oasisweb4chat" target="_blank" rel="noopener">Telegram</a></li>
+          <li><a href="https://x.com/OASISWEB4" target="_blank" rel="noopener">𝕏 OASIS WEB4</a></li>
+          <li><a href="https://x.com/OurWorldTheGame" target="_blank" rel="noopener">𝕏 Our World</a></li>
+          <li><a href="https://x.com/HoloNET_OASIS" target="_blank" rel="noopener">𝕏 HoloNET</a></li>
+          <li><a href="https://www.youtube.com/@WEB4OASIS" target="_blank" rel="noopener">YouTube OASIS</a></li>
+          <li><a href="https://www.youtube.com/@ourworld-the-game" target="_blank" rel="noopener">YouTube Our World</a></li>
+          <li><a href="https://www.youtube.com/channel/UC0_O4RwdY3lq1m3-K-njUxA" target="_blank" rel="noopener">YouTube Our World Legacy</a></li>
+          <li><a href="https://www.facebook.com/ourworldthegame" target="_blank" rel="noopener">Facebook</a></li>
         </ul>
       </div>
       <div>
@@ -1505,22 +1530,16 @@ body.test-mode-on .test-chain-note{display:block}
         <ul class="footer-links">
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/issues" target="_blank" rel="noopener">Report an Issue</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/discussions" target="_blank" rel="noopener">Discussions</a></li>
-          <li><a href="mailto:enquiries@nextgenworld.co.uk">Contact</a></li>
-          <li><a href="https://www.nextgenworld.co.uk/" target="_blank" rel="noopener">NextGen Software</a></li>
+          <li><a href="https://tally.so/r/WOZjNa" target="_blank" rel="noopener">Submit a Support Ticket</a></li>
+          <!-- <li><a href="mailto:enquiries@nextgenworld.co.uk">Contact</a></li> -->
+          <!-- <li><a href="https://www.nextgenworld.co.uk/" target="_blank" rel="noopener">NextGen Software</a></li> -->
         </ul>
       </div>
     </div>
 
     <div style="font-size:12px">Minting powered by <a href="https://www.oasisweb4.com/" target="_blank" rel="noopener">THE OASIS</a></div>
-    <div class="footer-legal">
-      <a href="TermsOfService.html" target="_blank">Terms of Service</a>
-      <span>&middot;</span>
-      <a href="PrivacyPolicy.html" target="_blank">Privacy Policy</a>
-      <span>&middot;</span>
-      <a href="Disclaimer.html" target="_blank">Disclaimer</a>
-    </div>
-    <div class="modal-terms">By minting you agree to our Terms of Service, Privacy Policy and Disclaimer.</div>
-    <div class="footer-copy">&copy; 2026 OASIS. All rights reserved.</div>
+    <div class="modal-terms">By minting you agree to our <a href="TermsOfService.html" target="_blank">Terms of Service</a>,  <a href="PrivacyPolicy.html" target="_blank">Privacy Policy</a> and <a href="Disclaimer.html" target="_blank">Disclaimer</a>.</div>
+    <div class="footer-copy">© 2026 <a href="https://nextgenworld.co.uk">NextGen Software Ltd.</a> All rights reserved. · Part of the <a href="https://oasisomniverse.one" target="_blank" rel="noopener">OASIS Omniverse</a> ecosystem.</div>
   </footer>
 </div>
 
@@ -1575,9 +1594,9 @@ body.test-mode-on .test-chain-note{display:block}
     </div>
     <div class="modal-body">
       <div class="modal-summary">
-        <div><div style="font-size:12px;color:var(--text-dim);margin-bottom:2px">SUPPLY</div><strong id="sumSupply"></strong></div>
-        <div><div style="font-size:12px;color:var(--text-dim);margin-bottom:2px">TYPE</div><strong>Permanent Key</strong></div>
-        <div><div style="font-size:12px;color:var(--text-dim);margin-bottom:2px">NETWORK</div><strong>OGEngine Web5</strong></div>
+        <div><div style="font-size:12px;color:#a8bfd8;margin-bottom:2px">SUPPLY</div><strong id="sumSupply"></strong></div>
+        <div><div style="font-size:12px;color:#a8bfd8;margin-bottom:2px">TYPE</div><strong>Permanent Key</strong></div>
+        <div><div style="font-size:12px;color:#a8bfd8;margin-bottom:2px">NETWORK</div><strong>OGEngine Web5</strong></div>
       </div>
 
       <!-- NFT Preview -->
@@ -1630,7 +1649,7 @@ body.test-mode-on .test-chain-note{display:block}
 
             <div style="
               font-size:12px;
-              color:var(--text-dim);
+              color:#a8bfd8;
               margin-top:3px;
               font-family:'Share Tech Mono',monospace
             ">
@@ -1747,7 +1766,7 @@ body.test-mode-on .test-chain-note{display:block}
         <!-- Test mode note -->
         <div class="test-chain-note" id="cryptoTestNote">🧪 TESTNET — MetaMask will be asked to switch to the testnet version of each chain. No real funds involved.</div>
         <!-- coin selector -->
-        <div style="font-size:12px;letter-spacing:.12em;color:var(--text-dim);margin-bottom:10px;font-family:'Share Tech Mono',monospace">SELECT CURRENCY</div>
+        <div style="font-size:12px;letter-spacing:.12em;color:#a8bfd8;margin-bottom:10px;font-family:'Share Tech Mono',monospace">SELECT CURRENCY</div>
         <div class="coin-grid" id="coinGrid">
           <div class="coin-btn active" data-coin="ETH"  onclick="selectCoin(this)"><div class="coin-icon">⟠</div><div class="coin-label">ETH</div><div class="coin-sub">Ethereum</div></div>
           <div class="coin-btn"        data-coin="BNB"  onclick="selectCoin(this)"><div class="coin-icon">🟡</div><div class="coin-label">BNB</div><div class="coin-sub">BNB Chain</div></div>
@@ -1771,7 +1790,7 @@ body.test-mode-on .test-chain-note{display:block}
             <span id="connectEvmInner">🦊 Connect MetaMask</span>
           </button>
           <div class="form-group" style="margin-top:12px">
-            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:#a8bfd8;font-size:10px">(OPTIONAL)</span></label>
             <input class="form-input" id="evmEmail" type="email" placeholder="you@example.com">
           </div>
           <div class="price-row">
@@ -1794,7 +1813,7 @@ body.test-mode-on .test-chain-note{display:block}
           </button>
           <div class="net-warn" id="solNetWarn"></div>
           <div class="form-group" style="margin-top:12px">
-            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:#a8bfd8;font-size:10px">(OPTIONAL)</span></label>
             <input class="form-input" id="solEmail" type="email" placeholder="you@example.com">
           </div>
           <div class="price-row">
@@ -1808,7 +1827,7 @@ body.test-mode-on .test-chain-note{display:block}
         <!-- QR sub-panel (BTC only) -->
         <div class="chain-panel" id="qrPanel" style="display:none">
           <div class="qr-panel">
-            <div style="font-size:13px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:10px" id="qrLabel">Send exact amount to this address:</div>
+            <div style="font-size:13px;color:#a8bfd8;font-family:'Share Tech Mono',monospace;margin-bottom:10px" id="qrLabel">Send exact amount to this address:</div>
             <div class="qr-wrap" id="qrWrap"></div>
             <div class="addr-copy-row">
               <input type="text" id="qrAddrInput" readonly>
@@ -1817,7 +1836,7 @@ body.test-mode-on .test-chain-note{display:block}
             <div class="qr-note" id="qrNote"></div>
           </div>
           <div class="form-group" style="margin-top:12px">
-            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:var(--text-dim);font-size:10px">(OPTIONAL)</span></label>
+            <label class="form-label">📧 EMAIL FOR UPDATES <span style="color:#a8bfd8;font-size:10px">(OPTIONAL)</span></label>
             <input class="form-input" id="btcEmail" type="email" placeholder="you@example.com">
           </div>
           <div class="price-row">
@@ -1838,12 +1857,12 @@ body.test-mode-on .test-chain-note{display:block}
           <div style="font-size:28px">🌀</div>
           <div>
             <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:.1em">MINT VIA OASIS</div>
-            <div style="font-size:12px;color:var(--text-dim);margin-top:3px;font-family:'Share Tech Mono',monospace">Powered by OASIS Web4+Web5 · Native multi-chain minting</div>
+            <div style="font-size:12px;color:#a8bfd8;margin-top:3px;font-family:'Share Tech Mono',monospace">Powered by OASIS Web4+Web5 · Native multi-chain minting</div>
           </div>
         </div>
 
         <!-- Chain selector -->
-        <div style="font-size:12px;letter-spacing:.12em;color:var(--text-dim);margin-bottom:10px;font-family:'Share Tech Mono',monospace">SELECT CHAIN</div>
+        <div style="font-size:12px;letter-spacing:.12em;color:#a8bfd8;margin-bottom:10px;font-family:'Share Tech Mono',monospace">SELECT CHAIN</div>
         <div class="coin-grid" id="oasisChainGrid">
           <div class="coin-btn active" data-ochain="ERC721"    onclick="selectOasisChain(this)"><div class="coin-icon">⟠</div><div class="coin-label">ETH</div><div class="coin-sub">ERC-721</div></div>
           <div class="coin-btn"        data-ochain="ArbitrumOASIS" onclick="selectOasisChain(this)"><div class="coin-icon">🔵</div><div class="coin-label">ARB</div><div class="coin-sub">Arbitrum</div></div>
@@ -1911,7 +1930,7 @@ body.test-mode-on .test-chain-note{display:block}
             font-size:11px;
             line-height:1.7;
             font-family:'Share Tech Mono',monospace;
-            color:var(--text-dim);
+            color:#a8bfd8;
             word-break:break-all
           "
         >
@@ -1929,7 +1948,7 @@ body.test-mode-on .test-chain-note{display:block}
       </div>
 
         <!-- OASIS API status -->
-        <div id="oasisStatus" style="display:none;background:rgba(0,0,0,.25);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:12px;font-family:'Share Tech Mono',monospace;color:var(--text-dim);line-height:1.6"></div>
+        <div id="oasisStatus" style="display:none;background:rgba(0,0,0,.25);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:12px;font-family:'Share Tech Mono',monospace;color:#a8bfd8;line-height:1.6"></div>
 
         <div class="price-row">
           <span class="price-label">TOTAL DUE</span>
@@ -1971,7 +1990,7 @@ body.test-mode-on .test-chain-note{display:block}
     </div>
       
       <!-- Powered by badge -->
-      <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace">
+      <div style="text-align:center;margin-top:16px;font-size:11px;color:#a8bfd8;font-family:'Share Tech Mono',monospace">
         POWERED BY <a href="https://oasisweb4.com" target="_blank" style="color:var(--cyan);text-decoration:none;font-weight:700">THE OASIS</a>
       </div>
     </div>
@@ -2146,7 +2165,7 @@ function initStripe() {
     stripeReady = true;
   } catch(e) {
     document.getElementById('stripe-card-element').innerHTML =
-      `<div style="font-size:12px;color:var(--text-dim);padding:4px 0">⚠ Stripe not configured.</div>`;
+      `<div style="font-size:12px;color:#a8bfd8;padding:4px 0">⚠ Stripe not configured.</div>`;
   }
 }
 
