@@ -77,10 +77,10 @@ window.Buffer=B;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <style>
 :root{
-  --gold:#e8d5b0;--gold-light:#f5ebe0;--gold-dim:#9a8060;
+  --gold:#f0a500;--gold-light:#ffd166;--gold-dim:#a06800;
   --cyan:#00e5ff;--bg-deep:#030714;--bg-card:#0a1535;--bg-card2:#071028;
   --text:#d0e4ff;--text-dim:#6a80a8;
-  --genesis:#e8d5b0;--core:#a0c4ff;--supporter:#00cc44;
+  --genesis:#f0a500;--core:#a0c4ff;--supporter:#00cc44;
   --tier1-bg:linear-gradient(135deg,#1a0e00,#0a1535);
   --tier2-bg:linear-gradient(135deg,#001a2e,#0a1535);
   --tier3-bg:linear-gradient(135deg,#021408,#040e1a);
@@ -148,7 +148,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* Genesis tier button keeps gold glow */
 .genesis .mint-btn:hover {
-  filter:drop-shadow(0 0 8px rgba(232,213,176,.7)) drop-shadow(0 0 20px rgba(232,213,176,.35));
+  filter:drop-shadow(0 0 8px rgba(240,165,0,.7)) drop-shadow(0 0 20px rgba(240,165,0,.35));
 }
 
 /* Core tier button keeps blue glow */
@@ -189,7 +189,7 @@ a:hover {
 
 /* Tier cards */
 .tier-card.genesis:hover {
-  filter:drop-shadow(0 0 20px rgba(232,213,176,.3));
+  filter:drop-shadow(0 0 20px rgba(240,165,0,.3));
 }
 .tier-card.core:hover {
   filter:drop-shadow(0 0 20px rgba(100,170,255,.3));
@@ -275,8 +275,8 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .tiers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;max-width:1100px;margin:0 auto}
 .tier-card{border-radius:16px;padding:36px 28px;position:relative;overflow:hidden;transition:transform .4s cubic-bezier(.22,.61,.36,1),box-shadow .4s;cursor:pointer}
 .tier-card:hover{transform:translateY(-8px) scale(1.01)}
-.tier-card.genesis{background:var(--tier1-bg);border:1px solid rgba(232,213,176,.4);box-shadow:0 0 40px rgba(232,213,176,.12)}
-.tier-card.genesis:hover{box-shadow:0 20px 60px rgba(232,213,176,.25)}
+.tier-card.genesis{background:var(--tier1-bg);border:1px solid rgba(240,165,0,.4);box-shadow:0 0 40px rgba(240,165,0,.12)}
+.tier-card.genesis:hover{box-shadow:0 20px 60px rgba(240,165,0,.25)}
 .tier-card.core{background:var(--tier2-bg);border:1px solid rgba(160,196,255,.3);box-shadow:0 0 40px rgba(160,196,255,.08)}
 .tier-card.core:hover{box-shadow:0 20px 60px rgba(160,196,255,.2)}
 .tier-card.supporter{background:var(--tier3-bg);border:1px solid rgba(0,204,68,.3);box-shadow:0 0 40px rgba(0,204,68,.08)}
@@ -284,7 +284,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .tier-number{font-family:'Orbitron',sans-serif;font-size:72px;font-weight:900;position:absolute;top:16px;right:20px;opacity:.06;line-height:1}
 .genesis .tier-number{color:var(--genesis)}.core .tier-number{color:var(--core)}.supporter .tier-number{color:var(--supporter)}
 .tier-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:.15em;margin-bottom:16px}
-.genesis .tier-badge{background:rgba(232,213,176,.15);color:var(--genesis);border:1px solid rgba(232,213,176,.3)}
+.genesis .tier-badge{background:rgba(240,165,0,.15);color:var(--genesis);border:1px solid rgba(240,165,0,.3)}
 .core .tier-badge{background:rgba(160,196,255,.1);color:var(--core);border:1px solid rgba(160,196,255,.25)}
 .supporter .tier-badge{background:rgba(0,204,68,.1);color:var(--supporter);border:1px solid rgba(0,204,68,.25)}
 .tier-name{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;letter-spacing:.08em;margin-bottom:6px}
@@ -302,8 +302,8 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .mint-btn{width:100%;padding:16px 24px;border:none;border-radius:10px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
 .mint-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.1);transform:translateX(-100%);transition:transform .4s}
 .mint-btn:hover::before{transform:translateX(0)}.mint-btn:hover{transform:translateY(-2px)}.mint-btn:active{transform:scale(.98)}
-.genesis .mint-btn{background:linear-gradient(135deg,#9a8060,#e8d5b0,#f5ebe0);color:#1a1208;box-shadow:0 4px 20px rgba(232,213,176,.4)}
-.genesis .mint-btn:hover{box-shadow:0 8px 32px rgba(232,213,176,.6)}
+.genesis .mint-btn{background:linear-gradient(135deg,#b37800,#f0a500,#ffe066);color:#0a0500;box-shadow:0 4px 20px rgba(240,165,0,.4)}
+.genesis .mint-btn:hover{box-shadow:0 8px 32px rgba(240,165,0,.6)}
 .core .mint-btn{background:linear-gradient(135deg,#1a4080,#4488cc,#a0d4ff);color:#000a1a;box-shadow:0 4px 20px rgba(100,170,255,.3)}
 .core .mint-btn:hover{box-shadow:0 8px 32px rgba(100,170,255,.5)}
 .supporter .mint-btn{background:linear-gradient(135deg,#004d18,#00aa33,#44ff80);color:#001a08;box-shadow:0 4px 20px rgba(0,204,68,.35)}
@@ -430,7 +430,7 @@ body.test-mode-on .test-chain-note{display:block}
 .video-text{font-size:16px;color:#a8bfd8;line-height:1.55}
 .proof-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:1100px;margin:0 auto}
 .proof-card{background:rgba(10,21,53,.82);border:1px solid rgba(0,229,255,.13);border-radius:12px;padding:24px 22px;box-shadow:0 20px 60px rgba(0,0,0,.16)}
-.proof-card.gold{border-color:rgba(232,213,176,.22);background:linear-gradient(135deg,rgba(232,213,176,.08),rgba(10,21,53,.82))}
+.proof-card.gold{border-color:rgba(240,165,0,.22);background:linear-gradient(135deg,rgba(240,165,0,.08),rgba(10,21,53,.82))}
 
 /* ↓ CHANGED: proof-kicker was gold-light, now heading-sub */
 .proof-kicker{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--heading-sub);margin-bottom:10px}
@@ -478,7 +478,7 @@ body.test-mode-on .test-chain-note{display:block}
 .core .perk-section-title{border-left-color:var(--core)}
 .supporter .perk-section-title{border-left-color:#00cc44}
 .tier-includes{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:12px;font-family:'Share Tech Mono',monospace;letter-spacing:.08em;text-align:center;font-weight:700}
-.genesis .tier-includes{background:rgba(232,213,176,.12);color:var(--gold);border:1px solid rgba(232,213,176,.3)}
+.genesis .tier-includes{background:rgba(240,165,0,.12);color:var(--gold);border:1px solid rgba(240,165,0,.3)}
 .core .tier-includes{background:rgba(160,196,255,.08);color:var(--core);border:1px solid rgba(160,196,255,.2)}
 .supporter .tier-includes{background:rgba(0,204,68,.08);color:#88ffaa;border:1px solid rgba(0,204,68,.2)}
 .tier-aura{margin-top:10px;padding:9px 14px;border-radius:8px;font-size:16px;color:#a8bfd8;line-height:1.5;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
@@ -614,7 +614,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
 
   <section class="hero">
     <!-- <div class="logo-ring">
-      <svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="24" stroke="#00e5ff" stroke-width="2"/><circle cx="30" cy="30" r="14" stroke="#e8d5b0" stroke-width="1.5"/><path d="M30 10 Q40 20 30 30 Q20 40 30 50" stroke="#00e5ff" stroke-width="1.5" fill="none"/><circle cx="30" cy="30" r="4" fill="#e8d5b0"/></svg>
+      <svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="24" stroke="#00e5ff" stroke-width="2"/><circle cx="30" cy="30" r="14" stroke="#f0a500" stroke-width="1.5"/><path d="M30 10 Q40 20 30 30 Q20 40 30 50" stroke="#00e5ff" stroke-width="1.5" fill="none"/><circle cx="30" cy="30" r="4" fill="#f0a500"/></svg>
     </div> -->
 
     <div class="logo-ring">
@@ -1440,7 +1440,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   <div class="cta-band">
     <h2>SECURE YOUR FOUNDER ACCESS NOW</h2>
     <p>170 slots. Three tiers. One chance to be early.</p>
-    <button onclick="document.getElementById('tiers').scrollIntoView({behavior:'smooth'})" style="padding:18px 44px;background:linear-gradient(135deg,#9a8060,#e8d5b0,#f5ebe0);color:#1a1208;border:none;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;box-shadow:0 4px 24px rgba(232,213,176,.4);transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 36px rgba(232,213,176,.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(232,213,176,.4)'">⚡ VIEW ALL TIERS</button>
+    <button onclick="document.getElementById('tiers').scrollIntoView({behavior:'smooth'})" style="padding:18px 44px;background:linear-gradient(135deg,#b37800,#f0a500,#ffe066);color:#0a0500;border:none;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.15em;cursor:pointer;box-shadow:0 4px 24px rgba(240,165,0,.4);transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 36px rgba(240,165,0,.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(240,165,0,.4)'">⚡ VIEW ALL TIERS</button>
     <div style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.06)">
       <div style="font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.2em;color:#a8bfd8;margin-bottom:20px">THIS IS JUST THE BEGINNING</div>
       <p style="font-size:15px;color:#a8bfd8;max-width:600px;margin:0 auto 28px;line-height:1.7">We are building toward a fully connected digital ecosystem.<br>OGEngine. Identity. Holons. Games. Worlds. Cross-chain NFTs. Business. Ownership.</p>
@@ -2105,9 +2105,9 @@ const TIERS = {
   genesis: {
     badge:'TIER 1 · GENESIS', title:'Genesis Founder NFT', supply:'20 ONLY',
     fiatDisplay:'$1,499 USD', fiatColor:'var(--gold)',
-    fiatStyle:'background:linear-gradient(135deg,#9a8060,#e8d5b0,#f5ebe0);color:#1a1208',
-    badgeStyle:'background:rgba(232,213,176,.15);color:#e8d5b0;border:1px solid rgba(232,213,176,.3)',
-    titleColor:'#e8d5b0',
+    fiatStyle:'background:linear-gradient(135deg,#b37800,#f0a500,#ffe066);color:#0a0500',
+    badgeStyle:'background:rgba(240,165,0,.15);color:#f0a500;border:1px solid rgba(240,165,0,.3)',
+    titleColor:'#f0a500',
     prices:{ ETH:'0.437', BNB:'4.77', MATIC:'2100', USDT_ETH:'1499', USDT_BNB:'1499', USDT_POL:'1499', BTC:'0.0223', SOL:'13.2' },
     msg:"Your Genesis Founder NFT has been minted.<br>Your permanent access key to OASIS is secured forever. Welcome, Founder.",
   },
