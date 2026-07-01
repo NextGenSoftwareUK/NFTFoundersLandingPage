@@ -102,6 +102,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 40px;display:fl
 .nav-brand span{color:var(--cyan)}
 .nav-links{display:flex;gap:28px;list-style:none}
 .nav-links a{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.14em;color:#a8bfd8;text-decoration:none;transition:color .2s;text-transform:uppercase}
+.nav-links-mobile-only{display:none}
 .nav-links a:hover{color:var(--cyan)}
 .nav-cta{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--cyan);border:1px solid rgba(0,229,255,.35);border-radius:999px;padding:8px 18px;text-decoration:none;transition:background .2s,border-color .2s;white-space:nowrap}
 .nav-cta:hover{background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.6)}
@@ -124,6 +125,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 40px;display:fl
     transform:translateX(100%);transition:transform .3s ease;
   }
   .nav-links.open{transform:translateX(0)}
+  .nav-links-mobile-only{display:list-item}
   .nav-links a{display:block;padding:14px 0;width:100%;border-bottom:1px solid rgba(255,255,255,.05)}
 }
 
@@ -665,6 +667,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
     <li><a href="#tiers">TIERS</a></li>
     <li><a href="#unlocks">UNLOCKS</a></li>
     <li><a href="#faq">FAQ</a></li>
+    <li class="nav-links-mobile-only"><a href="https://oasisomniverse.one" target="_blank" rel="noopener">ECOSYSTEM</a></li>
   </ul>
   <a href="https://oasisomniverse.one" target="_blank" rel="noopener" class="nav-cta">ECOSYSTEM</a>
   <div class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
