@@ -4204,8 +4204,10 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 
 <script>
 // Override openModal to show the coming-soon gate instead of the purchase modal
+let _pendingNotifyTier = '';
 const _originalOpenModal = openModal;
 openModal = function(tier) {
+  _pendingNotifyTier = tier;
   const modal = document.getElementById('comingSoonModal');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -4236,7 +4238,7 @@ async function submitNotify(e) {
     const res = await fetch('/api/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, tier: _pendingNotifyTier })
     });
     if (res.ok) {
       result.style.color = '#00e5ff';
