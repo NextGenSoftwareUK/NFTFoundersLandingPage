@@ -2061,13 +2061,21 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <span class="price-label">TOTAL DUE</span>
           <span class="price-value" id="oasisPrice" style="color:var(--cyan)">$1,499 USD</span>
         </div>
-        <div class="price-row" style="margin-top:6px">
+        <div class="price-row" style="margin-top:6px" id="oasisSolPriceRow">
           <span class="price-label">SOL PRICE</span>
-          <span class="price-value" id="solPriceOASIS" style="color:#00e5ff">USD</span>
+          <span class="price-value" id="solPriceOASIS" style="color:#00e5ff">—</span>
         </div>
-        <div class="price-row" style="margin-top:6px">
+        <div class="price-row" style="margin-top:6px" id="oasisNftSolRow">
           <span class="price-label">NFT PRICE (SOL)</span>
-          <span class="price-value" id="nftSolPrice" style="color:#00e5ff">SOL</span>
+          <span class="price-value" id="nftSolPrice" style="color:#00e5ff">—</span>
+        </div>
+        <div class="price-row" style="margin-top:6px;display:none" id="oasisEthPriceRow">
+          <span class="price-label">ETH PRICE</span>
+          <span class="price-value" id="ethPriceOASIS" style="color:#00e5ff">—</span>
+        </div>
+        <div class="price-row" style="margin-top:6px;display:none" id="oasisNftEthRow">
+          <span class="price-label">NFT PRICE (ETH)</span>
+          <span class="price-value" id="nftEthPrice" style="color:#00e5ff">—</span>
         </div>
         <button class="confirm-btn" id="oasisConfirm"
           style="background:linear-gradient(135deg,#003a6e,#005fa3,#00b4d8);color:#e0f7ff;"
@@ -3395,13 +3403,20 @@ let currentOasisChain = 'ERC721';
 // let oasisJwt = null;
 // let oasisJwtExpiry = 0;
 
-function selectOasisChain(el) 
+function selectOasisChain(el)
 {
   currentOasisChain = el.dataset.ochain;
   document.querySelectorAll('#oasisChainGrid .coin-btn').forEach(b => b.classList.toggle('active', b.dataset.ochain === currentOasisChain));
-
-  // Update OASIS UI when chain changes
   updateOasisWalletUI();
+  updateOasisPriceRows();
+}
+
+function updateOasisPriceRows() {
+  const isSol = currentOasisChain === 'SolanaOASIS';
+  document.getElementById('oasisSolPriceRow').style.display = isSol ? '' : 'none';
+  document.getElementById('oasisNftSolRow').style.display   = isSol ? '' : 'none';
+  document.getElementById('oasisEthPriceRow').style.display = isSol ? 'none' : '';
+  document.getElementById('oasisNftEthRow').style.display   = isSol ? 'none' : '';
 }
 
 function updateOasisPrice() {
@@ -3568,19 +3583,11 @@ async function handleOasisMint() {
     {
       if (!evmSigner) throw new Error('Connect MetaMask first.');
 
-      btn.innerHTML = '<span class="spinner"></span>CREATING ORDER...';
-
-      const evmOrderRes = await fetch('/api/create-evm-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wallet, tier: currentTier, chain: currentOasisChain })
-      }).then(r => r.json());
-
-      if (evmOrderRes.error) throw new Error(evmOrderRes.error);
-      order = evmOrderRes;
-
       const evmChainKey = OASIS_TO_EVM_CHAIN[currentOasisChain];
       const chainInfo   = EVM_CHAINS[evmChainKey];
+      const priceETH    = _lastEthPrice
+        ? Number((TIERS[currentTier].prices.ETH)).toFixed(6)
+        : TIERS[currentTier].prices.ETH;
 
       btn.innerHTML = '<span class="spinner"></span>SWITCHING CHAIN...';
       await switchChain(chainInfo);
@@ -3588,31 +3595,14 @@ async function handleOasisMint() {
       evmSigner   = await evmProvider.getSigner();
 
       btn.innerHTML = '<span class="spinner"></span>WAITING FOR METAMASK...';
-      const tx = await evmSigner.sendTransaction({
+      const evmTx = await evmSigner.sendTransaction({
         to:    TREASURY_WALLETS[currentOasisChain === 'ERC721' ? 'EthereumOASIS' : 'ArbitrumOASIS'],
-        value: ethers.parseEther(String(evmOrderRes.priceETH)),
+        value: ethers.parseEther(String(priceETH)),
       });
 
       btn.innerHTML = '<span class="spinner"></span>CONFIRMING...';
-      const receipt = await tx.wait();
-      const txHash  = receipt.hash;
-
-      btn.innerHTML = '<span class="spinner"></span>VERIFYING PAYMENT...';
-      const verifyRes = await fetch('/api/verify-evm-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          txHash,
-          orderId: evmOrderRes.orderId,
-          wallet,
-          email,
-          tier: currentTier,
-          chain: currentOasisChain,
-          testMode: TEST_MODE
-        })
-      }).then(r => r.json());
-
-      if (!verifyRes.success) throw new Error('Payment verification failed: ' + (verifyRes.error || 'Unknown'));
+      const receipt = await evmTx.wait();
+      sig = receipt.hash;
     }
 
     // ── SOL PAYMENT ──────────────────────────────────────────────────────────
@@ -3964,7 +3954,7 @@ async function mint(orderId, paymentSignature, wallet, email) {
       WaitTillNFTSent:           true,
       WaitForNFTToSendInSeconds: 60,
       AttemptToSendEveryXSeconds: 5,
-      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: orderId || null, paymentSignature: paymentSignature }
+      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: orderId || null, paymentSignature: paymentSignature, evmTxHash: (currentOasisChain !== 'SolanaOASIS' ? paymentSignature : null) }
     };
 
     console.log("calling oasis mint api...");
@@ -4014,23 +4004,30 @@ async function mint(orderId, paymentSignature, wallet, email) {
 }
 
 
-// const es = new EventSource("/api/sol-price-stream");
+let _lastSolPrice = null;
+let _lastEthPrice = null;
 
-// es.onmessage = (event) => {
-//   const data = JSON.parse(event.data);
-//    const solPrice = Number(data.price);
-//    const tier = TIERS[currentTier];
-//    const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
-//    const nftInSol = nftUsdPrice / solPrice;
+function updateOasisTokenPrices() {
+  const tier = TIERS[currentTier];
+  const usdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ''));
+  if (_lastSolPrice) {
+    document.getElementById('solPriceOASIS').textContent = `$${_lastSolPrice.toFixed(2)} USD`;
+    document.getElementById('nftSolPrice').textContent   = `${(usdPrice / _lastSolPrice).toFixed(4)} SOL`;
+  }
+  if (_lastEthPrice) {
+    document.getElementById('ethPriceOASIS').textContent = `$${_lastEthPrice.toFixed(2)} USD`;
+    document.getElementById('nftEthPrice').textContent   = `${(usdPrice / _lastEthPrice).toFixed(6)} ETH`;
+  }
+}
 
-//   // SOL price display
-//   document.getElementById("solPriceOASIS").innerText =
-//     `$${solPrice.toFixed(2)} USD`;
-
-//   // NFT price in SOL
-//   document.getElementById("nftSolPrice").innerText =
-//     `${nftInSol.toFixed(4)} SOL`;
-// };
+const priceStream = new EventSource('/api/sol-price-stream');
+priceStream.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  if (data.solPrice) _lastSolPrice = Number(data.solPrice);
+  if (data.ethPrice) _lastEthPrice = Number(data.ethPrice);
+  updateOasisTokenPrices();
+};
+priceStream.onerror = () => console.warn('Price stream disconnected, will retry...');
 
 
 // let currentOrder = null;
@@ -4157,6 +4154,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   await loadConfig();
   updateOasisWalletUI();
+  updateOasisPriceRows();
   preWarmPhantom();
   checkEdgeTracking();
   //initApp(); // whatever your current init function is called

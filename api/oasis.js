@@ -1,6 +1,53 @@
 const crypto = require("crypto");
 const { createClient } = require("redis");
 const { OASISClient } = require("@oasisomniverse/web4-api");
+const { getEthPriceUSD } = require("../lib/ethPrice");
+
+const ALCHEMY_KEY = process.env.ALCHEMY_API_KEY;
+
+function getEvmRpcUrl(chain) {
+  return chain === "ArbitrumOASIS"
+    ? `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
+    : `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
+}
+
+async function rpcCall(rpcUrl, method, params) {
+  const res = await fetch(rpcUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(`RPC error: ${data.error.message}`);
+  return data.result;
+}
+
+async function verifyEvmTx({ txHash, chain, tierPriceUSD }) {
+  const rpcUrl = getEvmRpcUrl(chain);
+
+  const [tx, receipt] = await Promise.all([
+    rpcCall(rpcUrl, "eth_getTransactionByHash", [txHash]),
+    rpcCall(rpcUrl, "eth_getTransactionReceipt", [txHash])
+  ]);
+
+  if (!tx)      throw new Error("EVM transaction not found");
+  if (!receipt) throw new Error("EVM transaction receipt not found");
+  if (receipt.status !== "0x1") throw new Error("EVM transaction failed on-chain");
+
+  if (tx.to?.toLowerCase() !== process.env.EVM_RECEIVER?.toLowerCase()) {
+    throw new Error(`Wrong recipient: ${tx.to}`);
+  }
+
+  // Verify amount — allow 10% below expected to handle price drift
+  const ethPriceUSD = await getEthPriceUSD();
+  const expectedETH = tierPriceUSD / ethPriceUSD;
+  const receivedETH = Number(BigInt(tx.value)) / 1e18;
+  if (receivedETH < expectedETH * 0.90) {
+    throw new Error(`Insufficient payment: received ${receivedETH.toFixed(6)} ETH, expected ~${expectedETH.toFixed(6)} ETH`);
+  }
+
+  return { receivedETH, expectedETH };
+}
 
 const redis = createClient({ url: process.env.REDIS_URL });
 
@@ -150,22 +197,51 @@ export default async function handler(req, res) {
     }
 
     // =========================
-    // 2. FETCH ORDER
+    // 2. FETCH ORDER / VERIFY EVM TX
     // =========================
 
-    const orderRaw = await redis.get(`order:${payload.MetaData.orderId}`);
+    const evmTxHash = payload.MetaData?.evmTxHash;
+    const isEvm     = !!evmTxHash;
 
-    if (!orderRaw) {
-      return res.status(404).json({ error: "Order not found" });
+    if (isEvm) {
+      // EVM path: verify on-chain, use tx hash as idempotency key
+      const usedKey = `evm-tx-used:${evmTxHash}`;
+      const alreadyUsed = await redis.get(usedKey);
+      if (alreadyUsed) {
+        return res.status(403).json({ error: "Transaction already used for minting" });
+      }
+
+      const TIER_PRICES = { supporter: 149, core: 499, genesis: 1499 };
+      const tierPriceUSD = TIER_PRICES[payload.MetaData?.tier];
+      if (!tierPriceUSD) {
+        return res.status(400).json({ error: "Invalid tier in payload" });
+      }
+
+      console.log("Verifying EVM tx:", evmTxHash, "chain:", payload.OnChainProvider);
+      await verifyEvmTx({
+        txHash: evmTxHash,
+        chain: payload.OnChainProvider,
+        tierPriceUSD
+      });
+
+      // Mark tx as used (7 days TTL)
+      await redis.set(usedKey, "1", { EX: 60 * 60 * 24 * 7 });
+
+      order = { orderId: evmTxHash, status: "paid", used: false, email: payload.MetaData?.email };
+
+    } else {
+      // SOL / card path: look up order in Redis
+      const orderRaw = await redis.get(`order:${payload.MetaData.orderId}`);
+      if (!orderRaw) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      try {
+        order = JSON.parse(orderRaw);
+      } catch {
+        throw new Error("Invalid order data");
+      }
+      console.log('Fetched order from Redis:', order);
     }
-
-    try {
-      order = JSON.parse(orderRaw);
-    } catch {
-      throw new Error("Invalid order data");
-    }
-
-    console.log('Fetched order from Redis:', order);
 
     // =========================
     // 3. VERIFY PAYMENT
