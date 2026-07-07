@@ -2026,27 +2026,6 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
         </div>
 
-        <!-- Coming soon notice -->
-        <div
-          id="oasisComingSoon"
-          class="coming-soon-box"
-          style="
-            display:block;
-            margin-bottom:14px;
-            background:rgba(255,180,0,.08);
-            border:1px solid rgba(255,180,0,.2);
-            color:#ffd166;
-            border-radius:10px;
-            padding:12px 14px;
-            font-size:16px;
-            line-height:1.6;
-            font-family:'Share Tech Mono',monospace
-          "
-        >
-          ⚡ Ethereum + Arbitrum minting is currently being finalized.<br>
-          Solana minting is live now via OASIS.
-        </div>
-
         <!-- Treasury wallet -->
         <div
           style="
@@ -3437,7 +3416,6 @@ function updateOasisWalletUI() {
   const addr   = document.getElementById('oasisWAddr');
   const chain  = document.getElementById('oasisWChain');
   const input  = document.getElementById('oasisWalletAddr');
-  const comingSoon = document.getElementById('oasisComingSoon');
   const mintBtn    = document.getElementById('oasisConfirm');
   const treasury   = document.getElementById('oasisTreasuryWallet');
 
@@ -3469,7 +3447,6 @@ function updateOasisWalletUI() {
       input.value            = solPublicKey;
       document.getElementById('oasisSolInner').textContent = '✓ Phantom Connected';
 
-      comingSoon.style.display = 'none';
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3488,8 +3465,6 @@ function updateOasisWalletUI() {
       chain.style.display    = 'none';
       input.value            = '';
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
-      comingSoon.style.display = 'none';
-      
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3502,14 +3477,12 @@ function updateOasisWalletUI() {
       document.getElementById('connectStripeSolInner').textContent = '👻 Connect Phantom';
     }
   } 
-  else 
+  else
   {
-    comingSoon.style.display = 'block';
-
-    mintBtn.disabled = true;
-    mintBtn.textContent = 'COMING SOON';
-    mintBtn.style.opacity = '.6';
-    mintBtn.style.cursor = 'not-allowed';
+    mintBtn.disabled = false;
+    mintBtn.textContent = '🌀 MINT WITH OASIS';
+    mintBtn.style.opacity = '1';
+    mintBtn.style.cursor = 'pointer';
 
     // MetaMask
     if (evmAddress) {
@@ -4182,78 +4155,5 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 
 </script>
 
-<!-- ── COMING SOON MODAL ── -->
-<div id="comingSoonModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(1,4,15,.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
-  <div style="background:linear-gradient(135deg,#060c24,#0a1330);border:1px solid rgba(0,229,255,.25);border-radius:20px;padding:48px 40px;max-width:480px;width:90%;text-align:center;position:relative;box-shadow:0 0 60px rgba(0,229,255,.12);">
-    <button onclick="closeComingSoon()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#a8bfd8;font-size:22px;cursor:pointer;line-height:1;">✕</button>
-    <div style="font-size:42px;margin-bottom:12px;">🚀</div>
-    <h2 style="font-family:'Orbitron',sans-serif;font-size:22px;color:#00e5ff;margin:0 0 10px;letter-spacing:.12em;">COMING SOON</h2>
-    <p style="font-family:'Rajdhani',sans-serif;font-size:16px;color:#a8bfd8;margin:0 0 28px;line-height:1.6;">NFT minting will be unlocked shortly as part of the full OASIS Omniverse launch.<br>Enter your email below to be notified the moment access opens.</p>
-    <form id="notifyForm" onsubmit="submitNotify(event)" style="display:flex;flex-direction:column;gap:14px;">
-      <input id="notifyEmail" type="email" required placeholder="your@email.com"
-        style="background:rgba(255,255,255,.06);border:1px solid rgba(0,229,255,.3);border-radius:10px;padding:14px 16px;color:#e0e0e0;font-family:'Share Tech Mono',monospace;font-size:15px;outline:none;width:100%;box-sizing:border-box;"
-        onfocus="this.style.borderColor='rgba(0,229,255,.7)'" onblur="this.style.borderColor='rgba(0,229,255,.3)'" />
-      <button type="submit" id="notifyBtn"
-        style="background:linear-gradient(135deg,#006080,#00b4d8,#80e8ff);color:#001a24;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.15em;border:none;border-radius:10px;padding:15px;cursor:pointer;transition:opacity .2s;">
-        NOTIFY ME WHEN OPEN
-      </button>
-    </form>
-    <div id="notifyResult" style="margin-top:16px;font-family:'Rajdhani',sans-serif;font-size:15px;min-height:20px;"></div>
-  </div>
-</div>
-
-<script>
-// Override openModal to show the coming-soon gate instead of the purchase modal
-let _pendingNotifyTier = '';
-const _originalOpenModal = openModal;
-openModal = function(tier) {
-  _pendingNotifyTier = tier;
-  const modal = document.getElementById('comingSoonModal');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  document.getElementById('notifyResult').textContent = '';
-  document.getElementById('notifyEmail').value = '';
-  document.getElementById('notifyBtn').disabled = false;
-  document.getElementById('notifyBtn').textContent = 'NOTIFY ME WHEN OPEN';
-};
-
-function closeComingSoon() {
-  document.getElementById('comingSoonModal').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-document.getElementById('comingSoonModal').addEventListener('click', function(e) {
-  if (e.target === this) closeComingSoon();
-});
-
-async function submitNotify(e) {
-  e.preventDefault();
-  const email = document.getElementById('notifyEmail').value.trim();
-  const btn = document.getElementById('notifyBtn');
-  const result = document.getElementById('notifyResult');
-  btn.disabled = true;
-  btn.textContent = 'SENDING...';
-  result.textContent = '';
-  try {
-    const res = await fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, tier: _pendingNotifyTier })
-    });
-    if (res.ok) {
-      result.style.color = '#00e5ff';
-      result.textContent = "✓ You're on the list! We'll email you when minting opens.";
-      btn.textContent = 'REGISTERED';
-    } else {
-      throw new Error('Server error');
-    }
-  } catch {
-    result.style.color = '#ff6b6b';
-    result.textContent = '✗ Something went wrong — please try again.';
-    btn.disabled = false;
-    btn.textContent = 'NOTIFY ME WHEN OPEN';
-  }
-}
-</script>
 </body>
 </html>
