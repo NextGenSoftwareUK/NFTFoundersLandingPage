@@ -2026,6 +2026,27 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
         </div>
 
+        <!-- Coming soon notice -->
+        <div
+          id="oasisComingSoon"
+          class="coming-soon-box"
+          style="
+            display:block;
+            margin-bottom:14px;
+            background:rgba(255,180,0,.08);
+            border:1px solid rgba(255,180,0,.2);
+            color:#ffd166;
+            border-radius:10px;
+            padding:12px 14px;
+            font-size:16px;
+            line-height:1.6;
+            font-family:'Share Tech Mono',monospace
+          "
+        >
+          ⚡ Ethereum + Arbitrum minting is currently being finalized.<br>
+          Solana minting is live now via OASIS.
+        </div>
+
         <!-- Treasury wallet -->
         <div
           style="
@@ -3416,6 +3437,7 @@ function updateOasisWalletUI() {
   const addr   = document.getElementById('oasisWAddr');
   const chain  = document.getElementById('oasisWChain');
   const input  = document.getElementById('oasisWalletAddr');
+  const comingSoon = document.getElementById('oasisComingSoon');
   const mintBtn    = document.getElementById('oasisConfirm');
   const treasury   = document.getElementById('oasisTreasuryWallet');
 
@@ -3447,6 +3469,7 @@ function updateOasisWalletUI() {
       input.value            = solPublicKey;
       document.getElementById('oasisSolInner').textContent = '✓ Phantom Connected';
 
+      comingSoon.style.display = 'none';
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3465,6 +3488,7 @@ function updateOasisWalletUI() {
       chain.style.display    = 'none';
       input.value            = '';
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
+      comingSoon.style.display = 'none';
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3479,10 +3503,12 @@ function updateOasisWalletUI() {
   } 
   else
   {
-    mintBtn.disabled = false;
-    mintBtn.textContent = '🌀 MINT WITH OASIS';
-    mintBtn.style.opacity = '1';
-    mintBtn.style.cursor = 'pointer';
+    comingSoon.style.display = 'block';
+
+    mintBtn.disabled = true;
+    mintBtn.textContent = 'COMING SOON';
+    mintBtn.style.opacity = '.6';
+    mintBtn.style.cursor = 'not-allowed';
 
     // MetaMask
     if (evmAddress) {

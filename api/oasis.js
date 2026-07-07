@@ -502,6 +502,8 @@ export default async function handler(req, res) {
           modifiedByAvatarId: avatarId,
           currentOwnerAvatarId: avatarId,
           previousOwnerAvatarId: payload.MintedByAvatarId,
+          sendToAvatarAfterMintingId: avatarId,
+          sendToAvatarAfterMintingUsername: recipientEmail,
           title: web4NFT.title,
           description: web4NFT.description,
           imageUrl: web4NFT.imageUrl,
