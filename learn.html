@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OASIS — Connecting Everything. Empowering Everyone.</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='100' fill='%230d1117'/><circle cx='50' cy='50' r='32' fill='none' stroke='%2300e5ff' stroke-width='8'/><circle cx='50' cy='50' r='20' fill='none' stroke='%2300e5ff' stroke-width='8'/><ellipse cx='50' cy='50' rx='44' ry='13' transform='rotate(-30 50 50)' fill='none' stroke='%2300e5ff' stroke-width='4'/><circle cx='88' cy='28' r='5' fill='%2300e5ff'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:       #f0a500;
+  --gold-light: #ffd166;
+  --cyan:       #00e5ff;
+  --bg-deep:    #030714;
+  --bg-card:    #0a1535;
+  --bg-card2:   #071028;
+  --text:       #d0e4ff;
+  --text-dim:   #6a80a8;
+  --heading:    #ffffff;
+  --heading-sub: rgba(255,255,255,0.65);
+  --red:        #ff4d4d;
+  --green:      #00e07a;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Starfield */
+#stars-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+
+/* Scan lines */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.07) 2px, rgba(0,0,0,.07) 4px);
+  pointer-events: none; z-index: 1;
+}
+
+.wrap { position: relative; z-index: 2; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 18px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(3,7,20,.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,229,255,.12);
+}
+.nav-brand {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: .22em;
+  color: #fff; text-decoration: none;
+}
+.nav-brand span { color: var(--cyan); }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: .14em;
+  color: #a8bfd8; text-decoration: none;
+  text-transform: uppercase; transition: color .2s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-cta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: .1em;
+  color: var(--cyan);
+  border: 1px solid rgba(0,229,255,.35);
+  border-radius: 999px; padding: 8px 20px;
+  text-decoration: none;
+  transition: background .2s, border-color .2s, box-shadow .2s;
+}
+.nav-cta:hover {
+  background: rgba(0,229,255,.08);
+  border-color: rgba(0,229,255,.6);
+  box-shadow: 0 0 24px rgba(0,229,255,.5);
+}
+@media (max-width: 768px) {
+  nav { padding: 18px 20px; }
+  .nav-links, .nav-cta { display: none; }
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 100px 20px 60px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(124,58,237,.1) 0%, transparent 60%);
+}
+.logo-ring {
+  width: 90px; height: 90px; border-radius: 50%;
+  border: 2px solid var(--cyan);
+  margin-bottom: 28px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 30px rgba(0,229,255,.4), inset 0 0 20px rgba(0,229,255,.1);
+  animation: ringPulse 3s ease-in-out infinite;
+  position: relative;
+}
+.logo-ring::before {
+  content: '';
+  position: absolute; inset: -8px; border-radius: 50%;
+  border: 1px solid rgba(0,229,255,.2);
+  animation: ringPulse 3s ease-in-out infinite reverse;
+}
+.logo-ring svg { width: 50px; height: 50px; }
+@keyframes ringPulse {
+  0%,100% { box-shadow: 0 0 30px rgba(0,229,255,.4), inset 0 0 20px rgba(0,229,255,.1); }
+  50%      { box-shadow: 0 0 60px rgba(0,229,255,.7), inset 0 0 30px rgba(0,229,255,.2); }
+}
+
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(52px, 10vw, 110px);
+  font-weight: 900; letter-spacing: .12em; line-height: 1;
+  background: linear-gradient(180deg, #ffffff 0%, var(--cyan) 60%, rgba(0,180,220,.8) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+  animation: fadeUp .8s ease both, titleGlow 3s ease-in-out infinite;
+}
+.hero-sub {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(11px, 2vw, 16px);
+  letter-spacing: .35em; color: var(--cyan);
+  margin-bottom: 28px;
+  animation: fadeUp .8s .15s ease both;
+}
+.hero-desc {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text); max-width: 760px; line-height: 1.75;
+  animation: fadeUp .8s .3s ease both;
+  margin-bottom: 36px;
+}
+
+.hero-btns {
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp .8s .45s ease both;
+}
+.btn-primary {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: .15em;
+  padding: 14px 28px; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, #b37800, #f0a500, #ffe066);
+  color: #0a0500; cursor: pointer; text-decoration: none;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 20px rgba(240,165,0,.35);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(240,165,0,.6);
+  -webkit-text-fill-color: #0a0500;
+  filter: none;
+}
+.btn-outline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; letter-spacing: .12em;
+  padding: 14px 28px; border-radius: 8px;
+  border: 1px solid rgba(0,229,255,.35);
+  background: transparent; color: var(--cyan);
+  cursor: pointer; text-decoration: none;
+  transition: background .2s, border-color .2s, box-shadow .2s;
+}
+.btn-outline:hover {
+  background: rgba(0,229,255,.08);
+  border-color: rgba(0,229,255,.6);
+  box-shadow: 0 0 24px rgba(0,229,255,.4);
+  filter: none;
+}
+
+@keyframes spinCW  { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes spinCCW { from { transform: rotate(0deg); }   to { transform: rotate(-360deg); } }
+@keyframes pulse   { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes titleGlow {
+  0%,100% { filter: drop-shadow(0 0 18px rgba(0,229,255,.5)) drop-shadow(0 0 40px rgba(0,229,255,.2)); }
+  50%      { filter: drop-shadow(0 0 35px rgba(0,229,255,.9)) drop-shadow(0 0 80px rgba(0,229,255,.4)); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-hint {
+  margin-top: 52px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: .2em; color: #a8bfd8;
+  animation: fadeUp .8s .6s ease both;
+}
+.scroll-arrow { display: block; margin-top: 8px; font-size: 18px; animation: bounce 2s ease-in-out infinite; }
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+/* ── SECTIONS ── */
+.section { padding: 90px 20px; position: relative; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+
+.section-kicker {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--cyan); text-align: center; display: block;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(22px, 4vw, 36px); font-weight: 700;
+  letter-spacing: .08em; text-align: center;
+  color: var(--heading); margin-bottom: 10px;
+}
+.section-line {
+  display: block; width: 60px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  margin: 0 auto 50px;
+}
+.section-lead {
+  text-align: center; max-width: 680px; margin: 0 auto 50px;
+  font-size: 18px; line-height: 1.75; color: #a8bfd8;
+}
+
+/* ── WHY GRID ── */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.why-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0,229,255,.1);
+  border-radius: 12px; padding: 26px 20px;
+  transition: transform .3s, border-color .3s, box-shadow .3s;
+}
+.why-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,229,255,.3);
+  box-shadow: 0 12px 40px rgba(0,229,255,.08);
+}
+.why-card-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px; letter-spacing: .1em; color: var(--cyan);
+  margin-bottom: 8px;
+}
+.why-card-text { font-size: 15px; color: #a8bfd8; line-height: 1.65; }
+
+/* ── IMAGINE (alternating list) ── */
+.imagine-list { list-style: none; max-width: 800px; margin: 0 auto; }
+.imagine-item {
+  display: grid; grid-template-columns: 48px 1fr;
+  gap: 20px; padding: 20px 0;
+  border-bottom: 1px solid rgba(0,229,255,.08);
+  align-items: center;
+}
+.imagine-item:last-child { border-bottom: none; }
+.imagine-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: .1em;
+  color: var(--cyan);
+  background: rgba(0,229,255,.06);
+  border: 1px solid rgba(0,229,255,.2);
+  border-radius: 6px; padding: 8px 4px;
+  text-align: center;
+}
+.imagine-text { font-size: 17px; color: var(--text); line-height: 1.6; }
+
+/* ── PERSONA CARDS ── */
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px; background: rgba(0,229,255,.1);
+  border: 1px solid rgba(0,229,255,.1); border-radius: 12px;
+  overflow: hidden;
+}
+.persona-card {
+  background: var(--bg-card2);
+  padding: 30px 24px;
+  transition: background .3s;
+}
+.persona-card:hover { background: rgba(10,21,53,.95); }
+.persona-for {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 8px;
+}
+.persona-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px; font-weight: 700; letter-spacing: .06em;
+  color: var(--cyan); margin-bottom: 12px;
+}
+.persona-desc { font-size: 15px; color: #a8bfd8; line-height: 1.65; }
+
+/* ── CAPABILITY LIST ── */
+.cap-list { list-style: none; max-width: 800px; margin: 0 auto; }
+.cap-item {
+  display: grid; grid-template-columns: 28px 1fr;
+  gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  align-items: baseline; font-size: 17px; color: var(--text);
+}
+.cap-item:last-child { border-bottom: none; }
+.cap-dash {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; color: var(--cyan); letter-spacing: .05em;
+}
+
+/* ── ECOSYSTEM TABLE ── */
+.eco-table {
+  border: 1px solid rgba(0,229,255,.12);
+  border-radius: 12px; overflow: hidden;
+  background: rgba(10,21,53,.5);
+}
+.eco-row {
+  display: grid; grid-template-columns: 180px 1fr;
+  gap: 24px; padding: 24px 28px;
+  border-bottom: 1px solid rgba(0,229,255,.08);
+  align-items: start; transition: background .2s;
+}
+.eco-row:hover { background: rgba(0,229,255,.03); }
+.eco-row:last-child { border-bottom: none; }
+.eco-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: .06em;
+  color: var(--heading); margin-bottom: 4px;
+}
+.eco-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--cyan);
+}
+.eco-desc { font-size: 15px; color: #a8bfd8; line-height: 1.7; }
+
+/* ── FOUNDER CALLOUT ── */
+.founder-box {
+  background: linear-gradient(135deg, #0a1535, #071028);
+  border: 1px solid rgba(240,165,0,.3);
+  border-radius: 16px; padding: 56px 40px;
+  text-align: center; position: relative; overflow: hidden;
+  box-shadow: 0 0 60px rgba(240,165,0,.06);
+}
+.founder-box::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.founder-box::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,165,0,.4), transparent);
+}
+.founder-box .section-title { color: var(--gold); letter-spacing: .12em; }
+.founder-copy {
+  max-width: 600px; margin: 0 auto 20px;
+  font-size: 17px; color: #a8bfd8; line-height: 1.8;
+}
+.founder-em {
+  display: inline-block; margin-bottom: 36px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px; letter-spacing: .1em;
+  color: var(--gold); font-style: italic;
+}
+
+/* ── VISION ── */
+.vision-rows { max-width: 800px; margin: 0 auto; }
+.vision-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2rem; padding: 20px 0;
+  border-bottom: 1px solid rgba(0,229,255,.08);
+}
+.vision-row:last-child { border-bottom: none; }
+.v-assert { font-size: 17px; color: var(--text); }
+.v-contra  { font-size: 17px; color: var(--text-dim); font-style: italic; }
+.vision-close {
+  max-width: 700px; margin: 44px auto 0;
+  font-size: 17px; color: #a8bfd8; line-height: 1.8; text-align: center;
+}
+
+/* ── ROADMAP ── */
+.roadmap { display: flex; flex-direction: column; gap: 0; }
+.web-layer {
+  display: grid; grid-template-columns: 80px 1fr;
+  gap: 28px; padding: 32px 0;
+  border-bottom: 1px solid rgba(0,229,255,.08);
+  align-items: start;
+}
+.web-layer:last-child { border-bottom: none; }
+.web-id {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+  font-weight: 900; letter-spacing: -.02em; line-height: 1;
+}
+.near .web-id { color: var(--cyan); }
+.mid  .web-id { color: rgba(0,229,255,.45); }
+.far  .web-id { color: rgba(0,229,255,.18); }
+.web-layer-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.web-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px; font-weight: 700; letter-spacing: .06em;
+  color: var(--heading); margin-bottom: 10px;
+}
+.web-desc { font-size: 15px; color: #a8bfd8; line-height: 1.72; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 48px 20px;
+  border-top: 1px solid rgba(0,229,255,.1);
+  text-align: center; position: relative; z-index: 2;
+  background: rgba(3,7,20,.6);
+}
+.footer-brand {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px; font-weight: 700; letter-spacing: .2em;
+  color: #fff; margin-bottom: 8px;
+}
+.footer-brand span, .nav-brand span { color: var(--cyan); }
+.footer-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── GLOBAL LINK / HOVER ── */
+a { color: var(--cyan); text-decoration: none; transition: filter .3s ease; }
+a:hover { filter: drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.6)); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .section { padding: 60px 20px; }
+  .eco-row { grid-template-columns: 1fr; gap: 6px; }
+  .persona-grid { grid-template-columns: 1fr; }
+  .vision-row { grid-template-columns: 1fr; gap: 4px; }
+  .web-layer { grid-template-columns: 56px 1fr; gap: 16px; }
+  .founder-box { padding: 40px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-brand"><span>OA</span><span>SIS</span></a>
+  <ul class="nav-links">
+    <li><a href="#why">Why OASIS</a></li>
+    <li><a href="#ecosystem">Ecosystem</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#founder">Founders</a></li>
+  </ul>
+  <a href="https://founders.oasisomniverse.one" target="_blank" rel="noopener" class="nav-cta">Become a Founder</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero wrap">
+  <div class="logo-ring">
+    <svg viewBox="0 0 60 60" fill="none">
+      <circle cx="30" cy="30" r="4" fill="#ffffff"
+        style="animation:pulse 2.5s ease-in-out infinite;transform-origin:30px 30px"/>
+      <circle cx="30" cy="30" r="14" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"
+        style="animation:spinCCW 5s linear infinite;transform-origin:30px 30px"/>
+      <circle cx="30" cy="30" r="24" stroke="#00e5ff" stroke-width="2"
+        style="animation:spinCW 8s linear infinite;transform-origin:30px 30px"/>
+      <ellipse cx="30" cy="30" rx="28" ry="10"
+        stroke="#00e5ff" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.4"
+        transform="rotate(-30 30 30)"
+        style="animation:spinCW 12s linear infinite;transform-origin:30px 30px"/>
+      <g style="animation:spinCW 3s linear infinite;transform-origin:30px 30px">
+        <circle cx="30" cy="6" r="3" fill="#00e5ff"/>
+      </g>
+      <g style="animation:spinCCW 7s linear infinite;transform-origin:30px 30px">
+        <circle cx="30" cy="16" r="2" fill="rgba(255,255,255,0.7)"/>
+      </g>
+    </svg>
+  </div>
+
+  <h1 class="hero-title">OASIS</h1>
+  <p class="hero-sub">Connecting Everything &nbsp;·&nbsp; Empowering Everyone</p>
+  <p class="hero-desc">
+    Connecting people, intelligence, applications, communities and digital assets
+    through one unified, interoperable ecosystem.
+  </p>
+  <div class="hero-btns">
+    <a href="https://founders.oasisomniverse.one" target="_blank" rel="noopener" class="btn-primary">Become an OASIS Founder</a>
+    <a href="#ecosystem" class="btn-outline">Explore the Ecosystem</a>
+  </div>
+  <div class="scroll-hint">
+    SCROLL TO EXPLORE
+    <span class="scroll-arrow">↓</span>
+  </div>
+</section>
+
+<!-- ── WHY ── -->
+<section class="section wrap" id="why">
+  <div class="section-inner">
+    <span class="section-kicker">The Problem</span>
+    <h2 class="section-title">Why OASIS Exists</h2>
+    <span class="section-line"></span>
+    <p class="section-lead">
+      The internet has become fragmented. Every application has its own identity. Every community lives on a different platform.
+      Every AI operates in isolation. Every organisation rebuilds the same infrastructure. Every innovation creates another silo.
+      OASIS was created to solve this — not by replacing existing technologies, but by enabling them to work together.
+    </p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-card-title">Fragmented Identity</div>
+        <div class="why-card-text">Every platform demands its own account. Users rebuild their identity from scratch, repeatedly.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-title">Isolated Communities</div>
+        <div class="why-card-text">Communities live on incompatible networks with no way to connect, collaborate or exchange value.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-title">Disconnected AI</div>
+        <div class="why-card-text">AI systems operate in isolation instead of collaborating. Intelligence is trapped in silos.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-title">Duplicated Infrastructure</div>
+        <div class="why-card-text">Organisations rebuild the same foundational systems over and over, wasting time and resources.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-title">Compounding Complexity</div>
+        <div class="why-card-text">Every new technology creates another layer of disconnected tools, APIs and incompatible standards.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-title">Missed Opportunities</div>
+        <div class="why-card-text">Innovation that could connect creates new silos instead. The potential of the internet goes unrealised.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-title">No Digital Sovereignty</div>
+        <div class="why-card-text">Users don't own their data, identity or digital assets. Platforms can revoke access, change terms or disappear overnight.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-title">Broken User Experience</div>
+        <div class="why-card-text">Switching between disconnected apps means constant friction — re-authentication, data re-entry and lost context at every boundary.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── IMAGINE ── -->
+<section class="section wrap" style="background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(0,229,255,.04) 0%, transparent 70%);">
+  <div class="section-inner">
+    <span class="section-kicker">The Vision</span>
+    <h2 class="section-title">Imagine a Connected World</h2>
+    <span class="section-line"></span>
+    <ul class="imagine-list">
+      <li class="imagine-item">
+        <div class="imagine-num">01</div>
+        <div class="imagine-text">Log in once and securely access every connected application.</div>
+      </li>
+      <li class="imagine-item">
+        <div class="imagine-num">02</div>
+        <div class="imagine-text">Own one digital identity that moves with you wherever you go.</div>
+      </li>
+      <li class="imagine-item">
+        <div class="imagine-num">03</div>
+        <div class="imagine-text">AI systems collaborating instead of competing.</div>
+      </li>
+      <li class="imagine-item">
+        <div class="imagine-num">04</div>
+        <div class="imagine-text">Communities that remain sovereign while becoming part of something much bigger.</div>
+      </li>
+      <li class="imagine-item">
+        <div class="imagine-num">05</div>
+        <div class="imagine-text">Businesses connecting existing systems instead of constantly replacing them.</div>
+      </li>
+      <li class="imagine-item">
+        <div class="imagine-num">06</div>
+        <div class="imagine-text">Technology disappearing into the background because everything simply works.</div>
+      </li>
+    </ul>
+    <p style="text-align:center; margin-top:36px; font-family:'Orbitron',sans-serif; font-size:13px; letter-spacing:.12em; color:var(--cyan);">
+      That is the future OASIS is building.
+    </p>
+  </div>
+</section>
+
+<!-- ── WHO ── -->
+<section class="section wrap">
+  <div class="section-inner">
+    <span class="section-kicker">Who It's For</span>
+    <h2 class="section-title">Built for Every Builder</h2>
+    <span class="section-line"></span>
+    <div class="persona-grid">
+      <div class="persona-card">
+        <div class="persona-for">For</div>
+        <div class="persona-name">Entrepreneurs</div>
+        <div class="persona-desc">Launch faster. Scale globally. Connect your business to an expanding ecosystem instead of rebuilding common infrastructure from scratch.</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-for">For</div>
+        <div class="persona-name">Developers</div>
+        <div class="persona-desc">Build once. Deploy everywhere. Access interoperability, identity, reputation, data, AI and future ecosystem services through one unified platform.</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-for">For</div>
+        <div class="persona-name">Enterprises</div>
+        <div class="persona-desc">Reduce complexity. Connect existing technology. Protect previous investments while preparing for the future.</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-for">For</div>
+        <div class="persona-name">Communities</div>
+        <div class="persona-desc">Remain sovereign while becoming part of an interconnected global ecosystem. Share knowledge, exchange value, and collaborate effortlessly.</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-for">For</div>
+        <div class="persona-name">Founders &amp; Early Supporters</div>
+        <div class="persona-desc">Become part of the ecosystem from the very beginning and help shape infrastructure designed for the next evolution of the internet.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CAPABILITIES ── -->
+<section class="section wrap">
+  <div class="section-inner">
+    <span class="section-kicker">What Becomes Possible</span>
+    <h2 class="section-title">What OASIS Enables</h2>
+    <span class="section-line"></span>
+    <p class="section-lead">Technology becomes simpler. Collaboration becomes natural. Innovation accelerates.</p>
+    <ul class="cap-list">
+      <li class="cap-item"><span class="cap-dash">›</span><span>Connect existing software instead of replacing it</span></li>
+      <li class="cap-item"><span class="cap-dash">›</span><span>Provide users with one secure, sovereign identity</span></li>
+      <li class="cap-item"><span class="cap-dash">›</span><span>Enable multiple AI systems to work together intelligently</span></li>
+      <li class="cap-item"><span class="cap-dash">›</span><span>Connect communities without centralisation</span></li>
+      <li class="cap-item"><span class="cap-dash">›</span><span>Create interoperable applications that communicate seamlessly</span></li>
+      <li class="cap-item"><span class="cap-dash">›</span><span>Share data securely between trusted systems</span></li>
+      <li class="cap-item"><span class="cap-dash">›</span><span>Build resilient digital ecosystems that grow more valuable as new participants join</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── ECOSYSTEM ── -->
+<section class="section wrap" id="ecosystem">
+  <div class="section-inner">
+    <span class="section-kicker">The Stack</span>
+    <h2 class="section-title">Powered by the OASIS Ecosystem</h2>
+    <span class="section-line"></span>
+    <p class="section-lead">
+      OASIS is not a single platform. It is an interoperable ecosystem of technologies that connect applications,
+      intelligence, identities, communities and digital infrastructure into one unified network.
+    </p>
+    <div class="eco-table">
+      <div class="eco-row">
+        <div><div class="eco-name">OASIS API</div><div class="eco-tag">Web4</div></div>
+        <div class="eco-desc">The universal interoperability, abstraction and aggregation layer connecting Web1, Web2, Web3 and future technologies through one unified API. Provides universal identity, avatars, reputation (karma), data, assets, provider abstraction and cross-platform interoperability.</div>
+      </div>
+      <div class="eco-row">
+        <div><div class="eco-name">STAR API</div><div class="eco-tag">Web5</div></div>
+        <div class="eco-desc">The core API powering the Experience Layer, enabling interoperable applications, worlds, quests, missions, achievements, gamification and shared digital experiences across the OASIS ecosystem.</div>
+      </div>
+      <div class="eco-row">
+        <div><div class="eco-name">STARNET</div><div class="eco-tag">Marketplace</div></div>
+        <div class="eco-desc">The decentralised App, Asset and Intelligence Marketplace where developers can discover, publish, deploy and monetise OAPPs, Smart Bricks, Holons, AI agents, workflows, APIs, plugins, templates, virtual worlds, digital assets and interoperable services.</div>
+      </div>
+      <div class="eco-row">
+        <div><div class="eco-name">OGEngine</div><div class="eco-tag">Omniverse Runtime</div></div>
+        <div class="eco-desc">The interoperable Omniverse runtime connecting games, virtual worlds and interactive experiences through shared identity, assets, inventory, quests, achievements, AI and persistent progression.</div>
+      </div>
+      <div class="eco-row">
+        <div><div class="eco-name">OPORTAL</div><div class="eco-tag">Gateway</div></div>
+        <div class="eco-desc">The unified gateway providing seamless access to every application, identity, service, world and experience across the OASIS ecosystem.</div>
+      </div>
+      <div class="eco-row">
+        <div><div class="eco-name">ONET</div><div class="eco-tag">Networking</div></div>
+        <div class="eco-desc">The resilient networking layer providing secure communication and connectivity across the ecosystem.</div>
+      </div>
+      <div class="eco-row">
+        <div><div class="eco-name">Our World</div><div class="eco-tag">Flagship Experience</div></div>
+        <div class="eco-desc">The flagship real-world experience that bridges the physical and digital worlds through location-based exploration, sustainability, wellbeing, gamification and interoperable digital experiences.</div>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:24px; font-size:14px; color:var(--text-dim); font-style:italic;">
+      Each component remains sovereign. Together they become exponentially more powerful because they are intentionally designed to interoperate.
+    </p>
+  </div>
+</section>
+
+<!-- ── FOUNDER ── -->
+<section class="section wrap" id="founder">
+  <div class="section-inner">
+    <div class="founder-box">
+      <span class="section-kicker" style="margin-bottom:18px;">Limited Availability</span>
+      <h2 class="section-title" style="color:var(--gold); margin-bottom:10px;">Become an OASIS Founder</h2>
+      <span class="section-line" style="background:linear-gradient(90deg,transparent,var(--gold),transparent); margin-bottom:36px;"></span>
+      <p class="founder-copy">
+        Every transformational ecosystem begins with a small group of people who recognise its potential before everyone else.
+        Founder Membership is your opportunity to become part of that story from the very beginning.
+      </p>
+      <p class="founder-copy">
+        This is not about purchasing an NFT. It is about becoming a Founder. Your Founder Membership is securely represented
+        by a unique Founder NFT — providing verifiable ownership of your place within the ecosystem. As the ecosystem grows,
+        Founder Members receive priority access to future technologies, communities, collaborations and opportunities.
+      </p>
+      <span class="founder-em">The earlier you participate, the more of the journey you experience.</span>
+      <br>
+      <a href="https://founders.oasisomniverse.one" target="_blank" rel="noopener" class="btn-primary">Become a Founder</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── VISION ── -->
+<section class="section wrap">
+  <div class="section-inner">
+    <span class="section-kicker">Our Beliefs</span>
+    <h2 class="section-title">The OASIS Vision</h2>
+    <span class="section-line"></span>
+    <div class="vision-rows">
+      <div class="vision-row">
+        <div class="v-assert">Technology should create connection.</div>
+        <div class="v-contra">Never separation.</div>
+      </div>
+      <div class="vision-row">
+        <div class="v-assert">AI should augment humanity.</div>
+        <div class="v-contra">Not replace it.</div>
+      </div>
+      <div class="vision-row">
+        <div class="v-assert">Communities should collaborate.</div>
+        <div class="v-contra">Not compete.</div>
+      </div>
+      <div class="vision-row">
+        <div class="v-assert">Innovation should be interoperable.</div>
+        <div class="v-contra">Not isolated.</div>
+      </div>
+    </div>
+    <p class="vision-close">
+      The future will not be built by one company, one technology or one platform. It will be built through
+      ecosystems that allow the best people, organisations and technologies to work together.
+      OASIS exists to make that possible.
+    </p>
+  </div>
+</section>
+
+<!-- ── ROADMAP ── -->
+<section class="section wrap" id="roadmap">
+  <div class="section-inner">
+    <span class="section-kicker">The Roadmap</span>
+    <h2 class="section-title">The OASIS Stack</h2>
+    <span class="section-line"></span>
+    <p class="section-lead">From universal interoperability to the convergence of all things — a layered architecture for the evolution of a connected world.</p>
+    <div class="roadmap">
+      <div class="web-layer near">
+        <div class="web-id">W4</div>
+        <div>
+          <div class="web-layer-name">The Unification Layer</div>
+          <div class="web-title">Web4</div>
+          <div class="web-desc">The universal interoperability, abstraction and aggregation layer connecting Web1, Web2, Web3 and future technologies through one unified API. Web4 provides universal identity, avatars, reputation (karma), assets, data and provider abstraction — forming the foundation for the entire OASIS ecosystem.</div>
+        </div>
+      </div>
+      <div class="web-layer near">
+        <div class="web-id">W5</div>
+        <div>
+          <div class="web-layer-name">The Experience Layer</div>
+          <div class="web-title">Web5</div>
+          <div class="web-desc">Transforms the unified infrastructure into living digital experiences. Web5 powers the Omniverse through interoperable applications (OAPPs), STARNET, OGEngine, shared worlds, cross-world assets, quests, achievements and immersive experiences built on top of Web4.</div>
+        </div>
+      </div>
+      <div class="web-layer mid">
+        <div class="web-id">W6</div>
+        <div>
+          <div class="web-layer-name">The Intelligence Layer</div>
+          <div class="web-title">Web6</div>
+          <div class="web-desc">The interoperability, abstraction and aggregation layer for artificial intelligence and future forms of intelligence. Web6 enables intelligent systems to discover, orchestrate, communicate, reason and collaborate across multiple AI providers through one unified intelligence network.</div>
+        </div>
+      </div>
+      <div class="web-layer mid">
+        <div class="web-id">W7</div>
+        <div>
+          <div class="web-layer-name">The Symbiotic Layer</div>
+          <div class="web-title">Web7</div>
+          <div class="web-desc">The conscious human-AI symbiosis layer. Designed for non-invasive, organic collaboration where human intuition, creativity and wisdom work in harmony with machine intelligence. Human and AI become partners — not replacements.</div>
+        </div>
+      </div>
+      <div class="web-layer far">
+        <div class="web-id">W8</div>
+        <div>
+          <div class="web-layer-name">The Inter-Galactic Layer</div>
+          <div class="web-title">Web8</div>
+          <div class="web-desc">Earth becomes one node within a wider connected mesh of worlds and civilisations. A fractal, holonic architecture designed to extend interoperability beyond our planet into future interplanetary and inter-galactic digital ecosystems.</div>
+        </div>
+      </div>
+      <div class="web-layer far">
+        <div class="web-id">W9</div>
+        <div>
+          <div class="web-layer-name">The Singularity Layer</div>
+          <div class="web-title">Web9</div>
+          <div class="web-desc">The Great Convergence. The layer where the distinctions between physical and digital, biological and artificial, human and galactic dissolve into one unified network. Intelligence recognises itself as part of a single interconnected whole.</div>
+        </div>
+      </div>
+      <div class="web-layer far">
+        <div class="web-id">W10</div>
+        <div>
+          <div class="web-layer-name">The Source</div>
+          <div class="web-title">Web10</div>
+          <div class="web-desc">The origin and destination of the entire stack. Pure undifferentiated consciousness — the Alpha and the Omega. Web10 completes the circle, where all layers ultimately emerge from and return to the same Source.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-brand"><span>OA</span><span>SIS</span></div>
+  <div class="footer-sub">Connecting Everything &nbsp;·&nbsp; Empowering Everyone</div>
+</footer>
+
+<!-- ── STARFIELD ── -->
+<script>
+(function () {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function initStars(count) {
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.2,
+        a: Math.random(),
+        speed: Math.random() * 0.004 + 0.001,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    frame++;
+    for (const s of stars) {
+      const alpha = s.a * (0.5 + 0.5 * Math.sin(frame * s.speed + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,230,255,${alpha})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  initStars(260);
+  draw();
+  window.addEventListener('resize', () => { resize(); initStars(260); });
+})();
+</script>
+
+</body>
+</html>
