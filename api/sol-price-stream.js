@@ -1,9 +1,9 @@
 const { getSolPriceUSD } = require("../lib/solPrice");
-//import { getSolPriceUSD } from "../lib/solPrice";
+const { getEthPriceUSD } = require("../lib/ethPrice");
 
 export default async function handler(req, res) {
   try {
-    console.log("STREAM START");
+    console.log("PRICE STREAM START");
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -11,33 +11,23 @@ export default async function handler(req, res) {
 
     const send = async () => {
       try {
-        const price = await getSolPriceUSD();
-        //const price = 100;
-
-        // res.write(`data: ${JSON.stringify({
-        //   solPrice: price,
-        //   nftPrice: 1499,
-        //   nftPriceInSOL: 1499 / price
-        // })}\n\n`);
-
-        res.write(`data: ${JSON.stringify({ price })}\n\n`);
+        const [solPrice, ethPrice] = await Promise.all([
+          getSolPriceUSD(),
+          getEthPriceUSD()
+        ]);
+        res.write(`data: ${JSON.stringify({ solPrice, ethPrice })}\n\n`);
       } catch (e) {
-        console.error("SEND ERROR:", e);
+        console.error("PRICE STREAM SEND ERROR:", e);
         res.write(`data: ${JSON.stringify({ error: e.message })}\n\n`);
       }
     };
 
     await send();
-
-    const interval = setInterval(send, 15000);
-
-    req.on("close", () => {
-      clearInterval(interval);
-      res.end();
-    });
+    const interval = setInterval(send, 30000);
+    req.on("close", () => { clearInterval(interval); res.end(); });
 
   } catch (err) {
-    console.error("FATAL STREAM ERROR:", err);
-    res.status(500).json({ error: err.message, stack: err.stack });
+    console.error("PRICE STREAM FATAL:", err);
+    res.status(500).json({ error: err.message });
   }
 }
