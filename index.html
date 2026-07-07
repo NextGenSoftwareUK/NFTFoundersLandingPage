@@ -2026,27 +2026,6 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
         </div>
 
-        <!-- Coming soon notice -->
-        <div
-          id="oasisComingSoon"
-          class="coming-soon-box"
-          style="
-            display:block;
-            margin-bottom:14px;
-            background:rgba(255,180,0,.08);
-            border:1px solid rgba(255,180,0,.2);
-            color:#ffd166;
-            border-radius:10px;
-            padding:12px 14px;
-            font-size:16px;
-            line-height:1.6;
-            font-family:'Share Tech Mono',monospace
-          "
-        >
-          ⚡ Ethereum + Arbitrum minting is currently being finalized.<br>
-          Solana minting is live now via OASIS.
-        </div>
-
         <!-- Treasury wallet -->
         <div
           style="
@@ -2159,8 +2138,8 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
 
 const TREASURY_WALLETS = {
   get SolanaOASIS()   { return CFG.solAddr; },
-  ArbitrumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48',
-  EthereumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48'
+  get EthereumOASIS() { return CFG.evmReceiver; },
+  get ArbitrumOASIS() { return CFG.evmReceiver; },
 };
 
 // ── NFT ARTWORK (real images per tier) ──
@@ -2180,30 +2159,34 @@ const NFT_IMAGE_URLS = {
 // EVM chain definitions  (chainId hex, name, rpc, explorer)
 // In TEST_MODE each key points to the testnet equivalent
 const EVM_CHAINS_MAINNET = {
-  ETH:      { id:'0x1',    name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
-  BNB:      { id:'0x38',   name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
+  ETH:      { id:'0x1',      name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
+  ARB:      { id:'0xa4b1',   name:'Arbitrum One',      rpc:'https://arb1.arbitrum.io/rpc',  explorer:'https://arbiscan.io',
+              nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
+  BNB:      { id:'0x38',     name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
               nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18} },
-  MATIC:    { id:'0x89',   name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
+  MATIC:    { id:'0x89',     name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
-  USDT_ETH: { id:'0x1',   name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
-  USDT_BNB: { id:'0x38',  name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
+  USDT_ETH: { id:'0x1',     name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
+  USDT_BNB: { id:'0x38',    name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
               nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18} },
-  USDT_POL: { id:'0x89',  name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
+  USDT_POL: { id:'0x89',    name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
 };
 
 const EVM_CHAINS_TESTNET = {
-  ETH:      { id:'0xaa36a7', name:'Sepolia Testnet',      rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
+  ETH:      { id:'0xaa36a7', name:'Sepolia Testnet',         rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
               nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
-  BNB:      { id:'0x61',     name:'BNB Testnet',          rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
+  ARB:      { id:'0x66eee',  name:'Arbitrum Sepolia Testnet',rpc:'https://sepolia-rollup.arbitrum.io/rpc', explorer:'https://sepolia.arbiscan.io',
+              nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
+  BNB:      { id:'0x61',     name:'BNB Testnet',             rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
               nativeCurrency:{name:'tBNB',symbol:'tBNB',decimals:18} },
-  MATIC:    { id:'0x13882',  name:'Polygon Amoy Testnet', rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
+  MATIC:    { id:'0x13882',  name:'Polygon Amoy Testnet',    rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
-  USDT_ETH: { id:'0xaa36a7', name:'Sepolia Testnet',      rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
+  USDT_ETH: { id:'0xaa36a7', name:'Sepolia Testnet',         rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
               nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
-  USDT_BNB: { id:'0x61',     name:'BNB Testnet',          rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
+  USDT_BNB: { id:'0x61',     name:'BNB Testnet',             rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
               nativeCurrency:{name:'tBNB',symbol:'tBNB',decimals:18} },
-  USDT_POL: { id:'0x13882',  name:'Polygon Amoy Testnet', rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
+  USDT_POL: { id:'0x13882',  name:'Polygon Amoy Testnet',    rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
 };
 
@@ -3401,6 +3384,13 @@ const OASIS_CHAINS_TESTNET = {
 };
 
 const OASIS_CHAINS = TEST_MODE ? OASIS_CHAINS_TESTNET : OASIS_CHAINS_MAINNET;
+
+// Maps OASIS chain key → EVM_CHAINS key for MetaMask chain switching
+const OASIS_TO_EVM_CHAIN = {
+  ERC721:        'ETH',
+  ArbitrumOASIS: 'ARB',
+};
+
 let currentOasisChain = 'ERC721';
 // let oasisJwt = null;
 // let oasisJwtExpiry = 0;
@@ -3437,7 +3427,6 @@ function updateOasisWalletUI() {
   const addr   = document.getElementById('oasisWAddr');
   const chain  = document.getElementById('oasisWChain');
   const input  = document.getElementById('oasisWalletAddr');
-  const comingSoon = document.getElementById('oasisComingSoon');
   const mintBtn    = document.getElementById('oasisConfirm');
   const treasury   = document.getElementById('oasisTreasuryWallet');
 
@@ -3469,7 +3458,6 @@ function updateOasisWalletUI() {
       input.value            = solPublicKey;
       document.getElementById('oasisSolInner').textContent = '✓ Phantom Connected';
 
-      comingSoon.style.display = 'none';
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3488,7 +3476,6 @@ function updateOasisWalletUI() {
       chain.style.display    = 'none';
       input.value            = '';
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
-      comingSoon.style.display = 'none';
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3503,12 +3490,10 @@ function updateOasisWalletUI() {
   } 
   else
   {
-    comingSoon.style.display = 'block';
-
-    mintBtn.disabled = true;
-    mintBtn.textContent = 'COMING SOON';
-    mintBtn.style.opacity = '.6';
-    mintBtn.style.cursor = 'not-allowed';
+    mintBtn.disabled = false;
+    mintBtn.textContent = '🌀 MINT WITH OASIS';
+    mintBtn.style.opacity = '1';
+    mintBtn.style.cursor = 'pointer';
 
     // MetaMask
     if (evmAddress) {
@@ -3578,8 +3563,60 @@ async function handleOasisMint() {
 
     setOasisStatus(`⛓ Preparing mint...`, 'var(--cyan)');
 
-    // 🔥 NEW: SOL PAYMENT GATE (ONLY FOR SOLANA CHAIN)
-    if (currentOasisChain === 'SolanaOASIS') 
+    // ── EVM PAYMENT (ETH / ARB) ──────────────────────────────────────────────
+    if (currentOasisChain === 'ERC721' || currentOasisChain === 'ArbitrumOASIS')
+    {
+      if (!evmSigner) throw new Error('Connect MetaMask first.');
+
+      btn.innerHTML = '<span class="spinner"></span>CREATING ORDER...';
+
+      const evmOrderRes = await fetch('/api/create-evm-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet, tier: currentTier, chain: currentOasisChain })
+      }).then(r => r.json());
+
+      if (evmOrderRes.error) throw new Error(evmOrderRes.error);
+      order = evmOrderRes;
+
+      const evmChainKey = OASIS_TO_EVM_CHAIN[currentOasisChain];
+      const chainInfo   = EVM_CHAINS[evmChainKey];
+
+      btn.innerHTML = '<span class="spinner"></span>SWITCHING CHAIN...';
+      await switchChain(chainInfo);
+      evmProvider = new ethers.BrowserProvider(window.ethereum);
+      evmSigner   = await evmProvider.getSigner();
+
+      btn.innerHTML = '<span class="spinner"></span>WAITING FOR METAMASK...';
+      const tx = await evmSigner.sendTransaction({
+        to:    TREASURY_WALLETS[currentOasisChain === 'ERC721' ? 'EthereumOASIS' : 'ArbitrumOASIS'],
+        value: ethers.parseEther(String(evmOrderRes.priceETH)),
+      });
+
+      btn.innerHTML = '<span class="spinner"></span>CONFIRMING...';
+      const receipt = await tx.wait();
+      const txHash  = receipt.hash;
+
+      btn.innerHTML = '<span class="spinner"></span>VERIFYING PAYMENT...';
+      const verifyRes = await fetch('/api/verify-evm-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          txHash,
+          orderId: evmOrderRes.orderId,
+          wallet,
+          email,
+          tier: currentTier,
+          chain: currentOasisChain,
+          testMode: TEST_MODE
+        })
+      }).then(r => r.json());
+
+      if (!verifyRes.success) throw new Error('Payment verification failed: ' + (verifyRes.error || 'Unknown'));
+    }
+
+    // ── SOL PAYMENT ──────────────────────────────────────────────────────────
+    else if (currentOasisChain === 'SolanaOASIS')
     {
       btn.innerHTML = '<span class="spinner"></span>APPROVING PAYMENT...';
 
