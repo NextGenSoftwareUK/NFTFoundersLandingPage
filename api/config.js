@@ -7,7 +7,7 @@ export default function handler(req, res) {
     stripePk: process.env.STRIPE_PK_TEST, //TODO: REMEMBER TO REMOVE AFTER TESTING!!!
     evmReceiver: process.env.EVM_RECEIVER,
     btcAddr: process.env.BTC_ADDR,
-    solAddr: process.env.SOL_ADDR,
+    solAddr: process.env.TREASURY_WALLET_SOL,
     usdtContracts: testMode ? {
       ETH:  process.env.USDT_ETH_TEST,
       BNB:  process.env.USDT_BNB_TEST,
