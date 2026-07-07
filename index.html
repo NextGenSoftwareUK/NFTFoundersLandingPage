@@ -96,16 +96,8 @@ body{background:var(--bg-deep);color:var(--text);font-family:'Rajdhani',sans-ser
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:1}
 .wrap{position:relative;z-index:2}
 
-/* ── LEARN BANNER ── */
-.learn-banner{position:fixed;top:0;left:0;right:0;z-index:201;background:linear-gradient(90deg,rgba(0,229,255,.08),rgba(0,229,255,.14),rgba(0,229,255,.08));border-bottom:1px solid rgba(0,229,255,.2);padding:9px 20px;text-align:center;display:flex;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(8px)}
-.learn-banner__text{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;color:#a8bfd8}
-.learn-banner__link{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--cyan);text-decoration:none;border:1px solid rgba(0,229,255,.35);border-radius:999px;padding:4px 14px;transition:background .2s,border-color .2s,box-shadow .2s;white-space:nowrap}
-.learn-banner__link:hover{background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.6);box-shadow:0 0 16px rgba(0,229,255,.4)}
-.learn-banner__close{background:none;border:none;color:#6a80a8;cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;margin-left:8px;transition:color .2s}
-.learn-banner__close:hover{color:var(--cyan)}
-
 /* ── NAV ── */
-nav{position:fixed;top:38px;left:0;right:0;z-index:200;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(3,7,20,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,229,255,.12)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(3,7,20,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,229,255,.12)}
 .nav-brand{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.22em;color:#fff;text-decoration:none}
 .nav-brand span{color:var(--cyan)}
 .nav-links{display:flex;gap:28px;list-style:none}
@@ -139,7 +131,7 @@ nav{position:fixed;top:38px;left:0;right:0;z-index:200;padding:18px 40px;display
 }
 
 /* ── HERO ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:138px 20px 40px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,229,255,.08) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(124,58,237,.12) 0%,transparent 60%)}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 20px 40px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,229,255,.08) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(124,58,237,.12) 0%,transparent 60%)}
 .logo-ring{width:90px;height:90px;border-radius:50%;border:2px solid var(--cyan);margin-bottom:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(0,229,255,.4),inset 0 0 20px rgba(0,229,255,.1);animation:ringPulse 3s ease-in-out infinite;position:relative}
 .logo-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(0,229,255,.2);animation:ringPulse 3s ease-in-out infinite reverse}
 .logo-ring svg{width:50px;height:50px}
@@ -689,13 +681,6 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
 <div id="testModeBanner">
   🧪 <strong>TESTNET MODE ACTIVE</strong> — No real funds will be sent. All chains are on testnet. Stripe uses test cards.
   <span class="tm-close" onclick="document.getElementById('testModeBanner').style.display='none';document.body.classList.remove('test-mode-on')">✕</span>
-</div>
-
-<!-- Learn banner -->
-<div class="learn-banner" id="learnBanner">
-  <span class="learn-banner__text">New to OASIS? Discover what we're building and why it matters.</span>
-  <a href="/learn.html" class="learn-banner__link">Learn about OASIS →</a>
-  <button class="learn-banner__close" onclick="document.getElementById('learnBanner').style.display='none';document.querySelector('nav').style.top='0';document.querySelector('.hero').style.paddingTop='100px'" aria-label="Dismiss">✕</button>
 </div>
 
 <canvas id="stars-canvas"></canvas>
@@ -2041,6 +2026,27 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <input class="form-input" id="oasisEmail" type="email" placeholder="you@example.com">
         </div>
 
+        <!-- Coming soon notice -->
+        <div
+          id="oasisComingSoon"
+          class="coming-soon-box"
+          style="
+            display:block;
+            margin-bottom:14px;
+            background:rgba(255,180,0,.08);
+            border:1px solid rgba(255,180,0,.2);
+            color:#ffd166;
+            border-radius:10px;
+            padding:12px 14px;
+            font-size:16px;
+            line-height:1.6;
+            font-family:'Share Tech Mono',monospace
+          "
+        >
+          ⚡ Ethereum + Arbitrum minting is currently being finalized.<br>
+          Solana minting is live now via OASIS.
+        </div>
+
         <!-- Treasury wallet -->
         <div
           style="
@@ -2076,21 +2082,13 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <span class="price-label">TOTAL DUE</span>
           <span class="price-value" id="oasisPrice" style="color:var(--cyan)">$1,499 USD</span>
         </div>
-        <div class="price-row" style="margin-top:6px" id="oasisSolPriceRow">
+        <div class="price-row" style="margin-top:6px">
           <span class="price-label">SOL PRICE</span>
-          <span class="price-value" id="solPriceOASIS" style="color:#00e5ff">—</span>
+          <span class="price-value" id="solPriceOASIS" style="color:#00e5ff">USD</span>
         </div>
-        <div class="price-row" style="margin-top:6px" id="oasisNftSolRow">
+        <div class="price-row" style="margin-top:6px">
           <span class="price-label">NFT PRICE (SOL)</span>
-          <span class="price-value" id="nftSolPrice" style="color:#00e5ff">—</span>
-        </div>
-        <div class="price-row" style="margin-top:6px;display:none" id="oasisEthPriceRow">
-          <span class="price-label">ETH PRICE</span>
-          <span class="price-value" id="ethPriceOASIS" style="color:#00e5ff">—</span>
-        </div>
-        <div class="price-row" style="margin-top:6px;display:none" id="oasisNftEthRow">
-          <span class="price-label">NFT PRICE (ETH)</span>
-          <span class="price-value" id="nftEthPrice" style="color:#00e5ff">—</span>
+          <span class="price-value" id="nftSolPrice" style="color:#00e5ff">SOL</span>
         </div>
         <button class="confirm-btn" id="oasisConfirm"
           style="background:linear-gradient(135deg,#003a6e,#005fa3,#00b4d8);color:#e0f7ff;"
@@ -2160,9 +2158,9 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   }
 
 const TREASURY_WALLETS = {
-  get SolanaOASIS()   { return CFG.solAddr; },
-  get EthereumOASIS() { return CFG.evmReceiver; },
-  get ArbitrumOASIS() { return CFG.evmReceiver; },
+  SolanaOASIS:   '89443sASVtWyg5pqSxMgtr7MxdTL1NTBqCFSHztKcGzq',
+  ArbitrumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48',
+  EthereumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48'
 };
 
 // ── NFT ARTWORK (real images per tier) ──
@@ -2182,34 +2180,30 @@ const NFT_IMAGE_URLS = {
 // EVM chain definitions  (chainId hex, name, rpc, explorer)
 // In TEST_MODE each key points to the testnet equivalent
 const EVM_CHAINS_MAINNET = {
-  ETH:      { id:'0x1',      name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
-  ARB:      { id:'0xa4b1',   name:'Arbitrum One',      rpc:'https://arb1.arbitrum.io/rpc',  explorer:'https://arbiscan.io',
-              nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
-  BNB:      { id:'0x38',     name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
+  ETH:      { id:'0x1',    name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
+  BNB:      { id:'0x38',   name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
               nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18} },
-  MATIC:    { id:'0x89',     name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
+  MATIC:    { id:'0x89',   name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
-  USDT_ETH: { id:'0x1',     name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
-  USDT_BNB: { id:'0x38',    name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
+  USDT_ETH: { id:'0x1',   name:'Ethereum Mainnet',  rpc:'https://mainnet.infura.io/v3/', explorer:'https://etherscan.io' },
+  USDT_BNB: { id:'0x38',  name:'BNB Smart Chain',   rpc:'https://bsc-dataseed.binance.org/', explorer:'https://bscscan.com',
               nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18} },
-  USDT_POL: { id:'0x89',    name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
+  USDT_POL: { id:'0x89',  name:'Polygon Mainnet',   rpc:'https://polygon-rpc.com/', explorer:'https://polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
 };
 
 const EVM_CHAINS_TESTNET = {
-  ETH:      { id:'0xaa36a7', name:'Sepolia Testnet',         rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
+  ETH:      { id:'0xaa36a7', name:'Sepolia Testnet',      rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
               nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
-  ARB:      { id:'0x66eee',  name:'Arbitrum Sepolia Testnet',rpc:'https://sepolia-rollup.arbitrum.io/rpc', explorer:'https://sepolia.arbiscan.io',
-              nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
-  BNB:      { id:'0x61',     name:'BNB Testnet',             rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
+  BNB:      { id:'0x61',     name:'BNB Testnet',          rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
               nativeCurrency:{name:'tBNB',symbol:'tBNB',decimals:18} },
-  MATIC:    { id:'0x13882',  name:'Polygon Amoy Testnet',    rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
+  MATIC:    { id:'0x13882',  name:'Polygon Amoy Testnet', rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
-  USDT_ETH: { id:'0xaa36a7', name:'Sepolia Testnet',         rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
+  USDT_ETH: { id:'0xaa36a7', name:'Sepolia Testnet',      rpc:'https://rpc.sepolia.org/', explorer:'https://sepolia.etherscan.io',
               nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18} },
-  USDT_BNB: { id:'0x61',     name:'BNB Testnet',             rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
+  USDT_BNB: { id:'0x61',     name:'BNB Testnet',          rpc:'https://data-seed-prebsc-1-s1.binance.org:8545/', explorer:'https://testnet.bscscan.com',
               nativeCurrency:{name:'tBNB',symbol:'tBNB',decimals:18} },
-  USDT_POL: { id:'0x13882',  name:'Polygon Amoy Testnet',    rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
+  USDT_POL: { id:'0x13882',  name:'Polygon Amoy Testnet', rpc:'https://rpc-amoy.polygon.technology/', explorer:'https://amoy.polygonscan.com',
               nativeCurrency:{name:'POL',symbol:'POL',decimals:18} },
 };
 
@@ -3407,31 +3401,17 @@ const OASIS_CHAINS_TESTNET = {
 };
 
 const OASIS_CHAINS = TEST_MODE ? OASIS_CHAINS_TESTNET : OASIS_CHAINS_MAINNET;
-
-// Maps OASIS chain key → EVM_CHAINS key for MetaMask chain switching
-const OASIS_TO_EVM_CHAIN = {
-  ERC721:        'ETH',
-  ArbitrumOASIS: 'ARB',
-};
-
 let currentOasisChain = 'ERC721';
 // let oasisJwt = null;
 // let oasisJwtExpiry = 0;
 
-function selectOasisChain(el)
+function selectOasisChain(el) 
 {
   currentOasisChain = el.dataset.ochain;
   document.querySelectorAll('#oasisChainGrid .coin-btn').forEach(b => b.classList.toggle('active', b.dataset.ochain === currentOasisChain));
-  updateOasisWalletUI();
-  updateOasisPriceRows();
-}
 
-function updateOasisPriceRows() {
-  const isSol = currentOasisChain === 'SolanaOASIS';
-  document.getElementById('oasisSolPriceRow').style.display = isSol ? '' : 'none';
-  document.getElementById('oasisNftSolRow').style.display   = isSol ? '' : 'none';
-  document.getElementById('oasisEthPriceRow').style.display = isSol ? 'none' : '';
-  document.getElementById('oasisNftEthRow').style.display   = isSol ? 'none' : '';
+  // Update OASIS UI when chain changes
+  updateOasisWalletUI();
 }
 
 function updateOasisPrice() {
@@ -3457,6 +3437,7 @@ function updateOasisWalletUI() {
   const addr   = document.getElementById('oasisWAddr');
   const chain  = document.getElementById('oasisWChain');
   const input  = document.getElementById('oasisWalletAddr');
+  const comingSoon = document.getElementById('oasisComingSoon');
   const mintBtn    = document.getElementById('oasisConfirm');
   const treasury   = document.getElementById('oasisTreasuryWallet');
 
@@ -3488,6 +3469,7 @@ function updateOasisWalletUI() {
       input.value            = solPublicKey;
       document.getElementById('oasisSolInner').textContent = '✓ Phantom Connected';
 
+      comingSoon.style.display = 'none';
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3506,6 +3488,8 @@ function updateOasisWalletUI() {
       chain.style.display    = 'none';
       input.value            = '';
       document.getElementById('oasisSolInner').textContent = '👻 Connect Phantom';
+      comingSoon.style.display = 'none';
+      
       mintBtn.disabled = false;
       mintBtn.textContent = '🌀 MINT WITH OASIS';
       mintBtn.style.opacity = '1';
@@ -3518,12 +3502,14 @@ function updateOasisWalletUI() {
       document.getElementById('connectStripeSolInner').textContent = '👻 Connect Phantom';
     }
   } 
-  else
+  else 
   {
-    mintBtn.disabled = false;
-    mintBtn.textContent = '🌀 MINT WITH OASIS';
-    mintBtn.style.opacity = '1';
-    mintBtn.style.cursor = 'pointer';
+    comingSoon.style.display = 'block';
+
+    mintBtn.disabled = true;
+    mintBtn.textContent = 'COMING SOON';
+    mintBtn.style.opacity = '.6';
+    mintBtn.style.cursor = 'not-allowed';
 
     // MetaMask
     if (evmAddress) {
@@ -3593,35 +3579,8 @@ async function handleOasisMint() {
 
     setOasisStatus(`⛓ Preparing mint...`, 'var(--cyan)');
 
-    // ── EVM PAYMENT (ETH / ARB) ──────────────────────────────────────────────
-    if (currentOasisChain === 'ERC721' || currentOasisChain === 'ArbitrumOASIS')
-    {
-      if (!evmSigner) throw new Error('Connect MetaMask first.');
-
-      const evmChainKey = OASIS_TO_EVM_CHAIN[currentOasisChain];
-      const chainInfo   = EVM_CHAINS[evmChainKey];
-      const priceETH    = _lastEthPrice
-        ? Number((TIERS[currentTier].prices.ETH)).toFixed(6)
-        : TIERS[currentTier].prices.ETH;
-
-      btn.innerHTML = '<span class="spinner"></span>SWITCHING CHAIN...';
-      await switchChain(chainInfo);
-      evmProvider = new ethers.BrowserProvider(window.ethereum);
-      evmSigner   = await evmProvider.getSigner();
-
-      btn.innerHTML = '<span class="spinner"></span>WAITING FOR METAMASK...';
-      const evmTx = await evmSigner.sendTransaction({
-        to:    TREASURY_WALLETS[currentOasisChain === 'ERC721' ? 'EthereumOASIS' : 'ArbitrumOASIS'],
-        value: ethers.parseEther(String(priceETH)),
-      });
-
-      btn.innerHTML = '<span class="spinner"></span>CONFIRMING...';
-      const receipt = await evmTx.wait();
-      sig = receipt.hash;
-    }
-
-    // ── SOL PAYMENT ──────────────────────────────────────────────────────────
-    else if (currentOasisChain === 'SolanaOASIS')
+    // 🔥 NEW: SOL PAYMENT GATE (ONLY FOR SOLANA CHAIN)
+    if (currentOasisChain === 'SolanaOASIS') 
     {
       btn.innerHTML = '<span class="spinner"></span>APPROVING PAYMENT...';
 
@@ -3969,7 +3928,7 @@ async function mint(orderId, paymentSignature, wallet, email) {
       WaitTillNFTSent:           true,
       WaitForNFTToSendInSeconds: 60,
       AttemptToSendEveryXSeconds: 5,
-      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: orderId || null, paymentSignature: paymentSignature, evmTxHash: (currentOasisChain !== 'SolanaOASIS' ? paymentSignature : null) }
+      MetaData: { tier: currentTier, badge: tier.badge, email, orderId: orderId || null, paymentSignature: paymentSignature }
     };
 
     console.log("calling oasis mint api...");
@@ -4019,30 +3978,23 @@ async function mint(orderId, paymentSignature, wallet, email) {
 }
 
 
-let _lastSolPrice = null;
-let _lastEthPrice = null;
+// const es = new EventSource("/api/sol-price-stream");
 
-function updateOasisTokenPrices() {
-  const tier = TIERS[currentTier];
-  const usdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ''));
-  if (_lastSolPrice) {
-    document.getElementById('solPriceOASIS').textContent = `$${_lastSolPrice.toFixed(2)} USD`;
-    document.getElementById('nftSolPrice').textContent   = `${(usdPrice / _lastSolPrice).toFixed(4)} SOL`;
-  }
-  if (_lastEthPrice) {
-    document.getElementById('ethPriceOASIS').textContent = `$${_lastEthPrice.toFixed(2)} USD`;
-    document.getElementById('nftEthPrice').textContent   = `${(usdPrice / _lastEthPrice).toFixed(6)} ETH`;
-  }
-}
+// es.onmessage = (event) => {
+//   const data = JSON.parse(event.data);
+//    const solPrice = Number(data.price);
+//    const tier = TIERS[currentTier];
+//    const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
+//    const nftInSol = nftUsdPrice / solPrice;
 
-const priceStream = new EventSource('/api/sol-price-stream');
-priceStream.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  if (data.solPrice) _lastSolPrice = Number(data.solPrice);
-  if (data.ethPrice) _lastEthPrice = Number(data.ethPrice);
-  updateOasisTokenPrices();
-};
-priceStream.onerror = () => console.warn('Price stream disconnected, will retry...');
+//   // SOL price display
+//   document.getElementById("solPriceOASIS").innerText =
+//     `$${solPrice.toFixed(2)} USD`;
+
+//   // NFT price in SOL
+//   document.getElementById("nftSolPrice").innerText =
+//     `${nftInSol.toFixed(4)} SOL`;
+// };
 
 
 // let currentOrder = null;
@@ -4099,7 +4051,7 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
 (function(){
   const c=document.getElementById('stars-canvas'),ctx=c.getContext('2d');let stars=[];
   function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
-  function init(){stars=[];for(let i=0;i<260;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+.2,o:Math.random()*.7+.1,s:Math.random()*.0003+.0001})}
+  function init(){stars=[];for(let i=0;i<180;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+.2,o:Math.random()*.7+.1,s:Math.random()*.0003+.0001})}
   let t=0;function draw(){ctx.clearRect(0,0,c.width,c.height);t++;stars.forEach(s=>{const p=s.o*(0.6+0.4*Math.sin(t*s.s*200));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(200,220,255,${p})`;ctx.fill()});requestAnimationFrame(draw)}
   resize();init();draw();window.addEventListener('resize',()=>{resize();init()});
 })();
@@ -4169,7 +4121,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   await loadConfig();
   updateOasisWalletUI();
-  updateOasisPriceRows();
   preWarmPhantom();
   checkEdgeTracking();
   //initApp(); // whatever your current init function is called
@@ -4231,5 +4182,78 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 
 </script>
 
+<!-- ── COMING SOON MODAL ── -->
+<div id="comingSoonModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(1,4,15,.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(135deg,#060c24,#0a1330);border:1px solid rgba(0,229,255,.25);border-radius:20px;padding:48px 40px;max-width:480px;width:90%;text-align:center;position:relative;box-shadow:0 0 60px rgba(0,229,255,.12);">
+    <button onclick="closeComingSoon()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#a8bfd8;font-size:22px;cursor:pointer;line-height:1;">✕</button>
+    <div style="font-size:42px;margin-bottom:12px;">🚀</div>
+    <h2 style="font-family:'Orbitron',sans-serif;font-size:22px;color:#00e5ff;margin:0 0 10px;letter-spacing:.12em;">COMING SOON</h2>
+    <p style="font-family:'Rajdhani',sans-serif;font-size:16px;color:#a8bfd8;margin:0 0 28px;line-height:1.6;">NFT minting will be unlocked shortly as part of the full OASIS Omniverse launch.<br>Enter your email below to be notified the moment access opens.</p>
+    <form id="notifyForm" onsubmit="submitNotify(event)" style="display:flex;flex-direction:column;gap:14px;">
+      <input id="notifyEmail" type="email" required placeholder="your@email.com"
+        style="background:rgba(255,255,255,.06);border:1px solid rgba(0,229,255,.3);border-radius:10px;padding:14px 16px;color:#e0e0e0;font-family:'Share Tech Mono',monospace;font-size:15px;outline:none;width:100%;box-sizing:border-box;"
+        onfocus="this.style.borderColor='rgba(0,229,255,.7)'" onblur="this.style.borderColor='rgba(0,229,255,.3)'" />
+      <button type="submit" id="notifyBtn"
+        style="background:linear-gradient(135deg,#006080,#00b4d8,#80e8ff);color:#001a24;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.15em;border:none;border-radius:10px;padding:15px;cursor:pointer;transition:opacity .2s;">
+        NOTIFY ME WHEN OPEN
+      </button>
+    </form>
+    <div id="notifyResult" style="margin-top:16px;font-family:'Rajdhani',sans-serif;font-size:15px;min-height:20px;"></div>
+  </div>
+</div>
+
+<script>
+// Override openModal to show the coming-soon gate instead of the purchase modal
+let _pendingNotifyTier = '';
+const _originalOpenModal = openModal;
+openModal = function(tier) {
+  _pendingNotifyTier = tier;
+  const modal = document.getElementById('comingSoonModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('notifyResult').textContent = '';
+  document.getElementById('notifyEmail').value = '';
+  document.getElementById('notifyBtn').disabled = false;
+  document.getElementById('notifyBtn').textContent = 'NOTIFY ME WHEN OPEN';
+};
+
+function closeComingSoon() {
+  document.getElementById('comingSoonModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('comingSoonModal').addEventListener('click', function(e) {
+  if (e.target === this) closeComingSoon();
+});
+
+async function submitNotify(e) {
+  e.preventDefault();
+  const email = document.getElementById('notifyEmail').value.trim();
+  const btn = document.getElementById('notifyBtn');
+  const result = document.getElementById('notifyResult');
+  btn.disabled = true;
+  btn.textContent = 'SENDING...';
+  result.textContent = '';
+  try {
+    const res = await fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, tier: _pendingNotifyTier })
+    });
+    if (res.ok) {
+      result.style.color = '#00e5ff';
+      result.textContent = "✓ You're on the list! We'll email you when minting opens.";
+      btn.textContent = 'REGISTERED';
+    } else {
+      throw new Error('Server error');
+    }
+  } catch {
+    result.style.color = '#ff6b6b';
+    result.textContent = '✗ Something went wrong — please try again.';
+    btn.disabled = false;
+    btn.textContent = 'NOTIFY ME WHEN OPEN';
+  }
+}
+</script>
 </body>
 </html>

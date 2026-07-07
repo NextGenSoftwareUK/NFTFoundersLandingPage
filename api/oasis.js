@@ -1,54 +1,6 @@
+//import { kv } from '@vercel/kv';
 const crypto = require("crypto");
 const { createClient } = require("redis");
-const { OASISClient } = require("@oasisomniverse/web4-api");
-const { getEthPriceUSD } = require("../lib/ethPrice");
-
-const ALCHEMY_KEY = process.env.ALCHEMY_API_KEY;
-
-function getEvmRpcUrl(chain) {
-  return chain === "ArbitrumOASIS"
-    ? `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
-    : `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
-}
-
-async function rpcCall(rpcUrl, method, params) {
-  const res = await fetch(rpcUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(`RPC error: ${data.error.message}`);
-  return data.result;
-}
-
-async function verifyEvmTx({ txHash, chain, tierPriceUSD }) {
-  const rpcUrl = getEvmRpcUrl(chain);
-
-  const [tx, receipt] = await Promise.all([
-    rpcCall(rpcUrl, "eth_getTransactionByHash", [txHash]),
-    rpcCall(rpcUrl, "eth_getTransactionReceipt", [txHash])
-  ]);
-
-  if (!tx)      throw new Error("EVM transaction not found");
-  if (!receipt) throw new Error("EVM transaction receipt not found");
-  if (receipt.status !== "0x1") throw new Error("EVM transaction failed on-chain");
-
-  if (tx.to?.toLowerCase() !== process.env.EVM_RECEIVER?.toLowerCase()) {
-    throw new Error(`Wrong recipient: ${tx.to}`);
-  }
-
-  // Verify amount — allow 10% below expected to handle price drift
-  const ethPriceUSD = await getEthPriceUSD();
-  const expectedETH = tierPriceUSD / ethPriceUSD;
-  const receivedETH = Number(BigInt(tx.value)) / 1e18;
-  if (receivedETH < expectedETH * 0.90) {
-    throw new Error(`Insufficient payment: received ${receivedETH.toFixed(6)} ETH, expected ~${expectedETH.toFixed(6)} ETH`);
-  }
-
-  return { receivedETH, expectedETH };
-}
-
 const redis = createClient({ url: process.env.REDIS_URL });
 
 redis.on("error", (err) => {
@@ -89,6 +41,115 @@ function usernameFromEmail(email) {
   return `${local}-${randomString(6)}`;
 }
 
+async function readResponseBody(response) {
+  const text = await response.text();
+  try {
+    return { text, json: JSON.parse(text) };
+  } catch {
+    return { text, json: null };
+  }
+}
+
+function extractAvatar(data) {
+  return data?.result?.result?.avatar
+    || data?.result?.avatar
+    || data?.avatar
+    || data?.result
+    || null;
+}
+
+function extractJwtToken(data) {
+  return data?.result?.result?.jwtToken
+    || data?.result?.jwtToken
+    || data?.jwtToken
+    || data?.token
+    || null;
+}
+
+function extractVerificationToken(data, avatar) {
+  return data?.result?.verificationToken
+    || data?.result?.result?.verificationToken
+    || data?.verificationToken
+    || avatar?.verificationToken
+    || null;
+}
+
+async function oasisJsonFetch(apiUrl, path, { method = "GET", token, body } = {}) {
+  const response = await fetch(`${apiUrl}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  const payload = await readResponseBody(response);
+  return { response, ...payload };
+}
+
+async function lookupAvatarByEmail({ apiUrl, token, email }) {
+  const { response, json, text } = await oasisJsonFetch(apiUrl, `/api/Avatar/get-by-email/${encodeURIComponent(email)}`, {
+    token
+  });
+
+  if (response.status === 404) return null;
+
+  if (!response.ok) {
+    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
+    if (/not found/i.test(msg)) return null;
+    throw new Error(`Avatar lookup failed (${response.status}): ${msg}`);
+  }
+
+  const avatar = extractAvatar(json);
+  if (avatar?.avatarId || avatar?.id) return avatar;
+
+  return null;
+}
+
+async function registerAvatar({ apiUrl, email, username, password }) {
+  const payload = {
+    username,
+    email,
+    password,
+    confirmPassword: password,
+    firstName: "Founder",
+    lastName: "User",
+    title: "Mx",
+    avatarType: "User",
+    acceptTerms: true,
+    privacyMode: false
+  };
+
+  const { response, json, text } = await oasisJsonFetch(apiUrl, "/api/Avatar/register", {
+    method: "POST",
+    body: payload
+  });
+
+  if (!response.ok) {
+    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
+    throw new Error(`Avatar registration failed (${response.status}): ${msg}`);
+  }
+
+  const avatar = extractAvatar(json);
+  const jwtToken = extractJwtToken(json);
+  const verificationToken = extractVerificationToken(json, avatar);
+
+  if (!avatar?.avatarId && !avatar?.id) {
+    throw new Error("Avatar registration succeeded but no avatar ID was returned");
+  }
+
+  return {
+    avatar,
+    jwtToken,
+    verificationToken,
+    username,
+    email,
+    password
+  };
+}
+
 function buildWeb4NFT({ payload, mintResult, avatarId, email, createdNewAvatar }) {
   const minted = mintResult?.result || {};
   const primaryWeb3NFT = minted?.web3NFTs?.[0] || {};
@@ -96,6 +157,7 @@ function buildWeb4NFT({ payload, mintResult, avatarId, email, createdNewAvatar }
 
   return {
     ...minted,
+    // The avatar-facing NFT queries key off MintedByAvatarId, so we re-home the record here.
     mintedByAvatarId: avatarId,
     modifiedByAvatarId: avatarId,
     sendToAvatarAfterMintingId: avatarId,
@@ -128,6 +190,22 @@ function buildWeb4NFT({ payload, mintResult, avatarId, email, createdNewAvatar }
     modifiedOn: now,
     mintedOn: minted.mintedOn || primaryWeb3NFT.mintedOn || now
   };
+}
+
+async function updateWeb4NFT({ apiUrl, token, providerType, nft }) {
+  const providerQuery = providerType ? `?providerType=${encodeURIComponent(providerType)}` : "";
+  const { response, json, text } = await oasisJsonFetch(apiUrl, `/api/Nft/update-web4-nft${providerQuery}`, {
+    method: "POST",
+    token,
+    body: nft
+  });
+
+  if (!response.ok) {
+    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
+    throw new Error(`Web4 NFT update failed (${response.status}): ${msg}`);
+  }
+
+  return json;
 }
 
 async function storeActivationRecord({ email, username, activationKey, avatarId, verificationToken, tempPassword, testMode }) {
@@ -173,13 +251,14 @@ export default async function handler(req, res) {
     const testMode = process.env.TEST_MODE === 'true';
 
     const OASIS_CFG = {
-      apiUrl: 'https://api.web4.oasisomniverse.one',
+      apiUrl: testMode ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
       username: process.env.OASIS_USERNAME,
       password: process.env.OASIS_PASSWORD,
       avatarId: process.env.OASIS_AVATAR_ID,
+      imageUrl: process.env.OASIS_IMAGE_URL,
     };
 
-    console.log('OASIS config:', JSON.stringify({ ...OASIS_CFG, password: '***' }));
+    console.log('OASIS config:', JSON.stringify(OASIS_CFG));
 
     // =========================
     // 1. CREATE MINT LOCK
@@ -189,84 +268,84 @@ export default async function handler(req, res) {
 
     const lockResult = await redis.set(lockKey, "1", {
       NX: true,
-      EX: 60 * 30
+      EX: 60 * 30 // 30 mins
     });
 
     if (!lockResult) {
-      return res.status(429).json({ error: "Mint already in progress" });
-    }
-
-    // =========================
-    // 2. FETCH ORDER / VERIFY EVM TX
-    // =========================
-
-    const evmTxHash = payload.MetaData?.evmTxHash;
-    const isEvm     = !!evmTxHash;
-
-    if (isEvm) {
-      // EVM path: verify on-chain, use tx hash as idempotency key
-      const usedKey = `evm-tx-used:${evmTxHash}`;
-      const alreadyUsed = await redis.get(usedKey);
-      if (alreadyUsed) {
-        return res.status(403).json({ error: "Transaction already used for minting" });
-      }
-
-      const TIER_PRICES = { supporter: 149, core: 499, genesis: 1499 };
-      const tierPriceUSD = TIER_PRICES[payload.MetaData?.tier];
-      if (!tierPriceUSD) {
-        return res.status(400).json({ error: "Invalid tier in payload" });
-      }
-
-      console.log("Verifying EVM tx:", evmTxHash, "chain:", payload.OnChainProvider);
-      await verifyEvmTx({
-        txHash: evmTxHash,
-        chain: payload.OnChainProvider,
-        tierPriceUSD
+      return res.status(429).json({
+        error: "Mint already in progress"
       });
-
-      // Mark tx as used (7 days TTL)
-      await redis.set(usedKey, "1", { EX: 60 * 60 * 24 * 7 });
-
-      order = { orderId: evmTxHash, status: "paid", used: false, email: payload.MetaData?.email };
-
-    } else {
-      // SOL / card path: look up order in Redis
-      const orderRaw = await redis.get(`order:${payload.MetaData.orderId}`);
-      if (!orderRaw) {
-        return res.status(404).json({ error: "Order not found" });
-      }
-      try {
-        order = JSON.parse(orderRaw);
-      } catch {
-        throw new Error("Invalid order data");
-      }
-      console.log('Fetched order from Redis:', order);
     }
+
+    // =========================
+    // 2. FETCH ORDER
+    // =========================
+
+    const orderRaw = await redis.get(`order:${payload.MetaData.orderId}`);
+
+    if (!orderRaw) {
+      return res.status(404).json({
+        error: "Order not found"
+      });
+    }
+
+    try {
+      order = JSON.parse(orderRaw);
+    } catch {
+      throw new Error("Invalid order data");
+    }
+
+    console.log('Fetched order from Redis:', order);
 
     // =========================
     // 3. VERIFY PAYMENT
     // =========================
 
     if (!order || order.status !== "paid" || order.used) {
-      return res.status(403).json({ error: "Payment required" });
+      return res.status(403).json({
+        error: "Payment required"
+      });
     }
 
     // =========================
-    // 4. AUTHENTICATE OASIS (via SDK)
+    // 4. AUTHENTICATE OASIS
     // =========================
 
-    const oasis = new OASISClient({ baseUrl: OASIS_CFG.apiUrl });
-
-    const authRes = await oasis.auth.login({
-      username: OASIS_CFG.username,
-      password: OASIS_CFG.password
+    const authRes = await fetch(`${OASIS_CFG.apiUrl}/api/avatar/authenticate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: OASIS_CFG.username,
+        password: OASIS_CFG.password
+      })
     });
 
-    if (authRes.isError || !authRes.session?.jwtToken) {
-      throw new Error(`OASIS auth failed: ${authRes.message || 'No JWT returned'}`);
+    if (!authRes.ok) {
+      throw new Error(`OASIS auth failed: ${authRes.status}`);
     }
 
-    console.log('OASIS authenticated, avatarId:', authRes.session.avatarId);
+    const authText = await authRes.text();
+
+    let authData;
+
+    try {
+      authData = JSON.parse(authText);
+    } catch (e) {
+      throw new Error(`Failed to parse OASIS auth response: ${e.message}`);
+    }
+
+    if (authData?.result?.isError) {
+      const msg = authData?.result?.message || 'OASIS authentication failed';
+      throw new Error(msg);
+    }
+
+    const token = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
+
+    if (!token) {
+      throw new Error('No JWT token in OASIS auth response');
+    }
 
     // =========================
     // 5. PREPARE PAYLOAD
@@ -286,6 +365,8 @@ export default async function handler(req, res) {
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs";
+
+    // Force server-side values
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
 
     console.log('Minting with payload:', JSON.stringify({
@@ -302,21 +383,44 @@ export default async function handler(req, res) {
     // =========================
 
     order.status = "minting";
+
     await redis.set(`order:${order.orderId}`, JSON.stringify(order));
 
     // =========================
-    // 7. MINT NFT (via SDK)
+    // 7. MINT NFT
     // =========================
 
-    const mintRes = await oasis.nft.mintNftAsync(payload);
+    const mintRes = await fetch(`${OASIS_CFG.apiUrl}/api/nft/mint-nft`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
 
-    console.log('Mint response:', JSON.stringify(mintRes));
+    if (!mintRes.ok) {
+      const errText = await mintRes.text();
 
-    if (mintRes.isError) {
-      throw new Error(`OASIS mint failed: ${mintRes.message || 'Unknown error'}`);
+      throw new Error(
+        `OASIS mint failed (${mintRes.status}): ${errText.slice(0, 500)}`
+      );
     }
 
-    const result = mintRes;
+    const mintText = await mintRes.text();
+    console.log('Mint response:', mintText);
+
+    let result;
+
+    try {
+      result = JSON.parse(mintText);
+    } catch (e) {
+      throw new Error(`Failed to parse OASIS mint response: ${e.message}`);
+    }
+
+    if (result?.isError) {
+      throw new Error(result.message || 'OASIS returned an error');
+    }
 
     // =========================
     // 8. RESOLVE AVATAR + LINK WEB4 NFT
@@ -334,9 +438,11 @@ export default async function handler(req, res) {
 
     if (recipientEmail) {
       try {
-        // Lookup avatar by email via SDK
-        const lookupRes = await oasis.avatar.getByEmail({ email: recipientEmail });
-        const existingAvatar = (!lookupRes.isError && lookupRes.result) ? lookupRes.result : null;
+        const existingAvatar = await lookupAvatarByEmail({
+          apiUrl: OASIS_CFG.apiUrl,
+          token,
+          email: recipientEmail
+        });
 
         let avatar = existingAvatar;
         let tempPassword = null;
@@ -353,22 +459,16 @@ export default async function handler(req, res) {
             const username = attempt === 0 ? baseUsername : `${baseUsername}-${attempt + 1}`;
 
             try {
-              const regRes = await oasis.auth.register({
-                username,
+              const registration = await registerAvatar({
+                apiUrl: OASIS_CFG.apiUrl,
                 email: recipientEmail,
-                password,
-                firstName: "Founder",
-                lastName: "User",
-                title: "Mx",
-                avatarType: "User",
-                acceptTerms: true
+                username,
+                password
               });
 
-              if (regRes.isError) throw new Error(regRes.message || 'Registration failed');
-
-              avatar = regRes.result;
-              tempPassword = password;
-              verificationToken = avatar?.verificationToken || regRes.session?.verificationToken || null;
+              avatar = registration.avatar;
+              tempPassword = registration.password;
+              verificationToken = registration.verificationToken;
               break;
             } catch (regErr) {
               lastRegisterError = regErr;
@@ -383,7 +483,7 @@ export default async function handler(req, res) {
           }
         }
 
-        const avatarId = avatar.avatarId || avatar.id || avatar.Id;
+        const avatarId = avatar.avatarId || avatar.id;
         if (!avatarId) {
           throw new Error("Avatar ID missing after lookup/registration");
         }
@@ -402,8 +502,6 @@ export default async function handler(req, res) {
           modifiedByAvatarId: avatarId,
           currentOwnerAvatarId: avatarId,
           previousOwnerAvatarId: payload.MintedByAvatarId,
-          sendToAvatarAfterMintingId: avatarId,
-          sendToAvatarAfterMintingUsername: recipientEmail,
           title: web4NFT.title,
           description: web4NFT.description,
           imageUrl: web4NFT.imageUrl,
@@ -418,13 +516,15 @@ export default async function handler(req, res) {
           providerType: payload.OffChainProvider
         };
 
-        // Update Web4 NFT ownership via SDK
-        const updateRes = await oasis.nft.updateWeb4NftAsync(updateRequest);
+        const updatedWeb4NFT = await updateWeb4NFT({
+          apiUrl: OASIS_CFG.apiUrl,
+          token,
+          providerType: payload.OffChainProvider,
+          nft: updateRequest
+        });
 
-        console.log('Web4 NFT update response:', JSON.stringify(updateRes));
-
-        if (updateRes?.result) {
-          result.result = updateRes.result;
+        if (updatedWeb4NFT?.result) {
+          result.result = updatedWeb4NFT.result;
         }
 
         avatarProvision.createdNewAvatar = createdNewAvatar;
@@ -433,7 +533,10 @@ export default async function handler(req, res) {
 
         if (createdNewAvatar) {
           const activationKey = crypto.randomUUID();
-          const activationUrl = buildActivationUrl({ email: recipientEmail, activationKey });
+          const activationUrl = buildActivationUrl({
+            email: recipientEmail,
+            activationKey
+          });
 
           await storeActivationRecord({
             email: recipientEmail,
@@ -461,8 +564,10 @@ export default async function handler(req, res) {
     order.used = true;
     order.status = "minted";
     order.mintedAt = Date.now();
+
     order.mintTx = result?.result?.web3NFTs?.[0]?.mintTransactionHash || null;
     order.sendTx = result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash || null;
+
     order.paymentSignature = payload.MetaData.paymentSignature || null;
     order.email = payload.MetaData.email || null;
     order.avatarId = avatarProvision.avatarId || null;
@@ -470,8 +575,16 @@ export default async function handler(req, res) {
     order.avatarActivationKey = avatarProvision.activationKey || null;
     order.avatarActivationUrl = avatarProvision.activationUrl || null;
     order.avatarProvisionWarning = avatarProvision.warning || null;
+
     order.lockReleasedAt = Date.now();
-    order.oasisResponse = JSON.stringify(result);
+    order.oasisResponse = mintText;
+
+    // Optional debug snapshot
+    // order.oasisResponse = {
+    //   success: true,
+    //   mintTx: order.mintTx,
+    //   sendTx: order.sendTx
+    // };
 
     await redis.set(`order:${order.orderId}`, JSON.stringify(order));
 
@@ -489,64 +602,36 @@ export default async function handler(req, res) {
 
     console.error('OASIS handler error:', e);
 
+    // Rollback minting state if mint failed
     if (order && order.status === "minting" && !order.used) {
+
       order.status = "paid";
-      await redis.set(`order:${order.orderId}`, JSON.stringify(order));
+
+      await redis.set(
+        `order:${order.orderId}`,
+        JSON.stringify(order)
+      );
     }
 
-    return res.status(500).json({ error: e.message || 'Unknown error' });
+    return res.status(500).json({
+      error: e.message || 'Unknown error'
+    });
 
   } finally {
 
     try {
+
       if (lockKey) {
         await redis.del(lockKey);
         console.log('Mint lock released:', lockKey);
       }
-    } catch (unlockErr) {
-      console.error('Failed to release mint lock:', unlockErr);
+
+    } catch (unlockErr) 
+    {
+      console.error(
+        'Failed to release mint lock:',
+        unlockErr
+      );
     }
   }
 }
-
-/*
-// ── ORIGINAL RAW-FETCH IMPLEMENTATION (kept for reference) ──────────────────
-
-//import { kv } from '@vercel/kv';
-// const crypto = require("crypto");
-// const { createClient } = require("redis");
-// const redis = createClient({ url: process.env.REDIS_URL });
-//
-// async function oasisJsonFetch(apiUrl, path, { method = "GET", token, body } = {}) {
-//   const response = await fetch(`${apiUrl}${path}`, {
-//     method,
-//     headers: {
-//       "Content-Type": "application/json",
-//       "Accept": "application/json",
-//       ...(token ? { Authorization: `Bearer ${token}` } : {})
-//     },
-//     body: body ? JSON.stringify(body) : undefined
-//   });
-//   const payload = await readResponseBody(response);
-//   return { response, ...payload };
-// }
-//
-// async function lookupAvatarByEmail({ apiUrl, token, email }) {
-//   const { response, json, text } = await oasisJsonFetch(apiUrl, `/api/Avatar/get-by-email/${encodeURIComponent(email)}`, { token });
-//   if (response.status === 404) return null;
-//   if (!response.ok) {
-//     const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
-//     if (/not found/i.test(msg)) return null;
-//     throw new Error(`Avatar lookup failed (${response.status}): ${msg}`);
-//   }
-//   const avatar = extractAvatar(json);
-//   if (avatar?.avatarId || avatar?.id) return avatar;
-//   return null;
-// }
-//
-// async function registerAvatar({ apiUrl, email, username, password }) { ... }
-//
-// Step 4 (old): raw fetch to /api/avatar/authenticate, extract JWT manually
-// Step 7 (old): raw fetch to /api/nft/mint-nft
-// Step 8 (old): raw fetch to /api/Nft/update-web4-nft
-*/
