@@ -2158,7 +2158,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   }
 
 const TREASURY_WALLETS = {
-  SolanaOASIS:   '89443sASVtWyg5pqSxMgtr7MxdTL1NTBqCFSHztKcGzq',
+  get SolanaOASIS()   { return CFG.solAddr; },
   ArbitrumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48',
   EthereumOASIS: '0x7BB7eDB55999E1B2b50BA9636466FE9243339d48'
 };
