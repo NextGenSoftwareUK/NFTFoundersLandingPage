@@ -414,22 +414,25 @@ nav {
 .web-desc { font-size: 15px; color: #a8bfd8; line-height: 1.72; }
 
 /* ── FOOTER ── */
-.footer {
-  padding: 48px 20px;
-  border-top: 1px solid rgba(0,229,255,.1);
-  text-align: center; position: relative; z-index: 2;
-  background: rgba(3,7,20,.6);
-}
-.footer-brand {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 18px; font-weight: 700; letter-spacing: .2em;
-  color: #fff; margin-bottom: 8px;
-}
-.footer-brand span, .nav-brand span { color: var(--cyan); }
-.footer-sub {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--text-dim);
+.footer{border-top:1px solid rgba(0,229,255,.08);padding:52px 20px 36px;text-align:center;background:rgba(0,0,0,.35);position:relative;z-index:2}
+.footer-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:.16em;color:var(--cyan);margin-bottom:6px}
+.footer-tagline{font-size:13px;color:#a8bfd8;letter-spacing:.07em;margin-bottom:32px}
+.footer-cols{display:flex;justify-content:center;flex-wrap:wrap;gap:40px;margin-bottom:36px;text-align:left}
+.footer-col h4{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.22em;color:var(--cyan);margin-bottom:14px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.footer-col a{font-size:15px;color:#a8bfd8;transition:filter .3s ease,color .3s ease}
+.footer a:hover{color:var(--cyan);filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.8)) drop-shadow(0 0 40px rgba(0,229,255,.4))}
+.footer-copy{font-size:12px;color:#a8bfd8;margin-top:8px}
+.nav-brand span { color: var(--cyan); }
+@media(max-width:700px){
+  .footer-cols{gap:24px}
+  .footer{padding:40px 16px 28px}
+  .footer-logo{font-size:18px;letter-spacing:.12em}
+  .footer-tagline{font-size:12px;margin-bottom:24px}
+  .footer-col h4{font-size:9px;letter-spacing:.18em;margin-bottom:12px}
+  .footer-col ul{gap:7px}
+  .footer-col a{font-size:13px;line-height:1.35}
+  .footer-copy{font-size:11px;line-height:1.6;max-width:320px;margin:0 auto}
 }
 
 /* ── GLOBAL LINK / HOVER ── */
@@ -818,8 +821,87 @@ a:hover { filter: drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rg
 
 <!-- ── FOOTER ── -->
 <footer class="footer">
-  <div class="footer-brand"><span>OA</span><span>SIS</span></div>
-  <div class="footer-sub">Connecting Everything &nbsp;·&nbsp; Empowering Everyone</div>
+  <div class="footer-logo">O<span style="vertical-align:.18em;font-style:normal">△</span>SIS OMNIVERSE</div>
+  <div class="footer-tagline">The unified Web4 to Web10 ecosystem</div>
+  <div class="footer-cols">
+    <div class="footer-col">
+      <h4>ECOSYSTEM</h4>
+      <ul>
+        <li><a href="https://web4.oasisomniverse.one" target="_blank" rel="noopener">WEB 4 Unification Layer</a></li>
+        <li><a href="https://oportal.oasisomniverse.one" target="_blank" rel="noopener">WEB 4 OPORTAL</a></li>
+        <li><a href="https://star.oasisomniverse.one" target="_blank" rel="noopener">WEB 5 XP Layer - STAR ODK</a></li>
+        <li><a href="https://starnet.oasisomniverse.one" target="_blank" rel="noopener">WEB 5 XP Layer - STARNET</a></li>
+        <li><a href="https://ogengine.oasisomniverse.one" target="_blank" rel="noopener">WEB 5 XP Layer - OGEngine</a></li>
+        <li><a href="https://web6.oasisomniverse.one" target="_blank" rel="noopener">WEB 6 AI Layer</a></li>
+        <li><a href="https://web7.oasisomniverse.one" target="_blank" rel="noopener">WEB 7 Symbiotic Layer</a></li>
+        <li><a href="https://web8.oasisomniverse.one" target="_blank" rel="noopener">WEB 8 Inter-Galactic Layer</a></li>
+        <li><a href="https://web9.oasisomniverse.one" target="_blank" rel="noopener">WEB 9 Singularity Layer</a></li>
+        <li><a href="https://web10.oasisomniverse.one" target="_blank" rel="noopener">WEB 10 The Source</a></li>
+        <li><a href="https://ourworld.oasisomniverse.one" target="_blank" rel="noopener">Our World</a></li>
+        <li><a href="https://odoom.oasisomniverse.one" target="_blank" rel="noopener">ODOOM</a></li>
+        <li><a href="https://oquake.oasisomniverse.one" target="_blank" rel="noopener">OQuake</a></li>
+        <li><a href="https://holonet.oasisomniverse.one" target="_blank" rel="noopener">HoloNET</a></li>
+        <li><a href="https://founders.oasisomniverse.one" target="_blank" rel="noopener">Founders NFT</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>BUILD</h4>
+      <ul>
+        <li><a href="https://api.web4.oasisomniverse.one/swagger" target="_blank" rel="noopener">WEB4 API</a></li>
+        <li><a href="https://www.npmjs.com/package/@oasisomniverse/web4-api" target="_blank" rel="noopener">WEB4 npm</a></li>
+        <li><a href="https://api.starnet.oasisomniverse.one/swagger" target="_blank" rel="noopener">WEB5 STARNET API</a></li>
+        <li><a href="https://www.npmjs.com/package/@oasisomniverse/web5-api" target="_blank" rel="noopener">WEB5 npm</a></li>
+        <li><a href="https://api.web6.oasisomniverse.one/swagger" target="_blank" rel="noopener">WEB6 API</a></li>
+        <li><a href="https://www.npmjs.com/package/@oasisomniverse/web6-api" target="_blank" rel="noopener">WEB6 npm</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://www.nuget.org/profiles/dellams" target="_blank" rel="noopener">NuGet (50 pkgs)</a></li>
+        <li><a href="https://marketplace.visualstudio.com/items?itemName=NextGenSoftware.oasis-ide" target="_blank" rel="noopener">OASIS IDE</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-ODK-Runtime-v3.5.0" target="_blank" rel="noopener">STAR CLI/ODK</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>DOCS</h4>
+      <ul>
+        <li><a href="https://oasis-web4.gitbook.io/oasis-web4-docs/" target="_blank" rel="noopener">GitBook Docs</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/GETTING_STARTED_INDEX.md" target="_blank" rel="noopener">Getting Started</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/OASIS_Quick_Start_Guide.md" target="_blank" rel="noopener">Quick Start</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/THE_OASIS_COMPREHENSIVE_WHITEPAPER.md" target="_blank" rel="noopener">Whitepaper</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/OASIS_Lite_Paper.md" target="_blank" rel="noopener">Lite Paper</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/INVESTOR_EVALUATION_GUIDE.md" target="_blank" rel="noopener">Investor Guide</a></li>
+        <li><a href="https://ourworld.oasisomniverse.one/blog" target="_blank" rel="noopener">Blog</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>FOUNDERS</h4>
+      <ul>
+        <li><a href="https://founders.oasisomniverse.one" target="_blank" rel="noopener">Founders NFT</a></li>
+        <li><a href="https://founders.oasisomniverse.one#tiers" target="_blank" rel="noopener">Genesis Tier</a></li>
+        <li><a href="https://founders.oasisomniverse.one#tiers" target="_blank" rel="noopener">Core Tier</a></li>
+        <li><a href="https://founders.oasisomniverse.one#tiers" target="_blank" rel="noopener">Supporter Tier</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>COMMUNITY</h4>
+      <ul>
+        <li><a href="https://discord.gg/q9gMKU6" target="_blank" rel="noopener">Discord</a></li>
+        <li><a href="https://t.me/oasisweb4chat" target="_blank" rel="noopener">Telegram</a></li>
+        <li><a href="https://x.com/OASISWEB4" target="_blank" rel="noopener">X OASIS WEB 4</a></li>
+        <li><a href="https://x.com/OurWorldTheGame" target="_blank" rel="noopener">X Our World</a></li>
+        <li><a href="https://www.youtube.com/@WEB4OASIS" target="_blank" rel="noopener">YouTube OASIS</a></li>
+        <li><a href="https://www.facebook.com/ourworldthegame" target="_blank" rel="noopener">Facebook</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>SUPPORT</h4>
+      <ul>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/issues" target="_blank" rel="noopener">Report an Issue</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/discussions" target="_blank" rel="noopener">Discussions</a></li>
+        <li><a href="https://tally.so/r/WOZjNa" target="_blank" rel="noopener">Submit a Support Ticket</a></li>
+        <li><a href="https://github.com/NextGenSoftwareUK/OASIS/blob/master/Docs/Devs/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-copy">© 2026 <a href="https://nextgenworld.co.uk" target="_blank" rel="noopener">NextGen Software Ltd.</a> All rights reserved.</div>
 </footer>
 
 <!-- ── STARFIELD ── -->
