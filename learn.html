@@ -120,6 +120,9 @@ nav {
 @media (max-width: 600px) {
   .love-cards { grid-template-columns: 1fr !important; gap: 12px !important; }
 }
+@media (max-width: 768px) {
+  #videos .section-inner > div[style*="grid-template-columns:repeat(3"] { grid-template-columns: 1fr !important; }
+}
 
 /* ── HERO ── */
 .hero {
@@ -541,6 +544,7 @@ a:hover { filter: drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rg
     <li><a href="#why">Why OASIS</a></li>
     <li><a href="#ecosystem">Ecosystem</a></li>
     <li><a href="#real-world">Real World</a></li>
+    <li><a href="#videos">Videos</a></li>
     <li><a href="#love">The Love</a></li>
     <li><a href="#founder">Become a Founder</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
@@ -887,6 +891,42 @@ a:hover { filter: drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rg
 </section>
 
 <hr style="border:none;border-top:1px solid rgba(0,229,255,.08);">
+
+<!-- ── VIDEOS ── -->
+<section class="section wrap" id="videos">
+  <div class="section-inner">
+    <div class="section-kicker">SEE IT IN ACTION</div>
+    <h2 class="section-title">WATCH OUR WORLD</h2>
+    <span class="section-line"></span>
+    <p class="section-sub">Live demos, AR prototypes and deep-dives into the geo-located gameplay and OASIS integration.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px">
+      <div style="background:var(--bg-card);border:1px solid rgba(0,229,255,.12);border-radius:16px;overflow:hidden">
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/s4aCSoD84pw" title="Our World GeoNFT AR Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe></div>
+        <div style="padding:18px 20px">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--cyan);margin-bottom:8px">OUR WORLD · LIVE DEMO</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:8px">GEOLOCATION AR + WEB4 GEONFTS</div>
+          <div style="font-size:14px;color:var(--text-dim);line-height:1.6">A live look at Our World using geolocation AR gameplay with Web4 GeoNFTs from the OASIS NFT API.</div>
+        </div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid rgba(0,229,255,.12);border-radius:16px;overflow:hidden">
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/a7CePybCoA8" title="Our World AR World Explainer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe></div>
+        <div style="padding:18px 20px">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--cyan);margin-bottom:8px">OUR WORLD · EXPLAINER</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:8px">AR WORLD EXPLAINER PREVIEW</div>
+          <div style="font-size:14px;color:var(--text-dim);line-height:1.6">Preview explainer of the Our World AR experience and the vision behind the platform.</div>
+        </div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid rgba(0,229,255,.12);border-radius:16px;overflow:hidden">
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/1n2Zf5XG9v0" title="Our World AR Geolocation Prototype" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe></div>
+        <div style="padding:18px 20px">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--cyan);margin-bottom:8px">OUR WORLD · PROTOTYPE</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:8px">AR GEOLOCATION PROTOTYPE</div>
+          <div style="font-size:14px;color:var(--text-dim);line-height:1.6">Early prototype footage of the Our World AR geolocation system in action.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ── THE HEART BEHIND THE TECH ── -->
 <section id="love" style="padding:80px 40px;background:linear-gradient(135deg,rgba(255,95,160,.04),rgba(167,139,250,.04),rgba(0,229,255,.03));border-top:1px solid rgba(255,95,160,.12);border-bottom:1px solid rgba(167,139,250,.12);position:relative;z-index:2">
