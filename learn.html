@@ -413,6 +413,54 @@ nav {
 }
 .web-desc { font-size: 15px; color: #a8bfd8; line-height: 1.72; }
 
+/* ── REAL WORLD APPS ── */
+.rw-intro { text-align: center; max-width: 680px; margin: 0 auto 52px; font-size: 17px; color: #a8bfd8; line-height: 1.85; }
+.rw-intro strong { color: var(--heading); }
+.rw-category { margin-bottom: 52px; }
+.rw-category-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--gold); border-bottom: 1px solid rgba(240,165,0,.2);
+  padding-bottom: 10px; margin-bottom: 24px;
+}
+.rw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.rw-card {
+  background: var(--bg-card2);
+  border: 1px solid rgba(0,229,255,.1);
+  border-radius: 12px; padding: 24px 20px;
+  transition: transform .3s, border-color .3s, box-shadow .3s;
+  text-decoration: none; display: block;
+}
+.rw-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,229,255,.3);
+  box-shadow: 0 12px 40px rgba(0,229,255,.08);
+  filter: none;
+}
+.rw-card-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+.rw-card-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: .08em;
+  color: var(--cyan); margin-bottom: 8px;
+}
+.rw-card-desc { font-size: 14px; color: #a8bfd8; line-height: 1.65; }
+.rw-holonic {
+  text-align: center; max-width: 620px; margin: 0 auto;
+  font-size: 16px; color: #a8bfd8; line-height: 1.85;
+  border-top: 1px solid rgba(0,229,255,.08); padding-top: 40px;
+}
+.rw-holonic strong { color: var(--cyan); }
+.rw-holonic em {
+  display: block; margin-top: 16px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px; letter-spacing: .1em;
+  color: var(--gold); font-style: italic;
+}
+
 /* ── FOOTER ── */
 .footer{border-top:1px solid rgba(0,229,255,.08);padding:52px 20px 36px;text-align:center;background:rgba(0,0,0,.35);position:relative;z-index:2}
 .footer-logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:.16em;color:var(--cyan);margin-bottom:6px}
@@ -695,6 +743,104 @@ a:hover { filter: drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rg
     </p>
   </div>
 </section>
+
+<!-- ── REAL WORLD ── -->
+<section class="section wrap" id="real-world">
+  <div class="section-inner">
+    <span class="section-kicker">The Bigger Picture</span>
+    <h2 class="section-title">Benevolent Technology for a Better World</h2>
+    <span class="section-line"></span>
+    <p class="rw-intro">
+      OASIS isn't just infrastructure for developers and businesses. At its heart it is
+      <strong>ascension technology</strong> — a unified system that gamifies healing, connection and
+      growth to help make the world a genuinely better place for people, animals and nature.
+      Every app below is its own world, yet all are woven together through the same shared
+      identity, karma and purpose.
+    </p>
+
+    <!-- Wellbeing & Spirituality -->
+    <div class="rw-category">
+      <div class="rw-category-label">🌿 &nbsp;Wellbeing &amp; Spirituality</div>
+      <div class="rw-grid">
+        <a href="https://gracebook.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🙏</span>
+          <div class="rw-card-name">GraceBook</div>
+          <div class="rw-card-desc">A spiritual social network built on gratitude, grace and conscious connection — a kinder, more uplifting alternative to mainstream social media.</div>
+        </a>
+        <a href="https://bemindful.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🧘</span>
+          <div class="rw-card-name">Be Mindful</div>
+          <div class="rw-card-desc">Guided mindfulness, meditation and breathwork tools to help you slow down, find stillness and reconnect with yourself every day.</div>
+        </a>
+        <a href="https://silverlining.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">☁️</span>
+          <div class="rw-card-name">Silver Lining</div>
+          <div class="rw-card-desc">Finding the positive in every situation. A community and practice for shifting perspective, building resilience and choosing hope.</div>
+        </a>
+        <a href="https://yoga4autism.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🌈</span>
+          <div class="rw-card-name">Yoga 4 Autism</div>
+          <div class="rw-card-desc">Specialised yoga programmes supporting children and adults with autism — helping them feel calm, confident and connected in their bodies.</div>
+        </a>
+        <a href="https://mindfulcrosswords.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">✏️</span>
+          <div class="rw-card-name">Mindful Crosswords</div>
+          <div class="rw-card-desc">A gentle, calming twist on the classic crossword — designed to sharpen the mind while nurturing inner peace and focus.</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Healing the World -->
+    <div class="rw-category">
+      <div class="rw-category-label">💚 &nbsp;Healing People, Animals &amp; Nature</div>
+      <div class="rw-grid">
+        <a href="https://globalhealingnetwork.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🌍</span>
+          <div class="rw-card-name">Global Healing Network</div>
+          <div class="rw-card-desc">A platform uniting healers, communities and intentions across the world — for healing people, animals, nature and ultimately working toward world peace.</div>
+        </a>
+        <a href="https://ourworld.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🗺️</span>
+          <div class="rw-card-name">Our World</div>
+          <div class="rw-card-desc">A benevolent Pokémon Go — a real-world adventure game that gets people back outside, into nature, being healthy, doing good and making a positive difference in their local community.</div>
+        </a>
+        <a href="https://noahsark.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🐾</span>
+          <div class="rw-card-name">Noah's Ark</div>
+          <div class="rw-card-desc">A global mission to find a loving home for every stray dog and cat in the world. Connecting animals in need with the people who can give them a forever home.</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Second Chances -->
+    <div class="rw-category">
+      <div class="rw-category-label">⭐ &nbsp;Second Chances &amp; Human Potential</div>
+      <div class="rw-grid">
+        <a href="https://justiceleagueacademy.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🦸</span>
+          <div class="rw-card-name">Justice League Academy</div>
+          <div class="rw-card-desc">Helping every person discover their unique gift and become the best version of themselves — providing education, purpose and real opportunities for a better future.</div>
+        </a>
+        <a href="https://your2ndchance.oasisomniverse.one" target="_blank" rel="noopener" class="rw-card">
+          <span class="rw-card-icon">🌱</span>
+          <div class="rw-card-name">Your 2nd Chance</div>
+          <div class="rw-card-desc">Everyone deserves a fresh start. This platform supports people rebuilding their lives — offering community, guidance, skills and the chance to begin again.</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Holonic message -->
+    <div class="rw-holonic">
+      <p>Every one of these apps is its own world — sovereign, independent, serving its own community.
+      Yet all of them share the same <strong>Avatar identity, Karma system and digital backbone</strong>
+      through OASIS. Your progress, reputation and achievements carry across all of them.
+      Separate, but part of something much greater.</p>
+      <em>"The whole is greater than the sum of its parts."</em>
+    </div>
+  </div>
+</section>
+
+<hr style="border:none;border-top:1px solid rgba(0,229,255,.08);">
 
 <!-- ── FOUNDER ── -->
 <section class="section wrap" id="founder">
