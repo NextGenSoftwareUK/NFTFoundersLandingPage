@@ -124,6 +124,10 @@ nav {
   #videos .section-inner > div[style*="grid-template-columns:repeat(3"] { grid-template-columns: 1fr !important; }
   .skeptic-grid { grid-template-columns: 1fr !important; }
   .skeptic-diff-grid { grid-template-columns: 1fr !important; }
+  .team-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .team-grid { grid-template-columns: 1fr !important; }
 }
 
 /* ── HERO ── */
@@ -549,6 +553,7 @@ a:hover { filter: drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rg
     <li><a href="#videos">Demos</a></li>
     <li><a href="#love">The Love</a></li>
     <li><a href="#skeptic">NFT Sceptics</a></li>
+    <li><a href="#team">The Team</a></li>
     <li><a href="#founder">Become a Founder</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
   </ul>
@@ -1023,6 +1028,56 @@ a:hover { filter: drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rg
     <div style="background:linear-gradient(135deg,rgba(0,229,255,.05),rgba(167,139,250,.05));border:1px solid rgba(0,229,255,.15);border-radius:18px;padding:36px 32px;max-width:760px;margin:0 auto;text-align:center">
       <p style="font-size:18px;color:var(--text);line-height:1.85;margin-bottom:12px">"We're not asking you to trust NFTs.<br>We're asking you to trust <strong style="color:#fff">the people, the mission, and the 10+ years of work behind it.</strong>"</p>
       <p style="font-size:15px;color:var(--text);line-height:1.7">The code exists. The apps exist. The team exists. You can see all of it — and that is the difference that matters.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── MEET THE TEAM ── -->
+<section class="section wrap" id="team">
+  <div class="section-inner">
+    <div class="section-kicker">THE PEOPLE BEHIND IT</div>
+    <h2 class="section-title">MEET THE TEAM</h2>
+    <span class="section-line"></span>
+    <p class="section-sub">Real names. Real roles. Real accountability. This is the core team building OASIS — and they've been at it for over a decade.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px" class="team-grid">
+
+      <!-- David -->
+      <div style="background:var(--bg-card);border:1px solid rgba(0,229,255,.15);border-radius:20px;padding:32px 24px;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(0,229,255,.15),rgba(124,58,237,.2));border:2px solid rgba(0,229,255,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px">👨‍💻</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">David Ellams</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--cyan);margin-bottom:12px">CEO · CTO · FOUNDER</div>
+        <div style="font-size:12px;color:var(--text-dim);letter-spacing:.05em;margin-bottom:14px">NextGen World Ltd</div>
+        <p style="font-size:14px;color:var(--text);line-height:1.7">Visionary architect of OASIS — over a decade building the infrastructure for a connected, compassionate world.</p>
+      </div>
+
+      <!-- Sarah -->
+      <div style="background:var(--bg-card);border:1px solid rgba(167,139,250,.15);border-radius:20px;padding:32px 24px;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(255,95,160,.15));border:2px solid rgba(167,139,250,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px">🌿</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">Sarah Lena Hofer</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;color:#a855f7;margin-bottom:12px">CHIEF GOVERNANCE OFFICER</div>
+        <div style="font-size:12px;color:var(--text-dim);letter-spacing:.05em;margin-bottom:14px">OASIS · CEO/Founder, Enlightened Nations</div>
+        <p style="font-size:14px;color:var(--text);line-height:1.7">Ensuring OASIS is governed with integrity, wisdom and a commitment to people over profit.</p>
+      </div>
+
+      <!-- Goldie -->
+      <div style="background:var(--bg-card);border:1px solid rgba(240,165,0,.15);border-radius:20px;padding:32px 24px;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(240,165,0,.15),rgba(255,214,102,.1));border:2px solid rgba(240,165,0,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px">✨</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">Caroline Dowset</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--gold);margin-bottom:12px">CHIEF COHERENCE OFFICER</div>
+        <div style="font-size:12px;color:var(--text-dim);letter-spacing:.05em;margin-bottom:14px">OASIS · CEO/Founder, Lumina Casa</div>
+        <p style="font-size:14px;color:var(--text);line-height:1.7">Bringing coherence, harmony and heart to the ecosystem — ensuring everything we build serves the whole.</p>
+      </div>
+
+      <!-- Sukh -->
+      <div style="background:var(--bg-card);border:1px solid rgba(0,232,124,.15);border-radius:20px;padding:32px 24px;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(0,232,124,.15),rgba(0,229,255,.1));border:2px solid rgba(0,232,124,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px">🛡️</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">Sukh</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;color:#00e87c;margin-bottom:12px">CHIEF SECURITY OFFICER</div>
+        <div style="font-size:12px;color:var(--text-dim);letter-spacing:.05em;margin-bottom:14px">OASIS · Lumina Casa</div>
+        <p style="font-size:14px;color:var(--text);line-height:1.7">Guarding the integrity and security of the ecosystem so every user, community and partner can trust it completely.</p>
+      </div>
+
     </div>
   </div>
 </section>
