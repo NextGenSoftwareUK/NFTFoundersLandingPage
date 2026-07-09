@@ -105,7 +105,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .learn-banner__close:hover{color:var(--cyan)}
 
 /* ── NAV ── */
-nav{position:fixed;top:38px;left:0;right:0;z-index:200;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(3,7,20,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,229,255,.12)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(3,7,20,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,229,255,.12)}
 .nav-brand{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.22em;color:#fff;text-decoration:none}
 .nav-brand span{color:var(--cyan)}
 .nav-links{display:flex;gap:28px;list-style:none}
@@ -692,12 +692,13 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   <span class="tm-close" onclick="document.getElementById('testModeBanner').style.display='none';document.body.classList.remove('test-mode-on')">✕</span>
 </div>
 
-<!-- Learn banner -->
+<!-- BANNER COMMENTED OUT — hero buttons now cover this CTA, uncomment to restore
 <div class="learn-banner" id="learnBanner">
   <span class="learn-banner__text">New to OASIS? Discover what we're building and why it matters.</span>
   <a href="/learn.html" class="learn-banner__link">Learn about OASIS →</a>
   <button class="learn-banner__close" onclick="document.getElementById('learnBanner').style.display='none';document.querySelector('nav').style.top='0';document.querySelector('.hero').style.paddingTop='100px'" aria-label="Dismiss">✕</button>
 </div>
+-->
 
 <canvas id="stars-canvas"></canvas>
 <div class="wrap">
