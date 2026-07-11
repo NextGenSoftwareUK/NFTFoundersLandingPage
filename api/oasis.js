@@ -251,7 +251,7 @@ export default async function handler(req, res) {
     const testMode = process.env.TEST_MODE === 'true';
 
     const OASIS_CFG = {
-      apiUrl: testMode ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
+      apiUrl: 'https://api.web4.oasisomniverse.one',
       username: process.env.OASIS_USERNAME,
       password: process.env.OASIS_PASSWORD,
       avatarId: process.env.OASIS_AVATAR_ID,
@@ -364,7 +364,11 @@ export default async function handler(req, res) {
       : String(payload.OffChainProvider);
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
-    payload.CollectionPublicKey = "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs";
+    payload.CollectionPublicKey = testMode
+      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs")
+      : (process.env.COLLECTION_PUBLIC_KEY_LIVE || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs");
+    // Override to avoid Vercel function timeout waiting for on-chain confirmation
+    payload.WaitTillNFTSent = false;
 
     // Force server-side values
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
