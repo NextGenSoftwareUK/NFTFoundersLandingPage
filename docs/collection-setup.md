@@ -30,19 +30,41 @@ The current collection public key is stored in Vercel env vars:
 
 ### 2. Create the Collection NFT
 
-> TODO: Document exact menu path / button in the OASIS admin panel used to create a collection NFT
->
-> Things to note:
-> - What name / symbol was used for the collection NFT?
-> - Was an image uploaded? (if so, which one — save it to `public/img/` in this repo)
-> - Was a metadata JSON URL provided? (if so, note it here)
-> - Which wallet was selected as the minting/update authority?
+Use Postman (or any REST client) to call `POST https://api.web4.oasisomniverse.one/api/nft/mint-nft` with a Bearer token from a prior `/api/avatar/authenticate` call.
+
+Request body:
+```json
+{
+    "SendToAddressAfterMinting": "<new minting wallet address>",
+    "SendToAvatarAfterMintingId": "",
+    "SendToAvatarAfterMintingUsername": "",
+    "SendToAvatarAfterMintingEmail": "",
+    "Title": "OASIS Founders Collection",
+    "Description": "OASIS Founder Access NFTs",
+    "Thumbnail": null,
+    "ThumbnailUrl": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
+    "Price": 0,
+    "Discount": 0,
+    "NumberToMint": 1,
+    "MetaData": null,
+    "OnChainProvider": "SolanaOASIS",
+    "OffChainProvider": "MongoDBOASIS",
+    "StoreNFTMetaDataOnChain": false,
+    "NFTOffChainMetaType": "ExternalJSONURL",
+    "JSONMetaDataURL": "https://founders.oasisomniverse.one/metadata/founder-collection.json",
+    "NFTStandardType": "SPL",
+    "ImageURL": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
+    "Symbol": "OASISFNDR"
+}
+```
+
+**Important:** `SendToAddressAfterMinting` must be the new OASIS minting wallet address — this makes that wallet both the owner and update authority of the collection NFT.
 
 ### 3. Note the Collection Public Key
 
 Once the collection NFT is created, copy its **mint address** (public key). This is a base-58 Solana address, e.g. `BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs`.
 
-> TODO: Paste the new key here once created
+The mint address is in the response message as **NFT Address**. Example from 2026-07-11 recreation: `9vgkKES9Cph9ukZPxXZKEV1uvbHenbofFi3BqXhP456r`
 
 You can verify it on Solana Explorer:
 - Mainnet: `https://explorer.solana.com/address/<KEY>`
@@ -79,9 +101,7 @@ Trigger a redeploy after saving.
 | Wallet | Purpose | Notes |
 |---|---|---|
 | Old wallet | Previous collection creator | **Compromised — do not use** |
-| New wallet | Current OASIS minting wallet | Used for all new mints |
-
-> TODO: Add wallet public addresses above (never private keys)
+| `kEGrGguhZYn2VFAW6GzNLQMce4rSHZd2G3AYsQCBydX` | Current OASIS minting wallet | Used for all new mints from 2026-07-11 |
 
 ---
 
@@ -90,4 +110,4 @@ Trigger a redeploy after saving.
 | Date | Action | Collection Key |
 |---|---|---|
 | ~early 2025 | Original collection created | `BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs` |
-| TBD | New collection created after wallet change | TBD |
+| 2026-07-11 | New collection created after old wallet compromised | `9vgkKES9Cph9ukZPxXZKEV1uvbHenbofFi3BqXhP456r` |
