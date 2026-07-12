@@ -368,6 +368,10 @@ export default async function handler(req, res) {
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs")
       : (process.env.COLLECTION_PUBLIC_KEY_LIVE || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs");
 
+    console.log('[oasis] testMode:', testMode);
+    console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
+    console.log('[oasis] CollectionPublicKey:', payload.CollectionPublicKey);
+
     // Force server-side values
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
 
@@ -597,7 +601,8 @@ export default async function handler(req, res) {
       avatarId: avatarProvision.avatarId,
       activationUrl: avatarProvision.activationUrl,
       activationKey: avatarProvision.activationKey,
-      avatarProvisionWarning: avatarProvision.warning
+      avatarProvisionWarning: avatarProvision.warning,
+      _debug: { testMode, apiUrl: OASIS_CFG.apiUrl, collectionPublicKey: payload.CollectionPublicKey }
     });
 
   } catch (e) {
