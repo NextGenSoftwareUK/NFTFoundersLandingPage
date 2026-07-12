@@ -621,7 +621,8 @@ export default async function handler(req, res) {
     }
 
     return res.status(500).json({
-      error: e.message || 'Unknown error'
+      error: e.message || 'Unknown error',
+      _debug: { testMode: process.env.TEST_MODE, apiUrl: process.env.TEST_MODE === 'true' ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE, collectionPublicKey: process.env.TEST_MODE === 'true' ? process.env.COLLECTION_PUBLIC_KEY_TEST : process.env.COLLECTION_PUBLIC_KEY_LIVE }
     });
 
   } finally {
