@@ -18,10 +18,7 @@ export default function handler(req, res) {
       MATIC: process.env.USDT_MATIC_LIVE,
     },
     oasis: {
-      apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
-      username: testMode ? process.env.OASIS_USERNAME_TEST  : process.env.OASIS_USERNAME_LIVE,
-      password: testMode ? process.env.OASIS_PASSWORD_TEST  : process.env.OASIS_PASSWORD_LIVE,
-      avatarId: testMode ? process.env.OASIS_AVATAR_ID_TEST : process.env.OASIS_AVATAR_ID_LIVE,
+      apiUrl:  testMode ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
       imageUrl: process.env.OASIS_IMAGE_URL,
     }
   });
