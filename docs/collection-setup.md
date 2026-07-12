@@ -109,5 +109,6 @@ Trigger a redeploy after saving.
 
 | Date | Action | Collection Key |
 |---|---|---|
-| ~early 2025 | Original collection created | `BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs` |
-| 2026-07-11 | New collection created after old wallet compromised | `9vgkKES9Cph9ukZPxXZKEV1uvbHenbofFi3BqXhP456r` |
+| ~early 2025 | Original collection created (live) | `BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs` |
+| 2026-07-11 | New live collection created after old wallet compromised | `9vgkKES9Cph9ukZPxXZKEV1uvbHenbofFi3BqXhP456r` |
+| 2026-07-12 | New dev/test collection created via dev API | `HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF` |
