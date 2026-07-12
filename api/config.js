@@ -7,7 +7,7 @@ export default function handler(req, res) {
     stripePk: process.env.STRIPE_PK_TEST, //TODO: REMEMBER TO REMOVE AFTER TESTING!!!
     evmReceiver: process.env.EVM_RECEIVER,
     btcAddr: process.env.BTC_ADDR,
-    solAddr: process.env.TREASURY_WALLET_SOL,
+    solAddr: process.env.SOL_ADDR,
     usdtContracts: testMode ? {
       ETH:  process.env.USDT_ETH_TEST,
       BNB:  process.env.USDT_BNB_TEST,
@@ -18,10 +18,7 @@ export default function handler(req, res) {
       MATIC: process.env.USDT_MATIC_LIVE,
     },
     oasis: {
-      apiUrl:   testMode ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
-      username: process.env.OASIS_USERNAME,
-      password: process.env.OASIS_PASSWORD,
-      avatarId: process.env.OASIS_AVATAR_ID,
+      apiUrl:  testMode ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
       imageUrl: process.env.OASIS_IMAGE_URL,
     }
   });
