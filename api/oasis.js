@@ -252,9 +252,9 @@ export default async function handler(req, res) {
 
     const OASIS_CFG = {
       apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
-      username: testMode ? process.env.OASIS_USERNAME_TEST  : process.env.OASIS_USERNAME_LIVE,
-      password: testMode ? process.env.OASIS_PASSWORD_TEST  : process.env.OASIS_PASSWORD_LIVE,
-      avatarId: testMode ? process.env.OASIS_AVATAR_ID_TEST : process.env.OASIS_AVATAR_ID_LIVE,
+      username: testMode ? process.env.OASIS_AVATAR_USERNAME_TEST  : process.env.OASIS_AVATAR_USERNAME_LIVE,
+      password: testMode ? process.env.OASIS_AVATAR_PASSWORD_TEST  : process.env.OASIS_AVATAR_PASSWORD_LIVE,
+      avatarId: testMode ? process.env.OASIS_AVATAR_ID_TEST        : process.env.OASIS_AVATAR_ID_LIVE,
       imageUrl: process.env.OASIS_IMAGE_URL,
     };
 
@@ -626,9 +626,9 @@ export default async function handler(req, res) {
         testMode: process.env.TEST_MODE,
         apiUrl: process.env.TEST_MODE === 'true' ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
         collectionPublicKey: process.env.TEST_MODE === 'true' ? process.env.COLLECTION_PUBLIC_KEY_TEST : process.env.COLLECTION_PUBLIC_KEY_LIVE,
-        username: process.env.TEST_MODE === 'true' ? process.env.OASIS_USERNAME_TEST : process.env.OASIS_USERNAME_LIVE,
+        username: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE,
         avatarId: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_ID_TEST : process.env.OASIS_AVATAR_ID_LIVE,
-        passwordSet: !!(process.env.TEST_MODE === 'true' ? process.env.OASIS_PASSWORD_TEST : process.env.OASIS_PASSWORD_LIVE)
+        passwordSet: !!(process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_PASSWORD_TEST : process.env.OASIS_AVATAR_PASSWORD_LIVE)
       }
     });
 
