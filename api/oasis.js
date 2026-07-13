@@ -247,7 +247,7 @@ export default async function handler(req, res) {
 
     await ensureRedis();
     const { payload } = req.body;
-    console.log('Received mint request with payload:', JSON.stringify(payload));
+    console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
     const testMode = process.env.TEST_MODE === 'true';
 
     const OASIS_CFG = {
@@ -382,14 +382,7 @@ export default async function handler(req, res) {
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
     console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'MintedByAvatarId:', payload.MintedByAvatarId);
 
-    console.log('Minting with payload:', JSON.stringify({
-      Title: payload.Title,
-      OnChainProvider: payload.OnChainProvider,
-      NFTStandardType: payload.NFTStandardType,
-      OffChainProvider: payload.OffChainProvider,
-      NFTOffChainMetaType: payload.NFTOffChainMetaType,
-      SendToAddress: payload.SendToAddressAfterMinting,
-    }));
+    console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
     // =========================
     // 6. MARK ORDER MINTING
@@ -422,7 +415,7 @@ export default async function handler(req, res) {
     }
 
     const mintText = await mintRes.text();
-    console.log('Mint response:', mintText);
+    console.log('[oasis] step 7: raw mint response (first 500):', mintText?.slice(0, 500));
 
     let result;
 
