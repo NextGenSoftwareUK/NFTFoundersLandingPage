@@ -230,9 +230,8 @@ async function updateWeb4NFT({ apiUrl, token, providerType, nft }) {
 }
 
 async function verifyAvatarEmail({ apiUrl, verificationToken }) {
-  const { response, json } = await oasisJsonFetch(apiUrl, '/api/avatar/verify-email', {
-    method: 'POST',
-    body: { VerificationToken: verificationToken }
+  const { response, json } = await oasisJsonFetch(apiUrl, `/api/avatar/verify-email?token=${encodeURIComponent(verificationToken)}`, {
+    method: 'GET'
   });
   const msg = json?.result?.message || json?.message || `HTTP ${response.status}`;
   console.log('[oasis] verify-email response:', response.status, msg);
