@@ -442,6 +442,8 @@ export default async function handler(req, res) {
       linked: false
     };
 
+    console.log('[oasis] step 8: recipientEmail:', recipientEmail);
+
     if (recipientEmail) {
       try {
         const existingAvatar = await lookupAvatarByEmail({
@@ -449,6 +451,8 @@ export default async function handler(req, res) {
           token,
           email: recipientEmail
         });
+
+        console.log('[oasis] existingAvatar:', existingAvatar ? (existingAvatar.avatarId || existingAvatar.id) : 'not found');
 
         let avatar = existingAvatar;
         let tempPassword = null;
@@ -490,6 +494,7 @@ export default async function handler(req, res) {
         }
 
         const avatarId = avatar.avatarId || avatar.id;
+        console.log('[oasis] avatarId:', avatarId, 'createdNewAvatar:', createdNewAvatar);
         if (!avatarId) {
           throw new Error("Avatar ID missing after lookup/registration");
         }
@@ -502,6 +507,7 @@ export default async function handler(req, res) {
           createdNewAvatar
         });
 
+        console.log('[oasis] updateWeb4NFT id:', web4NFT.id || result?.result?.id);
         const updateRequest = {
           id: web4NFT.id || result?.result?.id,
           mintedByAvatarId: avatarId,
@@ -529,6 +535,7 @@ export default async function handler(req, res) {
           nft: updateRequest
         });
 
+        console.log('[oasis] updateWeb4NFT response:', JSON.stringify(updatedWeb4NFT)?.slice(0, 300));
         if (updatedWeb4NFT?.result) {
           result.result = updatedWeb4NFT.result;
         }
@@ -558,7 +565,7 @@ export default async function handler(req, res) {
           avatarProvision.activationUrl = activationUrl;
         }
       } catch (avatarErr) {
-        console.warn("Avatar provisioning failed after mint:", avatarErr);
+        console.error('[oasis] Avatar provisioning failed:', avatarErr?.message || avatarErr);
         avatarProvision.warning = avatarErr?.message || String(avatarErr);
       }
     }
