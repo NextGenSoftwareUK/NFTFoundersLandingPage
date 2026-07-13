@@ -483,9 +483,13 @@ export default async function handler(req, res) {
                 password
               });
 
-              avatar = registration.avatar;
               tempPassword = registration.password;
               verificationToken = registration.verificationToken;
+
+              // Register endpoint doesn't return the avatar object — look it up
+              console.log('[oasis] registration succeeded, looking up avatar by email to get ID...');
+              avatar = await lookupAvatarByEmail({ apiUrl: OASIS_CFG.apiUrl, token, email: recipientEmail });
+              console.log('[oasis] post-registration lookup:', avatar ? (avatar.avatarId || avatar.id) : 'still not found');
               break;
             } catch (regErr) {
               lastRegisterError = regErr;
@@ -501,15 +505,17 @@ export default async function handler(req, res) {
           }
 
           if (!avatar) {
-            throw lastRegisterError || new Error("Avatar registration failed");
+            console.log('[oasis] could not get avatar ID after registration — skipping NFT link');
+            lastRegisterError = null; // don't throw, just warn
           }
         }
 
-        const avatarId = avatar.avatarId || avatar.id;
+        const avatarId = avatar?.avatarId || avatar?.id;
         console.log('[oasis] avatarId:', avatarId, 'createdNewAvatar:', createdNewAvatar);
         if (!avatarId) {
-          throw new Error("Avatar ID missing after lookup/registration");
-        }
+          console.log('[oasis] no avatar ID — skipping NFT link, mint still succeeded');
+          avatarProvision.warning = 'Could not resolve avatar ID — NFT minted but not linked to avatar';
+        } else {
 
         const web4NFT = buildWeb4NFT({
           payload,
@@ -578,6 +584,7 @@ export default async function handler(req, res) {
           avatarProvision.activationUrl = activationUrl;
           console.log('[oasis] step 8: activation record stored, url:', activationUrl);
         }
+        } // end if (avatarId)
       } catch (avatarErr) {
         console.error('[oasis] Avatar provisioning failed:', avatarErr?.message || avatarErr);
         avatarProvision.warning = avatarErr?.message || String(avatarErr);
