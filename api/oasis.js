@@ -266,12 +266,12 @@ export default async function handler(req, res) {
 
     lockKey = `mint-lock:${payload.SendToAddressAfterMinting}`;
 
+    console.log('[oasis] step 1: acquiring mint lock...');
     const lockResult = await redis.set(lockKey, "1", {
       NX: true,
       EX: 60 * 30 // 30 mins
     });
-
-    console.log('[oasis] step 1: mint lock acquired for', payload.SendToAddressAfterMinting);
+    console.log('[oasis] step 1: lock result:', lockResult, 'for', payload.SendToAddressAfterMinting);
 
     if (!lockResult) {
       return res.status(429).json({
