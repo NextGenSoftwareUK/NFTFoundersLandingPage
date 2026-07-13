@@ -116,7 +116,7 @@ async function lookupAvatarByEmail({ apiUrl, token, email }) {
   return null;
 }
 
-async function registerAvatar({ apiUrl, email, username, password }) {
+async function registerAvatar({ apiUrl, token, email, username, password }) {
   const payload = {
     username,
     email,
@@ -132,6 +132,7 @@ async function registerAvatar({ apiUrl, email, username, password }) {
 
   const { response, json, text } = await oasisJsonFetch(apiUrl, "/api/Avatar/register", {
     method: "POST",
+    token,
     body: payload
   });
 
@@ -511,6 +512,7 @@ export default async function handler(req, res) {
             try {
               const registration = await registerAvatar({
                 apiUrl: OASIS_CFG.apiUrl,
+                token,
                 email: recipientEmail,
                 username,
                 password
@@ -554,15 +556,14 @@ export default async function handler(req, res) {
           createdNewAvatar
         });
 
-        // For new avatars: verify email then authenticate as them so update-web4-nft passes ownership check
-        let updateToken = token;
-        if (createdNewAvatar && tempPassword && verificationToken) {
+        // For new avatars: verify their email so they can log in later via the activation portal.
+        // We always use oasismint's token (a Wizard) for update-web4-nft since that endpoint requires Wizard access.
+        if (createdNewAvatar && verificationToken) {
           try {
             await verifyAvatarEmail({ apiUrl: OASIS_CFG.apiUrl, verificationToken });
-            updateToken = await authenticateOasis({ apiUrl: OASIS_CFG.apiUrl, username: avatar.username, password: tempPassword });
-            console.log('[oasis] verified and authenticated as new avatar for NFT update');
-          } catch (authErr) {
-            console.log('[oasis] could not verify/auth as new avatar, using minting token:', authErr.message);
+            console.log('[oasis] new avatar email verified successfully');
+          } catch (verifyErr) {
+            console.log('[oasis] could not verify new avatar email:', verifyErr.message);
           }
         }
 
@@ -589,7 +590,7 @@ export default async function handler(req, res) {
 
         const updatedWeb4NFT = await updateWeb4NFT({
           apiUrl: OASIS_CFG.apiUrl,
-          token: updateToken,
+          token,
           providerType: payload.OffChainProvider,
           nft: updateRequest
         });
