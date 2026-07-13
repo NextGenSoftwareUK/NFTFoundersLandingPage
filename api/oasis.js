@@ -197,16 +197,18 @@ function buildWeb4NFT({ payload, mintResult, avatarId, email, createdNewAvatar }
     jsonMetaDataURL: payload.JSONMetaDataURL || payload.JsonMetaDataURL || minted.jsonMetaDataURL || primaryWeb3NFT.jsonMetaDataURL,
     imageUrl: payload.ImageUrl || payload.imageUrl || minted.imageUrl || primaryWeb3NFT.imageUrl,
     thumbnailUrl: payload.ThumbnailUrl || payload.thumbnailUrl || minted.thumbnailUrl || primaryWeb3NFT.thumbnailUrl,
-    metaData: {
-      ...(minted.metaData || {}),
-      ...(payload.MetaData || {}),
-      email,
-      mintingAvatarId: payload.MintedByAvatarId,
-      linkedAvatarId: avatarId,
-      createdNewAvatar,
-      mintTransactionHash: primaryWeb3NFT.mintTransactionHash || minted.mintTransactionHash || null,
-      sendNFTTransactionHash: primaryWeb3NFT.sendNFTTransactionHash || minted.sendNFTTransactionHash || null
-    },
+    metaData: Object.fromEntries(
+      Object.entries({
+        ...(minted.metaData || {}),
+        ...(payload.MetaData || {}),
+        email,
+        mintingAvatarId: payload.MintedByAvatarId,
+        linkedAvatarId: avatarId,
+        createdNewAvatar,
+        mintTransactionHash: primaryWeb3NFT.mintTransactionHash || minted.mintTransactionHash || null,
+        sendNFTTransactionHash: primaryWeb3NFT.sendNFTTransactionHash || minted.sendNFTTransactionHash || null
+      }).map(([k, v]) => [k, v == null ? '' : String(v)])
+    ),
     tags: Array.from(new Set([...(minted.tags || []), ...(primaryWeb3NFT.tags || []), "founder", "web4", createdNewAvatar ? "activation-required" : "existing-avatar"])),
     importedOn: now,
     modifiedOn: now,
