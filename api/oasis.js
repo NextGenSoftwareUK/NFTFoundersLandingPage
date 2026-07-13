@@ -149,6 +149,8 @@ async function registerAvatar({ apiUrl, email, username, password }) {
   const jwtToken = extractJwtToken(json);
   const verificationToken = extractVerificationToken(json, avatar);
 
+  console.log('[oasis] register json.result keys:', Object.keys(json?.result || {}));
+  console.log('[oasis] register json.result.result:', JSON.stringify(json?.result?.result)?.slice(0, 300));
   console.log('[oasis] extractAvatar result:', JSON.stringify(avatar)?.slice(0, 300));
 
   if (!avatar?.avatarId && !avatar?.id) {
