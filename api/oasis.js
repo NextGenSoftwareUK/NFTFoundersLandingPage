@@ -220,10 +220,23 @@ async function updateWeb4NFT({ apiUrl, token, providerType, nft }) {
   });
 
   const msg = json?.result?.message || json?.message || json?.error || text || `HTTP ${response.status}`;
-  if (!response.ok || json?.result?.isError) {
+  if (!response.ok || json?.result?.isError || json?.isError) {
     throw new Error(`Web4 NFT update failed: ${msg}`);
   }
 
+  return json;
+}
+
+async function verifyAvatarEmail({ apiUrl, verificationToken }) {
+  const { response, json } = await oasisJsonFetch(apiUrl, '/api/avatar/verify-email', {
+    method: 'POST',
+    body: { VerificationToken: verificationToken }
+  });
+  const msg = json?.result?.message || json?.message || `HTTP ${response.status}`;
+  console.log('[oasis] verify-email response:', response.status, msg);
+  if (!response.ok || json?.result?.isError || json?.isError) {
+    throw new Error(`Email verification failed: ${msg}`);
+  }
   return json;
 }
 
@@ -540,14 +553,15 @@ export default async function handler(req, res) {
           createdNewAvatar
         });
 
-        // For new avatars we have their credentials — authenticate as them so update-web4-nft passes ownership check
+        // For new avatars: verify email then authenticate as them so update-web4-nft passes ownership check
         let updateToken = token;
-        if (createdNewAvatar && tempPassword) {
+        if (createdNewAvatar && tempPassword && verificationToken) {
           try {
+            await verifyAvatarEmail({ apiUrl: OASIS_CFG.apiUrl, verificationToken });
             updateToken = await authenticateOasis({ apiUrl: OASIS_CFG.apiUrl, username: avatar.username, password: tempPassword });
-            console.log('[oasis] authenticated as new avatar for NFT update');
+            console.log('[oasis] verified and authenticated as new avatar for NFT update');
           } catch (authErr) {
-            console.log('[oasis] could not auth as new avatar, using minting token:', authErr.message);
+            console.log('[oasis] could not verify/auth as new avatar, using minting token:', authErr.message);
           }
         }
 
