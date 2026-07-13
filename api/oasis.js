@@ -14,7 +14,7 @@ async function ensureRedis() {
   return redisReady;
 }
 
-const ACTIVATION_PORTAL_URL = "https://portal.oasisomniverse.one/activate";
+const ACTIVATION_PORTAL_URL = "https://oportal.oasisomniverse.one/activate";
 const ACTIVATION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 function randomString(length = 24) {
