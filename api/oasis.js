@@ -101,7 +101,7 @@ async function lookupAvatarByEmail({ apiUrl, token, email }) {
 
   if (response.status === 404) return null;
   if (json?.result?.isError) {
-    if (/not found|unauthorized/i.test(lookupMsg)) return null;
+    if (/not found|unauthorized|does not exist|failed to load/i.test(lookupMsg)) return null;
     throw new Error(`Avatar lookup failed: ${lookupMsg}`);
   }
   if (!response.ok) {
