@@ -94,6 +94,8 @@ async function lookupAvatarByEmail({ apiUrl, token, email }) {
     token
   });
 
+  console.log('[oasis] avatar lookup status:', response.status, 'body:', JSON.stringify(json)?.slice(0, 300));
+
   if (response.status === 404) return null;
 
   if (!response.ok) {
@@ -103,6 +105,7 @@ async function lookupAvatarByEmail({ apiUrl, token, email }) {
   }
 
   const avatar = extractAvatar(json);
+  console.log('[oasis] avatar lookup extractAvatar:', JSON.stringify(avatar)?.slice(0, 200));
   if (avatar?.avatarId || avatar?.id) return avatar;
 
   return null;
@@ -127,6 +130,8 @@ async function registerAvatar({ apiUrl, email, username, password }) {
     body: payload
   });
 
+  console.log('[oasis] register response status:', response.status, 'body:', JSON.stringify(json)?.slice(0, 600));
+
   if (!response.ok) {
     const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
     throw new Error(`Avatar registration failed (${response.status}): ${msg}`);
@@ -135,6 +140,8 @@ async function registerAvatar({ apiUrl, email, username, password }) {
   const avatar = extractAvatar(json);
   const jwtToken = extractJwtToken(json);
   const verificationToken = extractVerificationToken(json, avatar);
+
+  console.log('[oasis] extractAvatar result:', JSON.stringify(avatar)?.slice(0, 300));
 
   if (!avatar?.avatarId && !avatar?.id) {
     throw new Error("Avatar registration succeeded but no avatar ID was returned");
