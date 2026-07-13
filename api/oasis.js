@@ -264,20 +264,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    lockKey = `mint-lock:${payload.SendToAddressAfterMinting}`;
-
-    console.log('[oasis] step 1: acquiring mint lock...');
-    const lockResult = await redis.set(lockKey, "1", {
-      NX: true,
-      EX: testMode ? 60 * 5 : 60 * 30 // 5 mins in test, 30 mins in prod
-    });
-    console.log('[oasis] step 1: lock result:', lockResult, 'for', payload.SendToAddressAfterMinting);
-
-    if (!lockResult) {
-      return res.status(429).json({
-        error: "Mint already in progress"
-      });
-    }
+    // lockKey = `mint-lock:${payload.SendToAddressAfterMinting}`;
+    // const lockResult = await redis.set(lockKey, "1", { NX: true, EX: testMode ? 60 * 5 : 60 * 30 });
+    // if (!lockResult) return res.status(429).json({ error: "Mint already in progress" });
+    console.log('[oasis] step 1: mint lock skipped (disabled for testing)');
 
     // =========================
     // 2. FETCH ORDER
@@ -647,10 +637,7 @@ export default async function handler(req, res) {
 
     try {
 
-      if (lockKey) {
-        await redis.del(lockKey);
-        console.log('Mint lock released:', lockKey);
-      }
+      // if (lockKey) { await redis.del(lockKey); }
 
     } catch (unlockErr) 
     {
