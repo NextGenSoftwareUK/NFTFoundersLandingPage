@@ -153,7 +153,9 @@ async function registerAvatar({ apiUrl, email, username, password }) {
 
   console.log('[oasis] register json.result keys:', Object.keys(json?.result || {}));
   console.log('[oasis] register json.result.result:', JSON.stringify(json?.result?.result)?.slice(0, 300));
-  console.log('[oasis] extractAvatar result:', JSON.stringify(avatar)?.slice(0, 300));
+  console.log('[oasis] register verificationToken (result.verificationToken):', json?.result?.verificationToken);
+  console.log('[oasis] register verificationToken (result.result.verificationToken):', json?.result?.result?.verificationToken);
+  console.log('[oasis] extractAvatar result avatarId:', avatar?.avatarId || avatar?.id);
 
   if (!avatar?.avatarId && !avatar?.id) {
     throw new Error("Avatar registration succeeded but no avatar ID was returned");
