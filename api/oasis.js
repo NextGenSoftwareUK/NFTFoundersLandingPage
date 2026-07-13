@@ -51,11 +51,13 @@ async function readResponseBody(response) {
 }
 
 function extractAvatar(data) {
-  return data?.result?.result?.avatar
-    || data?.result?.avatar
-    || data?.avatar
-    || data?.result
-    || null;
+  const candidates = [
+    data?.result?.result?.avatar,
+    data?.result?.result,         // register endpoint: avatar is here
+    data?.result?.avatar,
+    data?.avatar,
+  ];
+  return candidates.find(c => c?.avatarId || c?.id) || null;
 }
 
 function extractJwtToken(data) {
@@ -485,13 +487,9 @@ export default async function handler(req, res) {
                 password
               });
 
+              avatar = registration.avatar;
               tempPassword = registration.password;
               verificationToken = registration.verificationToken;
-
-              // Register endpoint doesn't return the avatar object — look it up
-              console.log('[oasis] registration succeeded, looking up avatar by email to get ID...');
-              avatar = await lookupAvatarByEmail({ apiUrl: OASIS_CFG.apiUrl, token, email: recipientEmail });
-              console.log('[oasis] post-registration lookup:', avatar ? (avatar.avatarId || avatar.id) : 'still not found');
               break;
             } catch (regErr) {
               lastRegisterError = regErr;
