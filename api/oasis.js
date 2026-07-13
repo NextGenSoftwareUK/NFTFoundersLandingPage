@@ -219,12 +219,27 @@ async function updateWeb4NFT({ apiUrl, token, providerType, nft }) {
     body: nft
   });
 
-  if (!response.ok) {
-    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
-    throw new Error(`Web4 NFT update failed (${response.status}): ${msg}`);
+  const msg = json?.result?.message || json?.message || json?.error || text || `HTTP ${response.status}`;
+  if (!response.ok || json?.result?.isError) {
+    throw new Error(`Web4 NFT update failed: ${msg}`);
   }
 
   return json;
+}
+
+async function authenticateOasis({ apiUrl, username, password }) {
+  const res = await fetch(`${apiUrl}/api/avatar/authenticate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch { throw new Error('Failed to parse auth response'); }
+  if (data?.result?.isError) throw new Error(data?.result?.message || 'Auth failed');
+  const token = data?.result?.result?.jwtToken ?? data?.result?.jwtToken;
+  if (!token) throw new Error('No JWT token in auth response');
+  return token;
 }
 
 async function storeActivationRecord({ email, username, activationKey, avatarId, verificationToken, tempPassword, testMode }) {
@@ -525,6 +540,17 @@ export default async function handler(req, res) {
           createdNewAvatar
         });
 
+        // For new avatars we have their credentials — authenticate as them so update-web4-nft passes ownership check
+        let updateToken = token;
+        if (createdNewAvatar && tempPassword) {
+          try {
+            updateToken = await authenticateOasis({ apiUrl: OASIS_CFG.apiUrl, username: avatar.username, password: tempPassword });
+            console.log('[oasis] authenticated as new avatar for NFT update');
+          } catch (authErr) {
+            console.log('[oasis] could not auth as new avatar, using minting token:', authErr.message);
+          }
+        }
+
         console.log('[oasis] updateWeb4NFT id:', web4NFT.id || result?.result?.id);
         const updateRequest = {
           id: web4NFT.id || result?.result?.id,
@@ -548,7 +574,7 @@ export default async function handler(req, res) {
 
         const updatedWeb4NFT = await updateWeb4NFT({
           apiUrl: OASIS_CFG.apiUrl,
-          token,
+          token: updateToken,
           providerType: payload.OffChainProvider,
           nft: updateRequest
         });
