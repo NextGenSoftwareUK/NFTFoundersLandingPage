@@ -94,14 +94,17 @@ async function lookupAvatarByEmail({ apiUrl, token, email }) {
     token
   });
 
-  console.log('[oasis] avatar lookup status:', response.status, 'body:', JSON.stringify(json)?.slice(0, 300));
+  const lookupMsg = json?.result?.message || json?.message || '';
+  console.log('[oasis] avatar lookup status:', response.status, 'isError:', json?.result?.isError, 'msg:', lookupMsg);
 
   if (response.status === 404) return null;
-
+  if (json?.result?.isError) {
+    if (/not found|unauthorized/i.test(lookupMsg)) return null;
+    throw new Error(`Avatar lookup failed: ${lookupMsg}`);
+  }
   if (!response.ok) {
-    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
-    if (/not found/i.test(msg)) return null;
-    throw new Error(`Avatar lookup failed (${response.status}): ${msg}`);
+    if (/not found/i.test(lookupMsg)) return null;
+    throw new Error(`Avatar lookup failed (${response.status}): ${lookupMsg}`);
   }
 
   const avatar = extractAvatar(json);
@@ -130,11 +133,16 @@ async function registerAvatar({ apiUrl, email, username, password }) {
     body: payload
   });
 
-  console.log('[oasis] register response status:', response.status, 'body:', JSON.stringify(json)?.slice(0, 600));
+  const registerMsg = json?.result?.message || json?.message || text || `HTTP ${response.status}`;
+  console.log('[oasis] register response status:', response.status, 'isError:', json?.result?.isError, 'msg:', registerMsg);
 
+  if (json?.result?.isError) {
+    const err = new Error(`Avatar registration failed: ${registerMsg}`);
+    err.alreadyExists = /already in use|already exists|duplicate/i.test(registerMsg);
+    throw err;
+  }
   if (!response.ok) {
-    const msg = json?.message || json?.error || text || `HTTP ${response.status}`;
-    throw new Error(`Avatar registration failed (${response.status}): ${msg}`);
+    throw new Error(`Avatar registration failed (${response.status}): ${registerMsg}`);
   }
 
   const avatar = extractAvatar(json);
@@ -481,6 +489,11 @@ export default async function handler(req, res) {
               break;
             } catch (regErr) {
               lastRegisterError = regErr;
+              if (regErr.alreadyExists) {
+                // Email belongs to existing user we can't look up — stop retrying
+                console.log('[oasis] email already exists, cannot register or look up — skipping avatar link');
+                break;
+              }
               if (!/duplicate|exists|already/i.test(String(regErr?.message || regErr))) {
                 throw regErr;
               }
