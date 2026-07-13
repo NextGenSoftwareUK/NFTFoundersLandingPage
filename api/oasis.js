@@ -14,7 +14,7 @@ async function ensureRedis() {
   return redisReady;
 }
 
-const ACTIVATION_PORTAL_URL = "https://portal.oasisomniverse.one/activate";
+const ACTIVATION_PORTAL_URL = "https://oportal.oasisomniverse.one/activate";
 const ACTIVATION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 function randomString(length = 24) {
@@ -271,6 +271,8 @@ export default async function handler(req, res) {
       EX: 60 * 30 // 30 mins
     });
 
+    console.log('[oasis] step 1: mint lock acquired for', payload.SendToAddressAfterMinting);
+
     if (!lockResult) {
       return res.status(429).json({
         error: "Mint already in progress"
@@ -281,6 +283,7 @@ export default async function handler(req, res) {
     // 2. FETCH ORDER
     // =========================
 
+    console.log('[oasis] step 2: fetching order', payload.MetaData?.orderId);
     const orderRaw = await redis.get(`order:${payload.MetaData.orderId}`);
 
     if (!orderRaw) {
@@ -295,12 +298,13 @@ export default async function handler(req, res) {
       throw new Error("Invalid order data");
     }
 
-    console.log('Fetched order from Redis:', order);
+    console.log('[oasis] step 2: order status:', order.status, 'used:', order.used, 'email:', order.email);
 
     // =========================
     // 3. VERIFY PAYMENT
     // =========================
 
+    console.log('[oasis] step 3: verifying payment');
     if (!order || order.status !== "paid" || order.used) {
       return res.status(403).json({
         error: "Payment required"
@@ -311,6 +315,7 @@ export default async function handler(req, res) {
     // 4. AUTHENTICATE OASIS
     // =========================
 
+    console.log('[oasis] step 4: authenticating with OASIS as', OASIS_CFG.username, 'at', OASIS_CFG.apiUrl);
     const authRes = await fetch(`${OASIS_CFG.apiUrl}/api/avatar/authenticate`, {
       method: 'POST',
       headers: {
@@ -342,6 +347,7 @@ export default async function handler(req, res) {
     }
 
     const token = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
+    console.log('[oasis] step 4: auth token obtained:', !!token);
 
     if (!token) {
       throw new Error('No JWT token in OASIS auth response');
@@ -374,6 +380,7 @@ export default async function handler(req, res) {
 
     // Force server-side values
     payload.MintedByAvatarId = OASIS_CFG.avatarId;
+    console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'MintedByAvatarId:', payload.MintedByAvatarId);
 
     console.log('Minting with payload:', JSON.stringify({
       Title: payload.Title,
@@ -388,14 +395,15 @@ export default async function handler(req, res) {
     // 6. MARK ORDER MINTING
     // =========================
 
+    console.log('[oasis] step 6: marking order as minting');
     order.status = "minting";
-
     await redis.set(`order:${order.orderId}`, JSON.stringify(order));
 
     // =========================
     // 7. MINT NFT
     // =========================
 
+    console.log('[oasis] step 7: calling mint-nft API');
     const mintRes = await fetch(`${OASIS_CFG.apiUrl}/api/nft/mint-nft`, {
       method: 'POST',
       headers: {
@@ -424,6 +432,7 @@ export default async function handler(req, res) {
       throw new Error(`Failed to parse OASIS mint response: ${e.message}`);
     }
 
+    console.log('[oasis] step 7: mint complete — isError:', result?.isError, 'result id:', result?.result?.id, 'web3NFTs count:', result?.result?.web3NFTs?.length);
     if (result?.isError) {
       throw new Error(result.message || 'OASIS returned an error');
     }
@@ -543,6 +552,7 @@ export default async function handler(req, res) {
         avatarProvision.createdNewAvatar = createdNewAvatar;
         avatarProvision.avatarId = avatarId;
         avatarProvision.linked = true;
+        console.log('[oasis] step 8: NFT linked to avatar', avatarId, '— createdNewAvatar:', createdNewAvatar);
 
         if (createdNewAvatar) {
           const activationKey = crypto.randomUUID();
@@ -563,6 +573,7 @@ export default async function handler(req, res) {
 
           avatarProvision.activationKey = activationKey;
           avatarProvision.activationUrl = activationUrl;
+          console.log('[oasis] step 8: activation record stored, url:', activationUrl);
         }
       } catch (avatarErr) {
         console.error('[oasis] Avatar provisioning failed:', avatarErr?.message || avatarErr);
