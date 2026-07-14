@@ -419,10 +419,95 @@ export default async function handler(req, res) {
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
     console.log('[oasis] CollectionPublicKey:', payload.CollectionPublicKey);
 
-    // Force server-side values
-    payload.MintedByAvatarId = OASIS_CFG.avatarId;
-    console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'MintedByAvatarId:', payload.MintedByAvatarId);
+    // =========================
+    // 5b. RESOLVE BUYER AVATAR (before mint so we can pass avatarId to mint)
+    // =========================
 
+    const recipientEmail = String(order.email || payload.MetaData?.email || "").trim();
+    const avatarProvision = {
+      createdNewAvatar: false,
+      avatarId: null,
+      activationUrl: null,
+      activationKey: null,
+      warning: null,
+      linked: false
+    };
+
+    let buyerAvatarId = null;
+    let buyerAvatar = null;
+    let buyerTempPassword = null;
+    let buyerVerificationToken = null;
+    let createdNewAvatar = false;
+
+    console.log('[oasis] step 5b: resolving buyer avatar for', recipientEmail || '(no email)');
+
+    if (recipientEmail) {
+      try {
+        const existingAvatar = await lookupAvatarByEmail({
+          apiUrl: OASIS_CFG.apiUrl,
+          token,
+          email: recipientEmail
+        });
+
+        console.log('[oasis] existingAvatar:', existingAvatar ? (existingAvatar.avatarId || existingAvatar.id) : 'not found');
+        buyerAvatar = existingAvatar;
+
+        if (!buyerAvatar) {
+          createdNewAvatar = true;
+          const baseUsername = usernameFromEmail(recipientEmail);
+
+          for (let attempt = 0; attempt < 3; attempt += 1) {
+            const password = randomPassword(20);
+            const username = attempt === 0 ? baseUsername : `${baseUsername}-${attempt + 1}`;
+
+            try {
+              const registration = await registerAvatar({
+                apiUrl: OASIS_CFG.apiUrl,
+                token,
+                email: recipientEmail,
+                username,
+                password
+              });
+
+              buyerAvatar = registration.avatar;
+              buyerTempPassword = registration.password;
+              buyerVerificationToken = registration.verificationToken;
+
+              // Verify email immediately so avatar is active
+              if (buyerVerificationToken) {
+                try {
+                  await verifyAvatarEmail({ apiUrl: OASIS_CFG.apiUrl, verificationToken: buyerVerificationToken });
+                  console.log('[oasis] new avatar email verified');
+                } catch (verifyErr) {
+                  console.log('[oasis] email verify failed (non-fatal):', verifyErr.message);
+                }
+              }
+              break;
+            } catch (regErr) {
+              if (regErr.alreadyExists) {
+                console.log('[oasis] email already exists, cannot register or look up — will mint without avatar link');
+                break;
+              }
+              if (!/duplicate|exists|already/i.test(String(regErr?.message || regErr))) {
+                throw regErr;
+              }
+            }
+          }
+        }
+
+        buyerAvatarId = buyerAvatar?.avatarId || buyerAvatar?.id || null;
+        console.log('[oasis] buyerAvatarId:', buyerAvatarId, 'createdNewAvatar:', createdNewAvatar);
+      } catch (avatarErr) {
+        // Non-fatal: mint proceeds with oasismint as owner
+        console.log('[oasis] avatar resolution failed (non-fatal):', avatarErr?.message || avatarErr);
+        avatarProvision.warning = `Avatar resolution failed: ${avatarErr?.message || avatarErr}`;
+      }
+    }
+
+    // Set mint ownership to buyer if we have their avatar, otherwise fall back to oasismint
+    payload.MintedByAvatarId = buyerAvatarId || OASIS_CFG.avatarId;
+    payload.SendToAvatarAfterMintingId = buyerAvatarId || OASIS_CFG.avatarId;
+    console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'MintedByAvatarId:', payload.MintedByAvatarId);
     console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
     // =========================
@@ -449,17 +534,13 @@ export default async function handler(req, res) {
 
     if (!mintRes.ok) {
       const errText = await mintRes.text();
-
-      throw new Error(
-        `OASIS mint failed (${mintRes.status}): ${errText.slice(0, 500)}`
-      );
+      throw new Error(`OASIS mint failed (${mintRes.status}): ${errText.slice(0, 500)}`);
     }
 
     const mintText = await mintRes.text();
     console.log('[oasis] step 7: raw mint response (first 500):', mintText?.slice(0, 500));
 
     let result;
-
     try {
       result = JSON.parse(mintText);
     } catch (e) {
@@ -472,166 +553,36 @@ export default async function handler(req, res) {
     }
 
     // =========================
-    // 8. RESOLVE AVATAR + LINK WEB4 NFT
+    // 8. RECORD AVATAR PROVISION
     // =========================
 
-    const recipientEmail = String(order.email || payload.MetaData?.email || "").trim();
-    const avatarProvision = {
-      createdNewAvatar: false,
-      avatarId: null,
-      activationUrl: null,
-      activationKey: null,
-      warning: null,
-      linked: false
-    };
+    if (buyerAvatarId) {
+      avatarProvision.createdNewAvatar = createdNewAvatar;
+      avatarProvision.avatarId = buyerAvatarId;
+      avatarProvision.linked = true;
+      console.log('[oasis] step 8: NFT minted directly to avatar', buyerAvatarId, '— createdNewAvatar:', createdNewAvatar);
 
-    console.log('[oasis] step 8: recipientEmail:', recipientEmail);
+      if (createdNewAvatar && buyerAvatar) {
+        const activationKey = crypto.randomUUID();
+        const activationUrl = buildActivationUrl({ email: recipientEmail, activationKey });
 
-    if (recipientEmail) {
-      try {
-        const existingAvatar = await lookupAvatarByEmail({
-          apiUrl: OASIS_CFG.apiUrl,
-          token,
-          email: recipientEmail
-        });
-
-        console.log('[oasis] existingAvatar:', existingAvatar ? (existingAvatar.avatarId || existingAvatar.id) : 'not found');
-
-        let avatar = existingAvatar;
-        let tempPassword = null;
-        let verificationToken = null;
-        let createdNewAvatar = false;
-
-        if (!avatar) {
-          createdNewAvatar = true;
-          const baseUsername = usernameFromEmail(recipientEmail);
-
-          let lastRegisterError = null;
-          for (let attempt = 0; attempt < 3; attempt += 1) {
-            const password = randomPassword(20);
-            const username = attempt === 0 ? baseUsername : `${baseUsername}-${attempt + 1}`;
-
-            try {
-              const registration = await registerAvatar({
-                apiUrl: OASIS_CFG.apiUrl,
-                token,
-                email: recipientEmail,
-                username,
-                password
-              });
-
-              avatar = registration.avatar;
-              tempPassword = registration.password;
-              verificationToken = registration.verificationToken;
-              break;
-            } catch (regErr) {
-              lastRegisterError = regErr;
-              if (regErr.alreadyExists) {
-                // Email belongs to existing user we can't look up — stop retrying
-                console.log('[oasis] email already exists, cannot register or look up — skipping avatar link');
-                break;
-              }
-              if (!/duplicate|exists|already/i.test(String(regErr?.message || regErr))) {
-                throw regErr;
-              }
-            }
-          }
-
-          if (!avatar) {
-            console.log('[oasis] could not get avatar ID after registration — skipping NFT link');
-            lastRegisterError = null; // don't throw, just warn
-          }
-        }
-
-        const avatarId = avatar?.avatarId || avatar?.id;
-        console.log('[oasis] avatarId:', avatarId, 'createdNewAvatar:', createdNewAvatar);
-        if (!avatarId) {
-          console.log('[oasis] no avatar ID — skipping NFT link, mint still succeeded');
-          avatarProvision.warning = 'Could not resolve avatar ID — NFT minted but not linked to avatar';
-        } else {
-
-        const web4NFT = buildWeb4NFT({
-          payload,
-          mintResult: result,
-          avatarId,
+        await storeActivationRecord({
           email: recipientEmail,
-          createdNewAvatar
+          username: buyerAvatar.username || null,
+          activationKey,
+          avatarId: buyerAvatarId,
+          verificationToken: buyerVerificationToken,
+          tempPassword: buyerTempPassword,
+          testMode
         });
 
-        // For new avatars: verify their email so they can log in later via the activation portal.
-        // We always use oasismint's token (a Wizard) for update-web4-nft since that endpoint requires Wizard access.
-        if (createdNewAvatar && verificationToken) {
-          try {
-            await verifyAvatarEmail({ apiUrl: OASIS_CFG.apiUrl, verificationToken });
-            console.log('[oasis] new avatar email verified successfully');
-          } catch (verifyErr) {
-            console.log('[oasis] could not verify new avatar email:', verifyErr.message);
-          }
-        }
-
-        console.log('[oasis] updateWeb4NFT id:', web4NFT.id || result?.result?.id);
-        const updateRequest = {
-          id: web4NFT.id || result?.result?.id,
-          mintedByAvatarId: avatarId,
-          modifiedByAvatarId: avatarId,
-          currentOwnerAvatarId: avatarId,
-          previousOwnerAvatarId: payload.MintedByAvatarId,
-          title: web4NFT.title,
-          description: web4NFT.description,
-          imageUrl: web4NFT.imageUrl,
-          thumbnailUrl: web4NFT.thumbnailUrl,
-          metaData: web4NFT.metaData,
-          tags: web4NFT.tags,
-          price: web4NFT.price,
-          discount: web4NFT.discount,
-          royaltyPercentage: web4NFT.royaltyPercentage,
-          lastSoldByAvatarId: payload.MintedByAvatarId,
-          lastPurchasedByAvatarId: avatarId
-        };
-
-        const updatedWeb4NFT = await updateWeb4NFT({
-          apiUrl: OASIS_CFG.apiUrl,
-          token,
-          providerType: payload.OffChainProvider,
-          nft: updateRequest
-        });
-
-        console.log('[oasis] updateWeb4NFT response:', JSON.stringify(updatedWeb4NFT)?.slice(0, 300));
-        if (updatedWeb4NFT?.result) {
-          result.result = updatedWeb4NFT.result;
-        }
-
-        avatarProvision.createdNewAvatar = createdNewAvatar;
-        avatarProvision.avatarId = avatarId;
-        avatarProvision.linked = true;
-        console.log('[oasis] step 8: NFT linked to avatar', avatarId, '— createdNewAvatar:', createdNewAvatar);
-
-        if (createdNewAvatar) {
-          const activationKey = crypto.randomUUID();
-          const activationUrl = buildActivationUrl({
-            email: recipientEmail,
-            activationKey
-          });
-
-          await storeActivationRecord({
-            email: recipientEmail,
-            username: avatar?.username || null,
-            activationKey,
-            avatarId,
-            verificationToken,
-            tempPassword,
-            testMode
-          });
-
-          avatarProvision.activationKey = activationKey;
-          avatarProvision.activationUrl = activationUrl;
-          console.log('[oasis] step 8: activation record stored, url:', activationUrl);
-        }
-        } // end if (avatarId)
-      } catch (avatarErr) {
-        console.error('[oasis] Avatar provisioning failed:', avatarErr?.message || avatarErr);
-        avatarProvision.warning = avatarErr?.message || String(avatarErr);
+        avatarProvision.activationKey = activationKey;
+        avatarProvision.activationUrl = activationUrl;
+        console.log('[oasis] step 8: activation record stored, url:', activationUrl);
       }
+    } else {
+      avatarProvision.warning = avatarProvision.warning || 'Could not resolve avatar ID — NFT minted under oasismint account';
+      console.log('[oasis] step 8: no buyer avatar resolved, NFT minted under oasismint');
     }
 
     // =========================
