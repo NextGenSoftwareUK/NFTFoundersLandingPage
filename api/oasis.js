@@ -504,8 +504,9 @@ export default async function handler(req, res) {
       }
     }
 
-    // MintedByAvatarId is always overridden by the controller from the JWT (oasismint).
-    // SendToAvatarAfterMintingId routes the NFT to the buyer's avatar after minting.
+    // MintedByAvatarId: Wizards can pass the buyer's avatar ID so the NFT is attributed to them.
+    // SendToAvatarAfterMintingId: routes the actual on-chain transfer to the buyer's wallet.
+    payload.MintedByAvatarId = buyerAvatarId || OASIS_CFG.avatarId;
     payload.SendToAvatarAfterMintingId = buyerAvatarId || OASIS_CFG.avatarId;
     // Force OffChainProvider to MongoDB so the holon is stored in the OASIS DB where OPORTAL can find it.
     payload.OffChainProvider = 'MongoDBOASIS';
