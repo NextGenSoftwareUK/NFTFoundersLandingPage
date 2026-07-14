@@ -558,14 +558,14 @@ export default async function handler(req, res) {
     // =========================
     // 7b. PERSIST HOLON TO MONGODB
     // =========================
-    try {
-      const web4Nft = buildWeb4NFT({ payload, mintResult: result, avatarId: buyerAvatarId, email: recipientEmail, createdNewAvatar });
-      console.log('[oasis] step 7b: calling update-web4-nft to persist holon in MongoDB');
-      await updateWeb4NFT({ apiUrl: OASIS_CFG.apiUrl, token, providerType: 'MongoDBOASIS', nft: web4Nft });
-      console.log('[oasis] step 7b: holon saved to MongoDB');
-    } catch (e) {
-      console.warn('[oasis] step 7b: update-web4-nft failed (non-fatal):', e.message);
-    }
+    // try {
+    //   const web4Nft = buildWeb4NFT({ payload, mintResult: result, avatarId: buyerAvatarId, email: recipientEmail, createdNewAvatar });
+    //   console.log('[oasis] step 7b: calling update-web4-nft to persist holon in MongoDB');
+    //   await updateWeb4NFT({ apiUrl: OASIS_CFG.apiUrl, token, providerType: 'MongoDBOASIS', nft: web4Nft });
+    //   console.log('[oasis] step 7b: holon saved to MongoDB');
+    // } catch (e) {
+    //   console.warn('[oasis] step 7b: update-web4-nft failed (non-fatal):', e.message);
+    // }
 
     // =========================
     // 8. RECORD AVATAR PROVISION
