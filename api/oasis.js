@@ -504,10 +504,12 @@ export default async function handler(req, res) {
       }
     }
 
-    // Set mint ownership to buyer if we have their avatar, otherwise fall back to oasismint
-    payload.MintedByAvatarId = buyerAvatarId || OASIS_CFG.avatarId;
+    // MintedByAvatarId is always overridden by the controller from the JWT (oasismint).
+    // SendToAvatarAfterMintingId routes the NFT to the buyer's avatar after minting.
     payload.SendToAvatarAfterMintingId = buyerAvatarId || OASIS_CFG.avatarId;
-    console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'MintedByAvatarId:', payload.MintedByAvatarId);
+    // Force OffChainProvider to MongoDB so the holon is stored in the OASIS DB where OPORTAL can find it.
+    payload.OffChainProvider = 'MongoDBOASIS';
+    console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'OffChainProvider:', payload.OffChainProvider, 'SendToAvatarAfterMintingId:', payload.SendToAvatarAfterMintingId);
     console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
     // =========================
