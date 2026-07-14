@@ -586,8 +586,7 @@ export default async function handler(req, res) {
           discount: web4NFT.discount,
           royaltyPercentage: web4NFT.royaltyPercentage,
           lastSoldByAvatarId: payload.MintedByAvatarId,
-          lastPurchasedByAvatarId: avatarId,
-          providerType: payload.OffChainProvider
+          lastPurchasedByAvatarId: avatarId
         };
 
         const updatedWeb4NFT = await updateWeb4NFT({
