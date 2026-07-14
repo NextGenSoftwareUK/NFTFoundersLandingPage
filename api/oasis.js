@@ -302,7 +302,7 @@ export default async function handler(req, res) {
     const testMode = process.env.TEST_MODE === 'true';
 
     const OASIS_CFG = {
-      apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
+      apiUrl:   'https://api.web4.oasisomniverse.one',
       username: testMode ? process.env.OASIS_AVATAR_USERNAME_TEST  : process.env.OASIS_AVATAR_USERNAME_LIVE,
       password: testMode ? process.env.OASIS_AVATAR_PASSWORD_TEST  : process.env.OASIS_AVATAR_PASSWORD_LIVE,
       avatarId: testMode ? process.env.OASIS_AVATAR_ID_TEST        : process.env.OASIS_AVATAR_ID_LIVE,
