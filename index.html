@@ -2786,6 +2786,14 @@ async function waitForPhantom(timeoutMs = PHANTOM_TIMEOUT) {
   });
 }
 
+function isSwDead(msg) {
+  return msg.includes('message channel closed') ||
+    msg.includes('listener indicated an asynchronous response') ||
+    msg.includes('undefined is not valid JSON') ||
+    msg.includes('Could not establish connection') ||
+    msg.includes('Receiving end does not exist');
+}
+
 // Connect with retry + exponential backoff
 async function connectPhantomWithRetry(attempt = 0) {
   const phantom = await waitForPhantom();
@@ -2794,7 +2802,12 @@ async function connectPhantomWithRetry(attempt = 0) {
     let resp;
     try {
       resp = await phantom.connect({ onlyIfTrusted: true });
-    } catch {
+    } catch(innerErr) {
+      const msg = innerErr.message || '';
+      // If the service worker is dead, propagate so the outer catch handles retry.
+      // Don't fall through to phantom.connect() — it would also fail and double the noise.
+      if (isSwDead(msg)) throw innerErr;
+      // Otherwise user hasn't trusted before — prompt them.
       resp = await phantom.connect();
     }
     return { phantom, resp };
@@ -2802,34 +2815,24 @@ async function connectPhantomWithRetry(attempt = 0) {
   } catch(e) {
     const msg = e.message || '';
 
-    const isServiceWorkerDead =
-      msg.includes('message channel closed') ||
-      msg.includes('listener indicated an asynchronous response') ||
-      msg.includes('undefined is not valid JSON') ||
-      msg.includes('Could not establish connection') ||
-      msg.includes('Receiving end does not exist');
-
     const isMetaMaskNoise =
       msg.includes('MetaMask extension not found') ||
       msg.includes('Failed to connect to MetaMask');
 
-    // Suppress MetaMask bridge noise entirely
     if (isMetaMaskNoise) {
       throw Object.assign(new Error('METAMASK_NOISE'), { silent: true });
     }
 
-    // Retry on service worker errors with exponential backoff
-    if (isServiceWorkerDead && attempt < MAX_RETRIES) {
-      const delay = Math.min(300 * 2 ** attempt, 5000); // 300→600→1200→2400→5000ms
+    if (isSwDead(msg) && attempt < MAX_RETRIES) {
+      // Flat 500 ms for first two attempts (service worker usually restarts in <1 s),
+      // then double up so we don't spin forever.
+      const delay = attempt < 2 ? 500 : Math.min(500 * 2 ** (attempt - 1), 4000);
       console.warn(`[PHANTOM] Service worker not ready, retry ${attempt + 1}/${MAX_RETRIES} in ${delay}ms`);
       await new Promise(r => setTimeout(r, delay));
       return connectPhantomWithRetry(attempt + 1);
     }
 
-    // Exhausted retries — tell user to restart Phantom
-    if (isServiceWorkerDead) {
-      throw new Error('PHANTOM_NEEDS_RESTART');
-    }
+    if (isSwDead(msg)) throw new Error('PHANTOM_NEEDS_RESTART');
 
     throw e;
   }
@@ -2850,8 +2853,10 @@ function setSolBtnSpinner(text) {
 }
 
 // Silent pre-warm on page load — if user has connected before,
-// this resolves instantly so wallet is ready before they click anything
-async function preWarmPhantom() {
+// this resolves instantly so wallet is ready before they click anything.
+// Also retries on service worker errors so the SW is awake before the user clicks.
+async function preWarmPhantom(attempt = 0) {
+  const MAX_PREWARM = 4;
   try {
     const phantom = await waitForPhantom(5000);
     if (phantom.isConnected) return;
@@ -2885,8 +2890,14 @@ async function preWarmPhantom() {
       updateOasisWalletUI();
     });
 
-  } catch {
-    // Silently ignore — user hasn't connected before or Phantom isn't installed
+  } catch(e) {
+    const msg = e?.message || '';
+    // Retry silently if the service worker was sleeping — wakes it up for when the user clicks
+    if (isSwDead(msg) && attempt < MAX_PREWARM) {
+      await new Promise(r => setTimeout(r, 600));
+      return preWarmPhantom(attempt + 1);
+    }
+    // Otherwise: user hasn't connected before, Phantom not installed, or user rejected — ignore
   }
 }
 

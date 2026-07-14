@@ -302,7 +302,8 @@ export default async function handler(req, res) {
     const testMode = process.env.TEST_MODE === 'true';
 
     const OASIS_CFG = {
-      apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
+      // apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
+      apiUrl:   'https://api.web4.oasisomniverse.one',
       username: testMode ? process.env.OASIS_AVATAR_USERNAME_TEST  : process.env.OASIS_AVATAR_USERNAME_LIVE,
       password: testMode ? process.env.OASIS_AVATAR_PASSWORD_TEST  : process.env.OASIS_AVATAR_PASSWORD_LIVE,
       avatarId: testMode ? process.env.OASIS_AVATAR_ID_TEST        : process.env.OASIS_AVATAR_ID_LIVE,
@@ -554,6 +555,18 @@ export default async function handler(req, res) {
     if (result?.isError) {
       throw new Error(result.message || 'OASIS returned an error');
     }
+
+    // =========================
+    // 7b. PERSIST HOLON TO MONGODB
+    // =========================
+    // try {
+    //   const web4Nft = buildWeb4NFT({ payload, mintResult: result, avatarId: buyerAvatarId, email: recipientEmail, createdNewAvatar });
+    //   console.log('[oasis] step 7b: calling update-web4-nft to persist holon in MongoDB');
+    //   await updateWeb4NFT({ apiUrl: OASIS_CFG.apiUrl, token, providerType: 'MongoDBOASIS', nft: web4Nft });
+    //   console.log('[oasis] step 7b: holon saved to MongoDB');
+    // } catch (e) {
+    //   console.warn('[oasis] step 7b: update-web4-nft failed (non-fatal):', e.message);
+    // }
 
     // =========================
     // 8. RECORD AVATAR PROVISION
