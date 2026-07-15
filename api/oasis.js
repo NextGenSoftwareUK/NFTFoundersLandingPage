@@ -513,7 +513,8 @@ export default async function handler(req, res) {
     // payload.SendToAddressAfterMinting is already set by the frontend (buyer's Solana wallet) — leave it as-is.
     // Force OffChainProvider to MongoDB so the holon is stored in the OASIS DB where OPORTAL can find it.
     payload.OffChainProvider = 'MongoDBOASIS';
-    console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'OffChainProvider:', payload.OffChainProvider, 'SendToAvatarAfterMintingId:', payload.SendToAvatarAfterMintingId);
+    payload.Price = order.priceSOL || 0;
+    console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'OffChainProvider:', payload.OffChainProvider, 'SendToAvatarAfterMintingId:', payload.SendToAvatarAfterMintingId, 'Price:', payload.Price);
     console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
     // =========================
