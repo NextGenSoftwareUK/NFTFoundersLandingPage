@@ -507,8 +507,10 @@ export default async function handler(req, res) {
 
     // MintedByAvatarId: Wizards can pass the buyer's avatar ID so the NFT is attributed to them.
     // SendToAvatarAfterMintingId: routes the actual on-chain transfer to the buyer's wallet.
+    // SendToAddressAfterMinting: must also be set so OASIS skips the avatar wallet lookup and reaches the holon save.
     payload.MintedByAvatarId = buyerAvatarId || OASIS_CFG.avatarId;
     payload.SendToAvatarAfterMintingId = buyerAvatarId || OASIS_CFG.avatarId;
+    // payload.SendToAddressAfterMinting is already set by the frontend (buyer's Solana wallet) — leave it as-is.
     // Force OffChainProvider to MongoDB so the holon is stored in the OASIS DB where OPORTAL can find it.
     payload.OffChainProvider = 'MongoDBOASIS';
     console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'OffChainProvider:', payload.OffChainProvider, 'SendToAvatarAfterMintingId:', payload.SendToAvatarAfterMintingId);
@@ -551,8 +553,12 @@ export default async function handler(req, res) {
       throw new Error(`Failed to parse OASIS mint response: ${e.message}`);
     }
 
-    console.log('[oasis] step 7: mint complete — isError:', result?.isError, 'result id:', result?.result?.id, 'web3NFTs count:', result?.result?.web3NFTs?.length);
-    if (result?.isError) {
+    console.log('[oasis] step 7: mint complete — isError:', result?.isError, 'savedCount:', result?.savedCount, 'result id:', result?.result?.id, 'web3NFTs count:', result?.result?.web3NFTs?.length);
+    // isError can be true even on a successful mint if Solana send retries failed — check
+    // whether we actually got a minted NFT before treating it as a fatal error.
+    const mintedNFT = result?.result?.web3NFTs?.[0];
+    const mintSucceeded = mintedNFT?.mintTransactionHash && !mintedNFT.mintTransactionHash.toLowerCase().includes('error');
+    if (result?.isError && !mintSucceeded) {
       throw new Error(result.message || 'OASIS returned an error');
     }
 
