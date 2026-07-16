@@ -3,6 +3,7 @@
     "@solana/web3.js": "^1.91.8",
     "@upstash/redis": "^1.38.0",
     "@vercel/kv": "^3.0.0",
+    "bcryptjs": "^3.0.3",
     "redis": "^5.12.1",
     "rpc-websockets": "^7.7.0",
     "stripe": "^22.1.1",

@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import bcrypt from "bcryptjs";
 
 let redisClient = null;
 let redisReady = null;
@@ -92,12 +93,15 @@ async function handleActivate(req, res) {
   console.log('[activate] wizard JWT obtained:', !!wizardJwt);
   if (!wizardJwt) throw new Error("No JWT returned from Wizard auth");
 
+  // Hash the password before sending — update-by-id stores it as-is, authenticate uses bcrypt
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
   // Update the avatar's password using the Wizard JWT
   console.log('[activate] calling update-by-id for avatarId:', avatarId);
   const updateRes = await fetch(`${OASIS_API_URL}/api/Avatar/update-by-id/${avatarId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${wizardJwt}` },
-    body: JSON.stringify({ password: newPassword, confirmPassword: newPassword })
+    body: JSON.stringify({ password: hashedPassword, confirmPassword: hashedPassword })
   });
 
   const updateText = await updateRes.text();
