@@ -127,7 +127,8 @@ async function registerAvatar({ apiUrl, token, email, username, password }) {
     title: "Mx",
     avatarType: "User",
     acceptTerms: true,
-    privacyMode: false
+    privacyMode: false,
+    suppressVerificationEmail: true
   };
 
   const { response, json, text } = await oasisJsonFetch(apiUrl, "/api/Avatar/register", {
