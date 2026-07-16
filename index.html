@@ -140,7 +140,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 40px;display:fl
 
 /* ── HERO ── */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:138px 20px 40px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,229,255,.08) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(124,58,237,.12) 0%,transparent 60%)}
-.logo-ring{width:90px;height:90px;border-radius:50%;border:2px solid var(--cyan);margin-bottom:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(0,229,255,.4),inset 0 0 20px rgba(0,229,255,.1);animation:ringPulse 3s ease-in-out infinite;position:relative}
+.logo-ring{width:90px;height:90px;border-radius:50%;border:2px solid var(--cyan);margin-bottom:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(0,229,255,.4),inset 0 0 20px rgba(0,229,255,.1);animation:ringPulse 3s ease-in-out infinite,float 6s ease-in-out infinite;position:relative}
 .logo-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(0,229,255,.2);animation:ringPulse 3s ease-in-out infinite reverse}
 .logo-ring svg{width:50px;height:50px}
 @keyframes ringPulse{0%,100%{box-shadow:0 0 30px rgba(0,229,255,.4),inset 0 0 20px rgba(0,229,255,.1)}50%{box-shadow:0 0 60px rgba(0,229,255,.7),inset 0 0 30px rgba(0,229,255,.2)}}
@@ -169,6 +169,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 40px;display:fl
 @keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes spinCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.oasis-arrow{display:inline-block;font-style:normal;line-height:1;vertical-align:-.05em;font-size:1em}
+.hero-title .oasis-arrow{vertical-align:.05em;display:inline-block;animation:ascend 2.4s ease-in-out infinite}
+@keyframes ascend{0%{transform:translateY(3px)}50%{transform:translateY(-5px)}100%{transform:translateY(3px)}}
 @keyframes titleGlow{
   0%,100%{filter:drop-shadow(0 0 18px rgba(0,229,255,.5)) drop-shadow(0 0 40px rgba(0,229,255,.2))}
   50%{filter:drop-shadow(0 0 35px rgba(0,229,255,.9)) drop-shadow(0 0 80px rgba(0,229,255,.4)) drop-shadow(0 0 120px rgba(0,229,255,.15))}
@@ -750,7 +754,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
 
 </svg>
 </div>
-    <h1 class="hero-title">OASIS</h1>
+    <h1 class="hero-title">O<span class="oasis-arrow"><svg viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:.75em;height:.85em;display:block"><polygon points="40,4 76,86 4,86" fill="none" stroke="#00e5ff" stroke-width="7" stroke-linejoin="round"/></svg></span>SIS</h1>
     <div class="hero-sub">FOUNDER ACCESS</div>
     <p class="hero-desc">A new digital world is being built.<br><strong>A limited number of people will own the keys.</strong></p>
     <p class="hero-desc" style="font-size:15px;color:#a8bfd8;margin-top:4px;">OGEngine · STAR CLI/ODK · COSMIC ORM · <a href="https://api.web4.oasisomniverse.one" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85">Web4 OASIS API</a> · <a href="https://api.starnet.oasisomniverse.one" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85">Web5 STAR API</a> · Our World access</p>
