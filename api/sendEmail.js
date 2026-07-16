@@ -120,11 +120,37 @@ async function handleActivate(req, res) {
     body: JSON.stringify({ username, password: newPassword })
   });
 
-  const authData = await authRes.json();
-  console.log('[activate] user auth status:', authRes.status, 'isError:', authData?.result?.isError);
-  const freshJwt = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
-  const avatarObj = authData?.result?.result ?? authData?.result ?? null;
-  const portalAvatar = avatarObj ? { ...avatarObj, jwtToken: freshJwt } : null;
+  const authText = await authRes.text();
+  let authData;
+  try { authData = JSON.parse(authText); } catch { authData = null; }
+  console.log('[activate] user auth status:', authRes.status, 'isError:', authData?.result?.isError, 'body:', authText.slice(0, 400));
+
+  let freshJwt = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
+  let avatarObj = authData?.result?.result ?? authData?.result ?? null;
+
+  // If username auth failed, retry with email (some OASIS builds accept email as username)
+  if (!freshJwt || authData?.result?.isError) {
+    console.log('[activate] username auth failed, retrying with email:', email);
+    const authRes2 = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: email, password: newPassword })
+    });
+    const authText2 = await authRes2.text();
+    let authData2;
+    try { authData2 = JSON.parse(authText2); } catch { authData2 = null; }
+    console.log('[activate] email auth status:', authRes2.status, 'isError:', authData2?.result?.isError, 'body:', authText2.slice(0, 400));
+    if (!authData2?.result?.isError) {
+      freshJwt = authData2?.result?.result?.jwtToken ?? authData2?.result?.jwtToken;
+      avatarObj = authData2?.result?.result ?? authData2?.result ?? null;
+    }
+  }
+
+  // Preserve the stored username so the portal shows the correct identity
+  const portalAvatar = (avatarObj && freshJwt)
+    ? { ...avatarObj, jwtToken: freshJwt, username: username || avatarObj.username || avatarObj.UserName }
+    : null;
+  console.log('[activate] portalAvatar username:', portalAvatar?.username, 'jwtToken set:', !!portalAvatar?.jwtToken);
 
   await redisClient.del(`avatar-activation:${key}`);
   console.log('[activate] success — redis key deleted');
