@@ -37,6 +37,7 @@ const CORS_HEADERS = {
 
 async function handleActivate(req, res) {
   const { email, key, newPassword } = req.body || {};
+  console.log('[activate] start — email:', email, 'key:', key, 'passwordLen:', newPassword?.length);
 
   if (!email || !key || !newPassword) {
     return res.status(400).json({ error: "Missing email, key, or newPassword" });
@@ -48,6 +49,7 @@ async function handleActivate(req, res) {
   await ensureRedis();
 
   const raw = await redisClient.get(`avatar-activation:${key}`);
+  console.log('[activate] redis record found:', !!raw);
   if (!raw) {
     return res.status(404).json({ error: "Activation link has expired or already been used. Please contact support." });
   }
@@ -57,29 +59,41 @@ async function handleActivate(req, res) {
     return res.status(500).json({ error: "Corrupt activation record" });
   }
 
+  console.log('[activate] record email:', record.email, 'avatarId:', record.avatarId, 'username:', record.username, 'hasTempPassword:', !!record.tempPassword, 'hasVerificationToken:', !!record.verificationToken);
+
   if (record.email?.toLowerCase() !== email.toLowerCase()) {
     return res.status(403).json({ error: "Email does not match activation record" });
   }
 
   const { username, tempPassword, verificationToken, avatarId } = record;
   if (!username || !tempPassword || !verificationToken || !avatarId) {
+    console.log('[activate] incomplete record — username:', !!username, 'tempPassword:', !!tempPassword, 'verificationToken:', !!verificationToken, 'avatarId:', !!avatarId);
     return res.status(500).json({ error: "Incomplete activation record — please contact support" });
   }
+
+  const testMode = process.env.TEST_MODE === 'true';
+  const wizardUsername = testMode ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE;
+  const wizardPassword = testMode ? process.env.OASIS_AVATAR_PASSWORD_TEST : process.env.OASIS_AVATAR_PASSWORD_LIVE;
+  console.log('[activate] testMode:', testMode, 'wizardUsername:', wizardUsername, 'wizardPassword set:', !!wizardPassword);
 
   // Authenticate as Wizard — can update any avatar regardless of verification status
   const wizardAuthRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE, password: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_PASSWORD_TEST : process.env.OASIS_AVATAR_PASSWORD_LIVE })
+    body: JSON.stringify({ username: wizardUsername, password: wizardPassword })
   });
 
+  console.log('[activate] wizard auth status:', wizardAuthRes.status);
   if (!wizardAuthRes.ok) throw new Error(`Wizard auth failed (${wizardAuthRes.status})`);
   const wizardData = await wizardAuthRes.json();
+  console.log('[activate] wizard auth isError:', wizardData?.result?.isError, 'msg:', wizardData?.result?.message);
   if (wizardData?.result?.isError) throw new Error(wizardData?.result?.message || "Wizard authentication failed");
   const wizardJwt = wizardData?.result?.result?.jwtToken ?? wizardData?.result?.jwtToken;
+  console.log('[activate] wizard JWT obtained:', !!wizardJwt);
   if (!wizardJwt) throw new Error("No JWT returned from Wizard auth");
 
   // Update the avatar's password using the Wizard JWT
+  console.log('[activate] calling update-by-id for avatarId:', avatarId);
   const updateRes = await fetch(`${OASIS_API_URL}/api/Avatar/update-by-id/${avatarId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${wizardJwt}` },
@@ -87,6 +101,7 @@ async function handleActivate(req, res) {
   });
 
   const updateText = await updateRes.text();
+  console.log('[activate] update-by-id status:', updateRes.status, 'body:', updateText.slice(0, 300));
   let updateData;
   try { updateData = JSON.parse(updateText); } catch {
     throw new Error(`Unexpected response from OASIS: ${updateText.slice(0, 200)}`);
@@ -98,6 +113,7 @@ async function handleActivate(req, res) {
   }
 
   // Now authenticate as the user with their new password to get their own JWT for the portal
+  console.log('[activate] re-authenticating as user:', username);
   const authRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -105,11 +121,13 @@ async function handleActivate(req, res) {
   });
 
   const authData = await authRes.json();
+  console.log('[activate] user auth status:', authRes.status, 'isError:', authData?.result?.isError);
   const freshJwt = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
   const avatarObj = authData?.result?.result ?? authData?.result ?? null;
   const portalAvatar = avatarObj ? { ...avatarObj, jwtToken: freshJwt } : null;
 
   await redisClient.del(`avatar-activation:${key}`);
+  console.log('[activate] success — redis key deleted');
 
   return res.status(200).json({ success: true, avatar: portalAvatar });
 }
