@@ -50,33 +50,53 @@ async function handleActivate(req, res) {
     return res.status(500).json({ error: "Incomplete activation record — please contact support" });
   }
 
-  const resetRes = await fetch(`${OASIS_API_URL}/api/avatar/reset-password`, {
+  // Authenticate with temp credentials to get a JWT
+  const authRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token: verificationToken, oldPassword: tempPassword, newPassword })
+    body: JSON.stringify({ username, password: tempPassword })
   });
 
-  const resetText = await resetRes.text();
-  let resetData;
-  try { resetData = JSON.parse(resetText); } catch {
-    throw new Error(`Unexpected response from OASIS: ${resetText.slice(0, 200)}`);
+  if (!authRes.ok) {
+    const txt = await authRes.text();
+    throw new Error(`OASIS auth failed (${authRes.status}): ${txt.slice(0, 200)}`);
   }
 
-  if (!resetRes.ok || resetData?.result?.isError || resetData?.isError) {
-    const msg = resetData?.result?.message || resetData?.message || `HTTP ${resetRes.status}`;
-    throw new Error(`Password reset failed: ${msg}`);
+  const authData = await authRes.json();
+  if (authData?.result?.isError) throw new Error(authData?.result?.message || "OASIS authentication failed");
+
+  const jwt = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
+  if (!jwt) throw new Error("No JWT returned from OASIS auth");
+
+  // Update password using the JWT
+  const updateRes = await fetch(`${OASIS_API_URL}/api/Avatar/update-by-id/${avatarId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${jwt}` },
+    body: JSON.stringify({ password: newPassword, confirmPassword: newPassword })
+  });
+
+  const updateText = await updateRes.text();
+  let updateData;
+  try { updateData = JSON.parse(updateText); } catch {
+    throw new Error(`Unexpected response from OASIS: ${updateText.slice(0, 200)}`);
   }
 
-  const authRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
+  if (!updateRes.ok || updateData?.result?.isError || updateData?.isError) {
+    const msg = updateData?.result?.message || updateData?.message || `HTTP ${updateRes.status}`;
+    throw new Error(`Password update failed: ${msg}`);
+  }
+
+  // Re-authenticate with new password for a fresh JWT
+  const reAuthRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password: newPassword })
   });
 
-  const authData = await authRes.json();
-  const jwt = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
-  const avatarObj = authData?.result?.result ?? authData?.result ?? null;
-  const portalAvatar = avatarObj ? { ...avatarObj, jwtToken: jwt } : null;
+  const reAuthData = await reAuthRes.json();
+  const freshJwt = reAuthData?.result?.result?.jwtToken ?? reAuthData?.result?.jwtToken;
+  const avatarObj = reAuthData?.result?.result ?? reAuthData?.result ?? null;
+  const portalAvatar = avatarObj ? { ...avatarObj, jwtToken: freshJwt || jwt } : null;
 
   await redisClient.del(`avatar-activation:${key}`);
 
