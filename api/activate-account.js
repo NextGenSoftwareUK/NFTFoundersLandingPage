@@ -50,69 +50,45 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: "Email does not match activation record" });
     }
 
-    const { username, tempPassword, avatarId } = record;
+    const { username, tempPassword, verificationToken, avatarId } = record;
 
-    if (!username || !tempPassword || !avatarId) {
+    if (!username || !tempPassword || !verificationToken || !avatarId) {
       return res.status(500).json({ error: "Incomplete activation record — please contact support" });
     }
 
-    // 2. Authenticate with temp credentials to get JWT
-    const authRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
+    // 2. Reset password using the verification token + old temp password
+    const resetRes = await fetch(`${OASIS_API_URL}/api/avatar/reset-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password: tempPassword })
-    });
-
-    if (!authRes.ok) {
-      const txt = await authRes.text();
-      throw new Error(`OASIS auth failed (${authRes.status}): ${txt.slice(0, 200)}`);
-    }
-
-    const authData = await authRes.json();
-    if (authData?.result?.isError) {
-      throw new Error(authData?.result?.message || "OASIS authentication failed");
-    }
-
-    const jwt = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
-    if (!jwt) throw new Error("No JWT returned from OASIS auth");
-
-    // 3. Update avatar password via update-by-id (requires JWT auth)
-    const updateRes = await fetch(`${OASIS_API_URL}/api/Avatar/update-by-id/${avatarId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`
-      },
       body: JSON.stringify({
-        password: newPassword,
-        confirmPassword: newPassword
+        token: verificationToken,
+        oldPassword: tempPassword,
+        newPassword
       })
     });
 
-    const updateText = await updateRes.text();
-    let updateData;
-    try { updateData = JSON.parse(updateText); } catch {
-      throw new Error(`Unexpected response from OASIS: ${updateText.slice(0, 200)}`);
+    const resetText = await resetRes.text();
+    let resetData;
+    try { resetData = JSON.parse(resetText); } catch {
+      throw new Error(`Unexpected response from OASIS: ${resetText.slice(0, 200)}`);
     }
 
-    if (!updateRes.ok || updateData?.result?.isError || updateData?.isError) {
-      const msg = updateData?.result?.message || updateData?.message || `HTTP ${updateRes.status}`;
-      throw new Error(`Password update failed: ${msg}`);
+    if (!resetRes.ok || resetData?.result?.isError || resetData?.isError) {
+      const msg = resetData?.result?.message || resetData?.message || `HTTP ${resetRes.status}`;
+      throw new Error(`Password reset failed: ${msg}`);
     }
 
-    // 4. Re-authenticate with the new password to get a fresh JWT for the portal
-    const reAuthRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
+    // 3. Authenticate with the new password to get a JWT for the portal
+    const authRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password: newPassword })
     });
 
-    const reAuthData = await reAuthRes.json();
-    const freshJwt = reAuthData?.result?.result?.jwtToken ?? reAuthData?.result?.jwtToken;
-    const avatarObj = reAuthData?.result?.result ?? reAuthData?.result ?? null;
-
-    // Ensure the avatar object has the JWT attached (portal reads avatar.jwtToken)
-    const portalAvatar = avatarObj ? { ...avatarObj, jwtToken: freshJwt || jwt } : null;
+    const authData = await authRes.json();
+    const jwt = authData?.result?.result?.jwtToken ?? authData?.result?.jwtToken;
+    const avatarObj = authData?.result?.result ?? authData?.result ?? null;
+    const portalAvatar = avatarObj ? { ...avatarObj, jwtToken: jwt } : null;
 
     // 5. Consume activation key so it can't be replayed
     await redis.del(`avatar-activation:${key}`);
