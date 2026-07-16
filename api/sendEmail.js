@@ -70,7 +70,7 @@ async function handleActivate(req, res) {
   const wizardAuthRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: process.env.OASIS_USERNAME, password: process.env.OASIS_PASSWORD })
+    body: JSON.stringify({ username: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE, password: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_PASSWORD_TEST : process.env.OASIS_AVATAR_PASSWORD_LIVE })
   });
 
   if (!wizardAuthRes.ok) throw new Error(`Wizard auth failed (${wizardAuthRes.status})`);
@@ -124,7 +124,7 @@ async function handleResendActivation(req, res) {
   const wizardAuthRes = await fetch(`${OASIS_API_URL}/api/avatar/authenticate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: process.env.OASIS_USERNAME, password: process.env.OASIS_PASSWORD })
+    body: JSON.stringify({ username: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE, password: process.env.TEST_MODE === 'true' ? process.env.OASIS_AVATAR_PASSWORD_TEST : process.env.OASIS_AVATAR_PASSWORD_LIVE })
   });
   if (!wizardAuthRes.ok) throw new Error("Wizard auth failed");
   const wizardData = await wizardAuthRes.json();
