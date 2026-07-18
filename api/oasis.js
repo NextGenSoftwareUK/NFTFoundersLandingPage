@@ -318,10 +318,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    // lockKey = `mint-lock:${payload.SendToAddressAfterMinting}`;
-    // const lockResult = await redis.set(lockKey, "1", { NX: true, EX: testMode ? 60 * 5 : 60 * 30 });
-    // if (!lockResult) return res.status(429).json({ error: "Mint already in progress" });
-    console.log('[oasis] step 1: mint lock skipped (disabled for testing)');
+    if (!testMode) {
+      return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
+    }
+    console.log('[oasis] step 1: mint lock skipped (TEST_MODE is true)');
 
     // =========================
     // 2. FETCH ORDER
