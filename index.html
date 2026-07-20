@@ -4259,7 +4259,7 @@ document.querySelectorAll('.nav-links a').forEach(a => {
     <button onclick="closeComingSoon()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#a8bfd8;font-size:22px;cursor:pointer;line-height:1;">✕</button>
     <div style="font-size:42px;margin-bottom:12px;">🚀</div>
     <h2 style="font-family:'Orbitron',sans-serif;font-size:22px;color:#00e5ff;margin:0 0 10px;letter-spacing:.12em;">MINTING OPENS 22ND JULY</h2>
-    <p style="font-family:'Rajdhani',sans-serif;font-size:16px;color:#a8bfd8;margin:0 0 8px;line-height:1.6;">Sign up below to join the <strong style="color:#fff;">early access waitlist</strong>.<br>You'll be among the first to mint when doors open on <strong style="color:#00e5ff;">22nd July 2026</strong>.</p>
+    <p style="font-family:'Rajdhani',sans-serif;font-size:16px;color:#a8bfd8;margin:0 0 8px;line-height:1.6;">Sign up below to join the <strong style="color:#fff;">early access waitlist</strong>.<br>You'll be among the first to mint when doors open on or before <strong style="color:#00e5ff;">22nd July 2026</strong>.</p>
     <p style="font-family:'Rajdhani',sans-serif;font-size:14px;color:rgba(168,191,216,.6);margin:0 0 24px;line-height:1.5;">Waitlist members get priority access before the general public.</p>
     <form id="notifyForm" onsubmit="submitNotify(event)" style="display:flex;flex-direction:column;gap:14px;">
       <input id="notifyEmail" type="email" required placeholder="your@email.com"
@@ -4315,7 +4315,7 @@ async function submitNotify(e, tier) {
     });
     if (res.ok) {
       result.style.color = '#00e5ff';
-      result.textContent = "✓ You're on the waitlist! We'll email you with early access on 22nd July.";
+      result.textContent = "✓ You're on the waitlist! We'll email you with early access on or before 22nd July.";
       btn.textContent = 'REGISTERED';
     } else {
       throw new Error('Server error');
