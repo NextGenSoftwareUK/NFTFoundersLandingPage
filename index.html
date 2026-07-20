@@ -4258,15 +4258,16 @@ document.querySelectorAll('.nav-links a').forEach(a => {
   <div style="background:linear-gradient(135deg,#060c24,#0a1330);border:1px solid rgba(0,229,255,.25);border-radius:20px;padding:48px 40px;max-width:480px;width:90%;text-align:center;position:relative;box-shadow:0 0 60px rgba(0,229,255,.12);">
     <button onclick="closeComingSoon()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#a8bfd8;font-size:22px;cursor:pointer;line-height:1;">✕</button>
     <div style="font-size:42px;margin-bottom:12px;">🚀</div>
-    <h2 style="font-family:'Orbitron',sans-serif;font-size:22px;color:#00e5ff;margin:0 0 10px;letter-spacing:.12em;">COMING SOON</h2>
-    <p style="font-family:'Rajdhani',sans-serif;font-size:16px;color:#a8bfd8;margin:0 0 28px;line-height:1.6;">NFT minting will be unlocked shortly as part of the full OASIS Omniverse launch.<br>Enter your email below to be notified the moment access opens.</p>
+    <h2 style="font-family:'Orbitron',sans-serif;font-size:22px;color:#00e5ff;margin:0 0 10px;letter-spacing:.12em;">MINTING OPENS 22ND JULY</h2>
+    <p style="font-family:'Rajdhani',sans-serif;font-size:16px;color:#a8bfd8;margin:0 0 8px;line-height:1.6;">Sign up below to join the <strong style="color:#fff;">early access waitlist</strong>.<br>You'll be among the first to mint when doors open on <strong style="color:#00e5ff;">22nd July 2026</strong>.</p>
+    <p style="font-family:'Rajdhani',sans-serif;font-size:14px;color:rgba(168,191,216,.6);margin:0 0 24px;line-height:1.5;">Waitlist members get priority access before the general public.</p>
     <form id="notifyForm" onsubmit="submitNotify(event)" style="display:flex;flex-direction:column;gap:14px;">
       <input id="notifyEmail" type="email" required placeholder="your@email.com"
         style="background:rgba(255,255,255,.06);border:1px solid rgba(0,229,255,.3);border-radius:10px;padding:14px 16px;color:#e0e0e0;font-family:'Share Tech Mono',monospace;font-size:15px;outline:none;width:100%;box-sizing:border-box;"
         onfocus="this.style.borderColor='rgba(0,229,255,.7)'" onblur="this.style.borderColor='rgba(0,229,255,.3)'" />
       <button type="submit" id="notifyBtn"
         style="background:linear-gradient(135deg,#006080,#00b4d8,#80e8ff);color:#001a24;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.15em;border:none;border-radius:10px;padding:15px;cursor:pointer;transition:opacity .2s;">
-        NOTIFY ME WHEN OPEN
+        JOIN THE WAITLIST
       </button>
     </form>
     <div id="notifyResult" style="margin-top:16px;font-family:'Rajdhani',sans-serif;font-size:15px;min-height:20px;"></div>
@@ -4314,7 +4315,7 @@ async function submitNotify(e, tier) {
     });
     if (res.ok) {
       result.style.color = '#00e5ff';
-      result.textContent = "✓ You're on the list! We'll email you when minting opens.";
+      result.textContent = "✓ You're on the waitlist! We'll email you with early access on 22nd July.";
       btn.textContent = 'REGISTERED';
     } else {
       throw new Error('Server error');
