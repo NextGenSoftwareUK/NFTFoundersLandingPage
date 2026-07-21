@@ -3,8 +3,8 @@ export default function handler(req, res) {
 
   res.status(200).json({
     testMode,
-    // stripePk: testMode ? process.env.STRIPE_PK_TEST : process.env.STRIPE_PK_LIVE,
-    stripePk: process.env.STRIPE_PK_TEST, //TODO: REMEMBER TO REMOVE AFTER TESTING!!!
+     stripePk: testMode ? process.env.STRIPE_PK_TEST : process.env.STRIPE_PK_LIVE,
+    //stripePk: process.env.STRIPE_PK_TEST, //TODO: REMEMBER TO REMOVE AFTER TESTING!!!
     evmReceiver: process.env.EVM_RECEIVER,
     btcAddr: process.env.BTC_ADDR,
     solAddr: process.env.SOL_ADDR,
