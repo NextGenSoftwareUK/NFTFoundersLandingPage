@@ -416,11 +416,7 @@ export default async function handler(req, res) {
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs")
-      : (process.env.COLLECTION_PUBLIC_KEY_LIVE || "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj");
-
-    if (!testMode && payload.CollectionPublicKey !== "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj") {
-      throw new Error(`SAFETY CHECK FAILED: live CollectionPublicKey is "${payload.CollectionPublicKey}" — expected FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj`);
-    }
+      : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
