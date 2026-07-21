@@ -646,6 +646,9 @@ export default async function handler(req, res) {
 
     await redis.set(`order:${order.orderId}`, JSON.stringify(order));
 
+    const tier = payload.MetaData?.tier;
+    if (tier) await redis.incr(`mint_count:${tier}`);
+
     return res.status(200).json({
       success: true,
       result,
