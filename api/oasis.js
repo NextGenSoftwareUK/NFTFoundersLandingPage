@@ -414,9 +414,7 @@ export default async function handler(req, res) {
       : String(payload.OffChainProvider);
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
-    payload.CollectionPublicKey = testMode
-      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs")
-      : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
+    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
     payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
