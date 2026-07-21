@@ -4275,7 +4275,23 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 </div>
 
 <script>
-// DEV BRANCH: Coming Soon gate disabled — mint goes straight through for testing.
+const _originalOpenModal = openModal;
+openModal = function(tier) {
+  if (!TEST_MODE) {
+    let _pendingNotifyTier = tier;
+    const modal = document.getElementById('comingSoonModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('notifyResult').textContent = '';
+    document.getElementById('notifyEmail').value = '';
+    document.getElementById('notifyBtn').disabled = false;
+    document.getElementById('notifyBtn').textContent = 'NOTIFY ME WHEN OPEN';
+    document.getElementById('notifyBtn').onclick = null;
+    document.getElementById('notifyForm').onsubmit = function(e) { submitNotify(e, _pendingNotifyTier); };
+    return;
+  }
+  _originalOpenModal(tier);
+};
 
 function closeComingSoon() {
   document.getElementById('comingSoonModal').style.display = 'none';
