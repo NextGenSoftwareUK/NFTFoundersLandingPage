@@ -2212,6 +2212,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
       btcAddr:       data.btcAddr,
       solAddr:       data.solAddr,
       usdtContracts: data.usdtContracts,
+      mintCounts:    data.mintCounts || {},
     };
     OASIS_CFG = data.oasis;
     TREASURY_WALLETS.SolanaOASIS = data.solAddr;
@@ -4150,8 +4151,7 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
 async function checkMintCounts() {
   const LIMITS = { genesis: 20, core: 50, supporter: 100 };
   try {
-    const data = await fetch('/api/mint-counts').then(r => r.json());
-    const counts = data.counts || {};
+    const counts = CFG.mintCounts || {};
     ['genesis', 'core', 'supporter'].forEach(tier => {
       const btn = document.getElementById('mintBtn-' + tier);
       if (!btn) return;
