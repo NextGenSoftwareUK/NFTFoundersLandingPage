@@ -302,7 +302,7 @@ export default async function handler(req, res) {
     const { payload } = req.body;
     console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
     //const testMode = process.env.TEST_MODE === 'true';
-    const testMode = false; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
+    const testMode = true; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
 
     const OASIS_CFG = {
       // apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
