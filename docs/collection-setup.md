@@ -76,7 +76,7 @@ In the Vercel dashboard for this project, set:
 
 | Variable | Value |
 |---|---|
-| `COLLECTION_PUBLIC_KEY_LIVE` | The mainnet collection mint address |
+| `COLLECTION_PUBLIC_KEY_LIVE` | FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj The mainnet collection mint address |
 | `COLLECTION_PUBLIC_KEY_TEST` | The devnet collection mint address (if separate) |
 
 Trigger a redeploy after saving.
