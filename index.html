@@ -2212,7 +2212,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
       btcAddr:       data.btcAddr,
       solAddr:       data.solAddr,
       usdtContracts: data.usdtContracts,
-      mintCounts:    { ...data.mintCounts, genesis: 20 }, // TEMP TEST
+      mintCounts:    data.mintCounts || {},
     };
     OASIS_CFG = data.oasis;
     TREASURY_WALLETS.SolanaOASIS = data.solAddr;
