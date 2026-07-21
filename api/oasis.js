@@ -302,6 +302,7 @@ export default async function handler(req, res) {
     const { payload } = req.body;
     console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
     const testMode = process.env.TEST_MODE === 'true';
+    testMode = false; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
 
     const OASIS_CFG = {
       // apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
@@ -311,7 +312,8 @@ export default async function handler(req, res) {
       avatarId: testMode ? process.env.OASIS_AVATAR_ID_TEST        : process.env.OASIS_AVATAR_ID_LIVE,
       imageUrl: process.env.OASIS_IMAGE_URL,
     };
-
+    
+    
     console.log('OASIS config:', JSON.stringify(OASIS_CFG));
 
     // =========================
@@ -414,7 +416,9 @@ export default async function handler(req, res) {
       : String(payload.OffChainProvider);
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
-    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
+    payload.CollectionPublicKey = testMode
+      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs")
+      : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
     payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
