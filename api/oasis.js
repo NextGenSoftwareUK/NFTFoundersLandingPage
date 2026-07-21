@@ -418,6 +418,8 @@ export default async function handler(req, res) {
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs")
       : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
+    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
+
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
     console.log('[oasis] CollectionPublicKey:', payload.CollectionPublicKey);
