@@ -300,6 +300,7 @@ export default async function handler(req, res) {
 
     await ensureRedis();
     const { payload } = req.body;
+    console.log('[oasis] VERSION: 2026-07-22-v3 | testMode env:', process.env.TEST_MODE);
     console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
     const testMode = process.env.TEST_MODE === 'true';
 
