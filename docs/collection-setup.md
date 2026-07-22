@@ -120,7 +120,7 @@ Due to some odd issues with Vercel env variables not working correctly (needs fu
 2. In oasis.js vercel api backend function for founders make sure testMode is true/false.
 3. Make sure in oasis.js that CollectionPublicKey is set to the correct key for devnet/mainnet.
 4. When going LIVE make sure you set the correct price in create-sol-order.js and createPayment.js (for testing these are set to 0 or near 0!).
-5. Remember to switch the line in config.js to use stripe live/test keys.
-6. Remember to make sure stripe is in live/test mode in the verify-card-payment.js line 30.
+5. Remember to switch the line in config.js to use stripe live/test keys. (should be automatic now with testMode env var in vercel)
+6. Remember to make sure stripe is in live/test mode in the verify-card-payment.js line 30. (should be automatic now with testMode env var in vercel)
 7. Also make sure testMode is set to true/false in Vercel!
 8. If testing creating and activating new users make sure you delete the test user account from MongoDB first for Avatar and AvatarDetail! ;-)
