@@ -302,7 +302,7 @@ export default async function handler(req, res) {
     const { payload } = req.body;
     console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
     //const testMode = process.env.TEST_MODE === 'true';
-    const testMode = true; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
+    const testMode = false; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
 
     const OASIS_CFG = {
        //apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
@@ -420,8 +420,8 @@ export default async function handler(req, res) {
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
       : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
-    //payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
-    payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
+    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
+    //payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
 
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
