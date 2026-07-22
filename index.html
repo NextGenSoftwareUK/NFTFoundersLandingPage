@@ -3776,7 +3776,7 @@ async function handleOasisMint() {
           },
           "confirmed"
         ),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('confirm timeout')), 10000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('confirm timeout')), 20000))
       ]);
 
       if (confirmation.value?.err) {
