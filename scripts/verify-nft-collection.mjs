@@ -10,11 +10,12 @@ import {
 import bs58 from 'bs58';
 
 const COLLECTION_MINT = 'FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj';
-const NFT_MINT        = '4cKugJX8HgCXq663WZD3VV2N8iu3yZ8nsV4pqN3q4KH2';
 
-const arg = process.argv[2];
+const arg     = process.argv[2];
+const NFT_MINT = process.argv[3] || '4cKugJX8HgCXq663WZD3VV2N8iu3yZ8nsV4pqN3q4KH2';
+
 if (!arg) {
-  console.error('Usage: node scripts/verify-nft-collection.mjs <base58-private-key>');
+  console.error('Usage: node scripts/verify-nft-collection.mjs <base58-private-key> [nft-mint-address]');
   process.exit(1);
 }
 
