@@ -4305,7 +4305,7 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 <script>
 // Gate: show Coming Soon popup when MINT_OPEN is false (checked via /api/mint-status).
 let _mintOpen = false;
-fetch('/api/mint-status').then(r => r.json()).then(d => { _mintOpen = !!d.mintOpen; }).catch(() => {});
+fetch('/api/oasis').then(r => r.json()).then(d => { _mintOpen = !!d.mintOpen; }).catch(() => {});
 
 const _originalOpenModal = openModal;
 openModal = function(tier) {
