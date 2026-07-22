@@ -319,10 +319,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    // if (!testMode) {
-    //   return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
-    // }
-    console.log('[oasis] step 1: mint lock skipped');
+    if (!testMode) {
+      return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
+    }
+    console.log('[oasis] step 1: mint lock skipped (testMode only)');
 
     // =========================
     // 2. FETCH ORDER
