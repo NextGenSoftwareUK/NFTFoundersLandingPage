@@ -3767,14 +3767,17 @@ async function handleOasisMint() {
     console.log("Waiting for confirmation...");
 
     try {
-      const confirmation = await connection.confirmTransaction(
-        {
-          signature: sig,
-          blockhash: latestBlockhash.blockhash,
-          lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-        },
-        "confirmed"
-      );
+      const confirmation = await Promise.race([
+        connection.confirmTransaction(
+          {
+            signature: sig,
+            blockhash: latestBlockhash.blockhash,
+            lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+          },
+          "confirmed"
+        ),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('confirm timeout')), 10000))
+      ]);
 
       if (confirmation.value?.err) {
         throw new Error("Transaction failed on-chain");
