@@ -301,8 +301,7 @@ export default async function handler(req, res) {
     await ensureRedis();
     const { payload } = req.body;
     console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
-    //const testMode = process.env.TEST_MODE === 'true';
-    const testMode = false; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
+    const testMode = process.env.TEST_MODE === 'true';
 
     const OASIS_CFG = {
        //apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
@@ -320,10 +319,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    // if (!testMode) {
-    //   return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
-    // }
-    // console.log('[oasis] step 1: mint lock skipped (TEST_MODE is true)');
+    if (!testMode) {
+      return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
+    }
+    console.log('[oasis] step 1: mint lock skipped (TEST_MODE is true)');
 
     // =========================
     // 2. FETCH ORDER
