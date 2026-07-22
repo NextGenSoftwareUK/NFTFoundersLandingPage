@@ -319,10 +319,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    if (!testMode) {
+    if (!process.env.MINT_OPEN) {
       return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
     }
-    console.log('[oasis] step 1: mint lock skipped (testMode only)');
+    console.log('[oasis] step 1: mint gate open');
 
     // =========================
     // 2. FETCH ORDER
@@ -645,6 +645,33 @@ export default async function handler(req, res) {
 
     const tier = payload.MetaData?.tier;
     if (tier) await redis.incr(`mint_count:${tier}`);
+
+    // Email notification to admin
+    try {
+      if (process.env.RESEND_API_KEY) {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'OASIS Mint <noreply@oasisfoundernfts.icu>',
+            to: 'davidellams@hotmail.com',
+            subject: `New Mint: ${tier || 'unknown'} NFT`,
+            html: `<p><strong>New NFT minted!</strong></p>
+<p>Tier: ${tier || 'unknown'}</p>
+<p>Email: ${recipientEmail || 'unknown'}</p>
+<p>Wallet: ${payload?.SendToAddressAfterMinting || 'unknown'}</p>
+<p>Mint TX: ${order.mintTx || 'unknown'}</p>
+<p>Avatar created: ${avatarProvision.createdNewAvatar}</p>
+<p>Avatar ID: ${avatarProvision.avatarId || 'none'}</p>`
+          })
+        });
+      }
+    } catch (emailErr) {
+      console.warn('[oasis] email notification failed (non-fatal):', emailErr.message);
+    }
 
     return res.status(200).json({
       success: true,
