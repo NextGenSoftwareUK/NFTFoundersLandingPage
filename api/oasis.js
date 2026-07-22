@@ -521,6 +521,24 @@ export default async function handler(req, res) {
     // Force OffChainProvider to MongoDB so the holon is stored in the OASIS DB where OPORTAL can find it.
     payload.OffChainProvider = 'MongoDBOASIS';
     payload.Price = order.priceSOL || 0;
+
+    const EARLYBIRD_EMAILS = new Set([
+      'cjsendwksro@gmail.com',
+      'joshuamartinez@jettoptics.ai',
+      'dan.garza3@gmail.com',
+      'rzerounian@hansonbridgett.com',
+      'tri0906090655@gmail.com',
+      'yanouv@protonmail.com',
+      'paulafolayan95@gmail.com',
+      'olanipekunseun828@gmail.com',
+      'kido201196@gmail.com',
+      'mohanmv1711@gmail.com',
+      'yoshiroyce26@gmail.com',
+      'goldie@luminacasa.co',
+    ]);
+    if (payload.MetaData) {
+      payload.MetaData.earlybird = EARLYBIRD_EMAILS.has(recipientEmail.toLowerCase()) ? 'true' : 'false';
+    }
     console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'OffChainProvider:', payload.OffChainProvider, 'SendToAvatarAfterMintingId:', payload.SendToAvatarAfterMintingId, 'Price:', payload.Price);
     console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
