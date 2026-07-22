@@ -420,8 +420,8 @@ export default async function handler(req, res) {
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
       : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
-    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
-    //payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
+    //payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
+    payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
 
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
