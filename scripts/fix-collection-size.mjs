@@ -1,18 +1,25 @@
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { keypairIdentity, publicKey } from '@metaplex-foundation/umi';
 import { mplTokenMetadata, setCollectionSize } from '@metaplex-foundation/mpl-token-metadata';
-import { readFileSync } from 'fs';
+import bs58 from 'bs58';
 
 const COLLECTION_MINT = 'FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj';
 
-// Load keypair from a JSON file containing the secret key bytes array
-// e.g. [1,2,3,...] exported from Phantom or Solana CLI
-const secretKey = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+// Pass the Phantom private key (base58 string) as the first argument:
+//   node scripts/fix-collection-size.mjs <base58-private-key>
+const arg = process.argv[2];
+if (!arg) {
+  console.error('Usage: node scripts/fix-collection-size.mjs <base58-private-key>');
+  console.error('  Get the key from Phantom → Settings → Export Private Key');
+  process.exit(1);
+}
+
+const secretKey = bs58.decode(arg);
 
 const umi = createUmi('https://api.mainnet-beta.solana.com')
   .use(mplTokenMetadata());
 
-const keypair = umi.eddsa.createKeypairFromSecretKey(new Uint8Array(secretKey));
+const keypair = umi.eddsa.createKeypairFromSecretKey(secretKey);
 umi.use(keypairIdentity(keypair));
 
 console.log('Using authority:', keypair.publicKey);
@@ -21,7 +28,7 @@ console.log('Setting collectionDetails on:', COLLECTION_MINT);
 const { signature } = await setCollectionSize(umi, {
   collectionMint: publicKey(COLLECTION_MINT),
   collectionAuthority: umi.identity,
-  size: 1,
+  setCollectionSizeArgs: { size: 1 },
 }).sendAndConfirm(umi);
 
 console.log('Done! Tx:', Buffer.from(signature).toString('base64'));
