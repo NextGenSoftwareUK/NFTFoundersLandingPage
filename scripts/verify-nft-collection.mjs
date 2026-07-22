@@ -5,7 +5,7 @@ import {
   fetchMetadata,
   findMetadataPda,
   findMasterEditionPda,
-  setAndVerifyCollection,
+  setAndVerifySizedCollectionItem,
 } from '@metaplex-foundation/mpl-token-metadata';
 import bs58 from 'bs58';
 
@@ -40,13 +40,15 @@ if (nftMeta.collection?.__option === 'Some' && nftMeta.collection.value.verified
   process.exit(0);
 }
 
-console.log('\nAttempting setAndVerifyCollection via UMI...');
+console.log('\nAttempting setAndVerifySizedCollectionItem via UMI...');
 
-const { signature } = await setAndVerifyCollection(umi, {
-  metadata:                     nftMetaPda,
-  collectionAuthority:          umi.identity,
-  collectionMint:               collectionMint,
-  collection:                   colMetaPda,
+// Instruction 25 (SetAndVerifyCollection) is blocked for sized collections.
+// Instruction 32 (SetAndVerifySizedCollectionItem) is the correct one.
+const { signature } = await setAndVerifySizedCollectionItem(umi, {
+  metadata:                       nftMetaPda,
+  collectionAuthority:            umi.identity,
+  collectionMint:                 collectionMint,
+  collection:                     colMetaPda,
   collectionMasterEditionAccount: colEditionPda,
 }).sendAndConfirm(umi);
 
