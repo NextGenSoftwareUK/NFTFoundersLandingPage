@@ -1,6 +1,6 @@
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { keypairIdentity, publicKey } from '@metaplex-foundation/umi';
-import { mplTokenMetadata, setCollectionSize } from '@metaplex-foundation/mpl-token-metadata';
+import { mplTokenMetadata, setCollectionSize, findMetadataPda } from '@metaplex-foundation/mpl-token-metadata';
 import bs58 from 'bs58';
 
 const COLLECTION_MINT = 'FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj';
@@ -22,11 +22,16 @@ const umi = createUmi('https://api.mainnet-beta.solana.com')
 const keypair = umi.eddsa.createKeypairFromSecretKey(secretKey);
 umi.use(keypairIdentity(keypair));
 
+const collectionMintPubkey = publicKey(COLLECTION_MINT);
+const [collectionMetadataPda] = findMetadataPda(umi, { mint: collectionMintPubkey });
+
 console.log('Using authority:', keypair.publicKey);
+console.log('Collection metadata PDA:', collectionMetadataPda);
 console.log('Setting collectionDetails on:', COLLECTION_MINT);
 
 const { signature } = await setCollectionSize(umi, {
-  collectionMint: publicKey(COLLECTION_MINT),
+  collectionMint: collectionMintPubkey,
+  collectionMetadata: collectionMetadataPda,
   collectionAuthority: umi.identity,
   setCollectionSizeArgs: { size: 1 },
 }).sendAndConfirm(umi);
