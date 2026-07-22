@@ -535,6 +535,8 @@ export default async function handler(req, res) {
       'mohanmv1711@gmail.com',
       'yoshiroyce26@gmail.com',
       'goldie@luminacasa.co',
+      'davidellams@hotmail.com',
+      'davidellams777@gmail.com',
     ]);
     if (payload.MetaData) {
       payload.MetaData.earlybird = EARLYBIRD_EMAILS.has(recipientEmail.toLowerCase()) ? 'true' : 'false';
