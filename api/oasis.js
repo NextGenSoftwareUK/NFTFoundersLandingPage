@@ -319,10 +319,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    if (!testMode) {
-      return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
-    }
-    console.log('[oasis] step 1: mint lock skipped (testMode only)');
+    // if (!testMode) {
+    //   return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
+    // }
+    console.log('[oasis] step 1: mint lock skipped');
 
     // =========================
     // 2. FETCH ORDER
@@ -416,10 +416,12 @@ export default async function handler(req, res) {
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
-      ? ("HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
+      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
       : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
-    payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF";
+    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
+    //payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
+
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
     console.log('[oasis] CollectionPublicKey:', payload.CollectionPublicKey);
