@@ -290,7 +290,7 @@ function buildActivationUrl({ email, activationKey }) {
 export default async function handler(req, res) {
 
   if (req.method === 'GET') {
-    return res.status(200).json({ mintOpen: !!process.env.MINT_OPEN });
+    return res.status(200).json({ mintOpen: process.env.MINT_OPEN === 'true' });
   }
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -322,7 +322,7 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    if (!process.env.MINT_OPEN) {
+    if (process.env.MINT_OPEN !== 'true') {
       return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
     }
     console.log('[oasis] step 1: mint gate open');
