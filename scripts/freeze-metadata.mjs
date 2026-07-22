@@ -10,7 +10,7 @@ import {
   mplTokenMetadata,
   fetchMetadata,
   findMetadataPda,
-  updateV1,
+  updateMetadataAccountV2,
 } from '@metaplex-foundation/mpl-token-metadata';
 import bs58 from 'bs58';
 
@@ -36,9 +36,9 @@ if (!metadata.isMutable) {
 
 console.log(`Freezing metadata for ${mintArg}...`);
 
-const { signature } = await updateV1(umi, {
-  mint,
-  authority: umi.identity,
+const { signature } = await updateMetadataAccountV2(umi, {
+  metadata: metadataPda,
+  updateAuthority: umi.identity,
   isMutable: false,
 }).sendAndConfirm(umi);
 
