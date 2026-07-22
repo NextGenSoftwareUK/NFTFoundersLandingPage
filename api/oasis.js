@@ -301,11 +301,11 @@ export default async function handler(req, res) {
     await ensureRedis();
     const { payload } = req.body;
     console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
-    const testMode = process.env.TEST_MODE === 'true';
-    testMode = false; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
+    //const testMode = process.env.TEST_MODE === 'true';
+    const testMode = false; //HARD CODE TO LIVE FOR NOW BECAUSE VERCEL SUCKS!
 
     const OASIS_CFG = {
-      // apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
+       //apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
       apiUrl:   'https://api.web4.oasisomniverse.one',
       username: testMode ? process.env.OASIS_AVATAR_USERNAME_TEST  : process.env.OASIS_AVATAR_USERNAME_LIVE,
       password: testMode ? process.env.OASIS_AVATAR_PASSWORD_TEST  : process.env.OASIS_AVATAR_PASSWORD_LIVE,
@@ -320,10 +320,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    if (!testMode) {
-      return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
-    }
-    console.log('[oasis] step 1: mint lock skipped (TEST_MODE is true)');
+    // if (!testMode) {
+    //   return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
+    // }
+    // console.log('[oasis] step 1: mint lock skipped (TEST_MODE is true)');
 
     // =========================
     // 2. FETCH ORDER
@@ -417,10 +417,11 @@ export default async function handler(req, res) {
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
-      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs")
+      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
       : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
-    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
+    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
+    //payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
 
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
@@ -644,6 +645,9 @@ export default async function handler(req, res) {
     // };
 
     await redis.set(`order:${order.orderId}`, JSON.stringify(order));
+
+    const tier = payload.MetaData?.tier;
+    if (tier) await redis.incr(`mint_count:${tier}`);
 
     return res.status(200).json({
       success: true,
