@@ -649,85 +649,6 @@ export default async function handler(req, res) {
     const tier = payload.MetaData?.tier;
     if (tier) await redis.incr(`mint_count:${tier}`);
 
-    // =========================
-    // 9b. REVOKE TOKEN AUTHORITIES (optional)
-    // =========================
-    // Triggered by payload.RevokeTokenAuthorities === true OR env AUTO_REVOKE_AUTHORITIES=true.
-    // Requires OASIS_SERVER_PRIVATE_KEY env var — base58-encoded 64-byte Solana keypair.
-    // Non-fatal: mint is already saved before this runs.
-    let revokeAuthoritiesTx = null;
-    if (payload.RevokeTokenAuthorities === true || process.env.AUTO_REVOKE_AUTHORITIES === 'true') {
-      try {
-        // Try the known field names OASIS may return for the mint address
-        const nftMintAddress = mintedNFT?.mintAddress || mintedNFT?.MintAddress || mintedNFT?.mint || null;
-        console.log('[oasis] step 9b: revokeTokenAuthorities — nftMintAddress:', nftMintAddress);
-        console.log('[oasis] step 9b: mintedNFT keys:', JSON.stringify(Object.keys(mintedNFT || {})));
-        console.log('[oasis] step 9b: mintedNFT (first 400):', JSON.stringify(mintedNFT)?.slice(0, 400));
-
-        if (nftMintAddress && process.env.OASIS_SERVER_PRIVATE_KEY) {
-          const web3 = require('@solana/web3.js');
-
-          // Decode base58 private key without external deps
-          function base58Decode(str) {
-            const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-            let n = 0n;
-            for (const c of str) {
-              const idx = ALPHA.indexOf(c);
-              if (idx < 0) throw new Error(`Invalid base58 character: ${c}`);
-              n = n * 58n + BigInt(idx);
-            }
-            let hex = n.toString(16);
-            if (hex.length % 2) hex = '0' + hex;
-            const bytes = Buffer.from(hex, 'hex');
-            const leadingZeros = str.match(/^1*/)[0].length;
-            return Buffer.concat([Buffer.alloc(leadingZeros), bytes]);
-          }
-
-          const keyBytes = base58Decode(process.env.OASIS_SERVER_PRIVATE_KEY);
-          const serverKeypair = web3.Keypair.fromSecretKey(keyBytes);
-          console.log('[oasis] step 9b: server signer:', serverKeypair.publicKey.toBase58());
-
-          const connection = new web3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
-          const TOKEN_PROGRAM_ID = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
-          const mintPubkey = new web3.PublicKey(nftMintAddress);
-
-          function setAuthorityIx(authorityType) {
-            // SPL Token SetAuthority instruction: [6=SetAuthority, authorityType, 0=None(revoke)]
-            return new web3.TransactionInstruction({
-              programId: TOKEN_PROGRAM_ID,
-              keys: [
-                { pubkey: mintPubkey, isSigner: false, isWritable: true },
-                { pubkey: serverKeypair.publicKey, isSigner: true, isWritable: false },
-              ],
-              data: Buffer.from([6, authorityType, 0])
-            });
-          }
-
-          const tx = new web3.Transaction()
-            .add(setAuthorityIx(0))  // 0 = MintTokens authority
-            .add(setAuthorityIx(1)); // 1 = FreezeAccount authority
-
-          const { blockhash } = await connection.getLatestBlockhash();
-          tx.recentBlockhash = blockhash;
-          tx.feePayer = serverKeypair.publicKey;
-          tx.sign(serverKeypair);
-
-          // Fire-and-forget — don't wait for confirmation to keep latency low
-          revokeAuthoritiesTx = await connection.sendRawTransaction(tx.serialize());
-          console.log('[oasis] step 9b: revoke tx sent:', revokeAuthoritiesTx);
-
-          order.revokeAuthoritiesTx = revokeAuthoritiesTx;
-          await redis.set(`order:${order.orderId}`, JSON.stringify(order));
-        } else if (!nftMintAddress) {
-          console.warn('[oasis] step 9b: skipping — mintAddress not found in OASIS response (tried mintAddress/MintAddress/mint)');
-        } else {
-          console.warn('[oasis] step 9b: skipping — OASIS_SERVER_PRIVATE_KEY env var not set');
-        }
-      } catch (revokeErr) {
-        console.warn('[oasis] step 9b: revoke failed (non-fatal):', revokeErr.message);
-      }
-    }
-
     return res.status(200).json({
       success: true,
       result,
@@ -736,7 +657,6 @@ export default async function handler(req, res) {
       activationUrl: avatarProvision.activationUrl,
       activationKey: avatarProvision.activationKey,
       avatarProvisionWarning: avatarProvision.warning,
-      revokeAuthoritiesTx,
       _debug: { testMode, apiUrl: OASIS_CFG.apiUrl, collectionPublicKey: payload.CollectionPublicKey }
     });
 
