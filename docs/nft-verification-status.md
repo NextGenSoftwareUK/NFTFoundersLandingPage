@@ -76,4 +76,4 @@ We are actively in contact with or pursuing contact with all of the following:
 
 Phantom · Solflare · Helius · RugCheck · Magic Eden · Tensor · Jupiter · CoinGecko · Bluprynt · Solana Foundation · Independent Verifiers
 
-We will update this page as the situation progresses. If you have any questions in the meantime, please reach out via the OASIS Discord or the contact details on the founders page.
+We will update this page as the situation progresses. If you have any questions in the meantime, please reach out to us on our **Telegram** — we check that most regularly — or via the contact details on the founders page.
