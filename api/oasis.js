@@ -525,6 +525,16 @@ export default async function handler(req, res) {
     console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
     // =========================
+    // 5c. EARLYBIRD CHECK
+    // =========================
+
+    const isEarlyBird = recipientEmail
+      ? !!(await redis.sIsMember('waitlist:emails', recipientEmail.toLowerCase().trim()))
+      : false;
+    console.log('[oasis] step 5c: earlyBird:', isEarlyBird, 'for email:', recipientEmail);
+    payload.MetaData = { ...(payload.MetaData || {}), earlyBird: String(isEarlyBird) };
+
+    // =========================
     // 6. MARK ORDER MINTING
     // =========================
 
@@ -648,6 +658,38 @@ export default async function handler(req, res) {
 
     const tier = payload.MetaData?.tier;
     if (tier) await redis.incr(`mint_count:${tier}`);
+
+    // =========================
+    // 10. NOTIFY OWNER
+    // =========================
+
+    try {
+      const tierLabels = { genesis: '⚡ Genesis', core: '🔵 Core', supporter: '🟢 Supporter' };
+      const tierLabel = tierLabels[tier] || tier || 'Unknown';
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM,
+          to: 'davidellams@hotmail.com',
+          subject: `🌌 New Founder Mint — ${tierLabel} (${recipientEmail || 'no email'})`,
+          html: `
+            <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:32px;max-width:520px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
+              <h2 style="color:#00e5ff;margin:0 0 16px">New Founder Minted!</h2>
+              <p style="margin:0 0 8px">Tier: <strong style="color:#00e5ff">${tierLabel}</strong></p>
+              <p style="margin:0 0 8px">Email: <strong>${recipientEmail || 'not provided'}</strong></p>
+              <p style="margin:0 0 8px">Early Bird: <strong>${isEarlyBird ? 'Yes ✅' : 'No'}</strong></p>
+              <p style="margin:0 0 8px">Wallet: <code style="color:#f0a500">${payload.SendToAddressAfterMinting || 'unknown'}</code></p>
+              <p style="margin:0 0 8px">Mint Tx: <code style="color:#888;font-size:12px">${order.mintTx || 'pending'}</code></p>
+              <p style="margin:0 0 8px">Test Mode: ${testMode ? 'YES' : 'no'}</p>
+            </div>
+          `
+        })
+      });
+      console.log('[oasis] step 10: owner notification sent');
+    } catch (notifyErr) {
+      console.warn('[oasis] step 10: owner notification failed (non-fatal):', notifyErr.message);
+    }
 
     return res.status(200).json({
       success: true,

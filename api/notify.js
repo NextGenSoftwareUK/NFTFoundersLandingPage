@@ -1,3 +1,16 @@
+import { createClient } from "redis";
+
+let redisClient = null;
+let redisReady = null;
+async function ensureRedis() {
+  if (!redisClient) {
+    redisClient = createClient({ url: process.env.REDIS_URL });
+    redisClient.on("error", (err) => console.error("Redis error:", err));
+  }
+  if (!redisReady) redisReady = redisClient.connect();
+  return redisReady;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -8,6 +21,11 @@ export default async function handler(req, res) {
   const tierLabel = tierLabels[tier] || tier || 'Unknown';
 
   try {
+    // Store email in Redis waitlist set so mint flow can check it
+    await ensureRedis();
+    await redisClient.sAdd('waitlist:emails', email.toLowerCase().trim());
+    console.log('[notify] added to waitlist:', email);
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
