@@ -1,495 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OASIS Founders NFT — Verification & Status</title>
-<style>
-:root {
-  --bg: #060C18;
-  --surface: #0B1527;
-  --surface-2: #101E36;
-  --border: rgba(255,255,255,0.07);
-  --text: #DDD9CF;
-  --muted: #6C7F9A;
-  --accent: #C99820;
-  --accent-light: #E5B840;
-  --accent-dim: rgba(201,152,32,0.12);
-  --green: #1EB870;
-  --green-dim: rgba(30,184,112,0.10);
-  --amber: #E87A2A;
-  --amber-dim: rgba(232,122,42,0.12);
-  --blue: #3A8FD4;
-  --blue-dim: rgba(58,143,212,0.10);
-  --r: 8px;
-}
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #EDEBE4;
-    --surface: #FFFFFF;
-    --surface-2: #F5F3EE;
-    --border: rgba(0,0,0,0.08);
-    --text: #1A2133;
-    --muted: #5A6B82;
-    --accent: #9A6E0E;
-    --accent-light: #B8850F;
-    --accent-dim: rgba(154,110,14,0.10);
-    --green: #1A9458;
-    --green-dim: rgba(26,148,88,0.09);
-    --amber: #C45618;
-    --amber-dim: rgba(196,86,24,0.09);
-    --blue: #2870B0;
-    --blue-dim: rgba(40,112,176,0.09);
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #060C18; --surface: #0B1527; --surface-2: #101E36;
-  --border: rgba(255,255,255,0.07); --text: #DDD9CF; --muted: #6C7F9A;
-  --accent: #C99820; --accent-light: #E5B840; --accent-dim: rgba(201,152,32,0.12);
-  --green: #1EB870; --green-dim: rgba(30,184,112,0.10);
-  --amber: #E87A2A; --amber-dim: rgba(232,122,42,0.12);
-  --blue: #3A8FD4; --blue-dim: rgba(58,143,212,0.10);
-}
-:root[data-theme="light"] {
-  --bg: #EDEBE4; --surface: #FFFFFF; --surface-2: #F5F3EE;
-  --border: rgba(0,0,0,0.08); --text: #1A2133; --muted: #5A6B82;
-  --accent: #9A6E0E; --accent-light: #B8850F; --accent-dim: rgba(154,110,14,0.10);
-  --green: #1A9458; --green-dim: rgba(26,148,88,0.09);
-  --amber: #C45618; --amber-dim: rgba(196,86,24,0.09);
-  --blue: #2870B0; --blue-dim: rgba(40,112,176,0.09);
-}
-
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.page {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 0 24px 96px;
-}
-
-/* ── Header ── */
-.site-header {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 28px 0 22px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 52px;
-}
-.logo {
-  font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  font-size: 20px;
-  font-weight: bold;
-  color: var(--accent);
-  letter-spacing: 0.06em;
-}
-.header-sep {
-  width: 1px; height: 18px;
-  background: var(--border);
-  margin: 0 16px;
-}
-.header-sub {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-/* ── Hero ── */
-.hero { padding-bottom: 48px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
-
-.verified-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--green-dim);
-  border: 1px solid var(--green);
-  color: var(--green);
-  border-radius: 100px;
-  padding: 5px 13px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  margin-bottom: 22px;
-}
-.verified-pill svg { width: 13px; height: 13px; flex-shrink: 0; }
-
-.hero h1 {
-  font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  font-size: clamp(26px, 4.5vw, 40px);
-  font-weight: bold;
-  line-height: 1.22;
-  text-wrap: balance;
-  margin-bottom: 16px;
-}
-.hero h1 span { color: var(--accent); }
-
-.hero-lead {
-  font-size: 17px;
-  color: var(--muted);
-  max-width: 580px;
-  line-height: 1.65;
-}
-
-/* ── Status cards ── */
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 10px;
-  margin-bottom: 56px;
-}
-.sc {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 15px 17px;
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-}
-.sc-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  margin-top: 5px;
-  flex-shrink: 0;
-}
-.sc.g .sc-dot { background: var(--green); box-shadow: 0 0 7px var(--green); }
-.sc.a .sc-dot { background: var(--amber); box-shadow: 0 0 7px var(--amber); }
-.sc-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 2px; }
-.sc-value { font-size: 13px; font-weight: 600; color: var(--text); }
-.sc.g .sc-value { color: var(--green); }
-.sc.a .sc-value { color: var(--amber); }
-
-/* ── Sections ── */
-.section { margin-bottom: 52px; }
-.eyebrow {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.section h2 {
-  font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  font-size: clamp(20px, 3vw, 25px);
-  font-weight: bold;
-  line-height: 1.28;
-  text-wrap: balance;
-  margin-bottom: 14px;
-}
-.section > p { color: var(--muted); margin-bottom: 12px; line-height: 1.65; }
-.section > p:last-of-type { margin-bottom: 0; }
-.section > p strong { color: var(--text); font-weight: 600; }
-
-/* ── Viewer list ── */
-.viewer-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
-.viewer-item {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 13px 16px;
-}
-.vi-icon {
-  width: 34px; height: 34px;
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px;
-  flex-shrink: 0;
-}
-.vi-icon.gold { background: var(--accent-dim); }
-.vi-icon.blue { background: var(--blue-dim); }
-.vi-name { font-weight: 600; font-size: 14px; color: var(--text); }
-.vi-desc { font-size: 12px; color: var(--muted); margin-top: 1px; }
-.vi-tag {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-  background: var(--accent-dim);
-  border-radius: 4px;
-  padding: 3px 7px;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-/* ── Callout ── */
-.callout {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--r);
-  padding: 16px 18px;
-  margin: 18px 0;
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.6;
-}
-.callout strong { color: var(--text); }
-
-/* ── Flag table ── */
-.flag-list { margin-top: 20px; display: flex; flex-direction: column; gap: 0; }
-.flag-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 15px 0;
-  border-bottom: 1px solid var(--border);
-}
-.flag-row:last-child { border-bottom: none; }
-.flag-body { flex: 1; }
-.flag-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-.flag-exp { font-size: 13px; color: var(--muted); line-height: 1.55; }
-.flag-badge {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 4px 8px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  white-space: nowrap;
-  margin-top: 1px;
-}
-.flag-badge.fp { color: var(--amber); background: var(--amber-dim); }
-.flag-badge.ok { color: var(--green); background: var(--green-dim); }
-
-/* ── Chip list ── */
-.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-.chip {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 6px 14px;
-  font-size: 13px;
-  color: var(--text);
-  font-weight: 500;
-}
-
-/* ── Divider ── */
-hr { border: none; border-top: 1px solid var(--border); margin: 52px 0; }
-
-/* ── Footer ── */
-.footer {
-  padding-top: 32px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.footer-logo {
-  font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  font-size: 15px;
-  font-weight: bold;
-  color: var(--accent);
-}
-.footer-note { font-size: 12px; color: var(--muted); }
-.footer a { color: var(--accent); text-decoration: none; }
-.footer a:hover { text-decoration: underline; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OASIS Founders NFT | Verification & Status</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#050816;
+      --panel:rgba(10,21,53,.86);
+      --line:rgba(0,229,255,.16);
+      --cyan:#00e5ff;
+      --heading:#f4fbff;
+      --text:#e8f6ff;
+      --dim:#a8bfd0;
+      --green:#00e57a;
+      --amber:#ffb340;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(0,229,255,.08), transparent 28%),
+        linear-gradient(180deg,#030611 0%,#050816 100%);
+      color:var(--text);
+      font-family:'Rajdhani',sans-serif;
+      line-height:1.7;
+    }
+    .wrap{max-width:1040px;margin:0 auto;padding:40px 20px 64px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+    .brand{font-family:'Orbitron',sans-serif;letter-spacing:.18em;color:var(--cyan);font-size:18px;font-weight:700}
+    .back{color:var(--cyan);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;transition:filter .25s ease,color .25s ease,transform .25s ease}
+    .back:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.8)) drop-shadow(0 0 40px rgba(0,229,255,.4));transform:translateY(-1px)}
+    .hero{padding:18px 0 28px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:28px}
+    h1{font-family:'Orbitron',sans-serif;font-size:clamp(24px,4vw,40px);line-height:1.15;margin:0 0 14px;color:var(--heading)}
+    .intro{max-width:820px;color:var(--dim);font-size:17px;margin:0}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .pill{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--cyan);border:1px solid rgba(0,229,255,.2);border-radius:999px;padding:8px 11px;background:rgba(0,229,255,.05)}
+    .pill.green{color:var(--green);border-color:rgba(0,229,255,.2);background:rgba(0,229,255,.05)}
+    .pill.amber{color:var(--amber);border-color:rgba(255,179,64,.25);background:rgba(255,179,64,.06)}
+    section{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
+    h2{font-family:'Orbitron',sans-serif;font-size:20px;letter-spacing:.08em;color:var(--heading);margin:0 0 12px}
+    h3{font-family:'Orbitron',sans-serif;font-size:15px;letter-spacing:.08em;color:var(--cyan);margin:22px 0 8px}
+    p{margin:0 0 12px}
+    p:last-child{margin-bottom:0}
+    ul,ol{margin:0 0 12px 18px;padding:0}
+    li{margin:0 0 6px}
+    strong{color:var(--heading)}
+    .table{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
+    .table th,.table td{border:1px solid rgba(255,255,255,.08);padding:10px 12px;text-align:left;vertical-align:top}
+    .table th{color:var(--heading);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;background:rgba(255,255,255,.03)}
+    .badge{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.06em;border-radius:4px;padding:3px 8px;white-space:nowrap}
+    .badge-fp{color:var(--amber);background:rgba(255,179,64,.1);border:1px solid rgba(255,179,64,.25)}
+    .badge-ok{color:var(--green);background:rgba(0,229,122,.08);border:1px solid rgba(0,229,122,.25)}
+    .callout{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.2);border-left:3px solid var(--cyan);border-radius:10px;padding:14px 16px;margin:14px 0;font-size:15px;color:var(--dim)}
+    .note{color:var(--dim);font-size:14px}
+    .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .chip{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--cyan);border:1px solid rgba(0,229,255,.18);border-radius:999px;padding:6px 12px;background:rgba(0,229,255,.04)}
+    .footer{margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:14px}
+    .footer a{color:var(--cyan);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;transition:filter .25s ease,color .25s ease,transform .25s ease}
+    .footer a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(0,229,255,.8)) drop-shadow(0 0 40px rgba(0,229,255,.4));transform:translateY(-1px)}
+    @media(max-width:700px){
+      .wrap{padding:24px 14px 40px}
+      section{padding:18px 16px}
+      .table{display:block;overflow-x:auto}
+    }
+  </style>
 </head>
 <body>
-<div class="page">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">OASIS</div>
+      <a class="back" href="index.html">Back to founder page</a>
+    </div>
 
-  <!-- Header -->
-  <header class="site-header">
-    <span class="logo">OASIS</span>
-    <div class="header-sep"></div>
-    <span class="header-sub">Founders NFT — Verification Status</span>
-  </header>
+    <div class="hero">
+      <h1>OASIS Founders NFT — Verification & Status</h1>
+      <p class="intro">Your OASIS Founders NFT is genuine, verified, and live on Solana mainnet. If it isn't showing up in Phantom or Solflare yet, or you've seen a RugCheck warning, this page explains exactly what is happening and why your NFT is completely legitimate.</p>
+      <div class="meta">
+        <span class="pill green">✓ On-Chain Verified</span>
+        <span class="pill green">✓ Metadata Frozen</span>
+        <span class="pill green">✓ OASIS Web4 Wallet Live</span>
+        <span class="pill amber">⏳ Phantom / Solflare Indexing</span>
+      </div>
+    </div>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="verified-pill">
-      <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.5" stroke="currentColor" stroke-width="1"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      On-Chain Verified
-    </div>
-    <h1>Your <span>OASIS Founders NFT</span> is genuine, verified, and live on Solana mainnet.</h1>
-    <p class="hero-lead">If it isn't showing up in Phantom or Solflare yet, or you've seen a RugCheck warning, this page explains exactly what is happening and why your NFT is completely legitimate.</p>
-  </section>
+    <section>
+      <h2>Where You Can View Your NFT Right Now</h2>
+      <p>Your NFT is live on Solana mainnet and visible in multiple places right now. The <strong>OASIS Portal</strong> is the primary home — this is where its Web4 utility lives and it is the definitive record of your ownership.</p>
+      <table class="table">
+        <thead>
+          <tr><th>Viewer</th><th>Status</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>OASIS Portal (oportal.oasisomniverse.one)</strong></td><td style="color:var(--green)">✓ Live</td><td>Primary home — full Web4 utility, verified ownership</td></tr>
+          <tr><td>Solscan.io</td><td style="color:var(--green)">✓ Live</td><td>Full on-chain detail, verified collection badge, metadata</td></tr>
+          <tr><td>Solana Explorer (explorer.solana.com)</td><td style="color:var(--green)">✓ Live</td><td>Official Solana Foundation explorer</td></tr>
+          <tr><td>Solana FM (solana.fm)</td><td style="color:var(--green)">✓ Live</td><td>Full transaction and metadata history</td></tr>
+          <tr><td>Phantom / Solflare</td><td style="color:var(--amber)">⏳ Indexing</td><td>Helius DAS re-index in progress — see below</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-  <!-- Status cards -->
-  <div class="status-grid">
-    <div class="sc g">
-      <div class="sc-dot"></div>
-      <div>
-        <div class="sc-label">Collection</div>
-        <div class="sc-value">Verified on-chain</div>
+    <section>
+      <h2>Why Phantom and Solflare May Not Be Showing Your NFT Yet</h2>
+      <p>Phantom and Solflare do not read NFT data directly from the Solana blockchain. Instead, they rely on a third-party indexing service called the <strong>Helius DAS API</strong>, which crawls the chain and builds a searchable database of NFTs. Your NFT is not missing from the blockchain — it is missing from that database.</p>
+      <p>This is a well-known, common issue affecting all new Solana NFT projects. When a collection is newly created or updated, Helius can take anywhere from a few hours to several days to re-index it. This is entirely outside our control.</p>
+      <div class="callout">
+        <strong>This is not a sign anything is wrong.</strong> The NFT exists on-chain, is verified, and is fully usable in the OASIS ecosystem right now. Phantom and Solflare simply have not caught up yet.
       </div>
-    </div>
-    <div class="sc g">
-      <div class="sc-dot"></div>
-      <div>
-        <div class="sc-label">Metadata</div>
-        <div class="sc-value">Permanently frozen</div>
+      <p>We are actively engaging with <strong>Helius, Phantom, and Solflare</strong> directly to request prioritised re-indexing of the OASIS Founders Collection. We are also exploring listing on Magic Eden and Tensor, as marketplace listings are known to trigger immediate indexer pickup.</p>
+    </section>
+
+    <section>
+      <h2>The RugCheck Score — Understanding the Flags</h2>
+      <p>RugCheck is a tool designed primarily to detect fraudulent <strong>meme coins and fungible tokens</strong>, where a live Mint Authority means the creator can print unlimited supply and dump on holders. It applies the same logic to NFTs, which creates several false positives.</p>
+      <p>Here is a breakdown of every flag that may appear on your OASIS Founders NFT:</p>
+      <table class="table">
+        <thead>
+          <tr><th>Flag</th><th>Verdict</th><th>Explanation</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Mint Authority enabled</strong></td>
+            <td><span class="badge badge-fp">False positive</span></td>
+            <td>When Metaplex creates the Master Edition (which enforces supply = 1), it transfers the Mint Authority to a Program Derived Address controlled entirely by the Metaplex program — not any wallet. Nobody can mint more of this token. This is the same state as every major Solana NFT collection including DeGods, Mad Lads and Okay Bears.</td>
+          </tr>
+          <tr>
+            <td><strong>Freeze Authority enabled</strong></td>
+            <td><span class="badge badge-fp">False positive</span></td>
+            <td>Same root cause. The Freeze Authority is held by the Metaplex Master Edition PDA, not by any human-controlled wallet. No one can freeze your token account. This applies to every standard Metaplex NFT on Solana.</td>
+          </tr>
+          <tr>
+            <td><strong>Mutable metadata</strong></td>
+            <td><span class="badge badge-ok">Fixed — immutable</span></td>
+            <td>We have set <code>isMutable = false</code> on all OASIS Founders NFTs. The metadata is permanently frozen on-chain and can never be altered by anyone, including us.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note" style="margin-top:14px">We have reported these false positives to RugCheck. The Mint and Freeze Authority flags are a structural characteristic of all Metaplex NFTs — they cannot be cleared without destroying the NFT standard itself. We are continuing to engage with RugCheck to ensure correct classification of NFTs vs fungible tokens.</p>
+    </section>
+
+    <section>
+      <h2>This Is a Real NFT With Real Utility</h2>
+      <p>Your OASIS Founders NFT is a legitimate, on-chain Metaplex Non-Fungible Token on Solana mainnet. It is part of a <strong>verified, sized collection</strong> — the collection NFT is itself verified on-chain, and each Founders NFT is cryptographically linked to it.</p>
+      <p>Beyond being an NFT, it carries genuine utility within the <strong>OASIS Web4 ecosystem</strong>. Your NFT is linked to your OASIS avatar, unlocking Founders-tier access, governance rights, and features within the OASIS Platform as they become available. This utility lives in the OASIS Portal and does not depend on Phantom or Solflare.</p>
+      <p>The combination of on-chain verification via Solscan and the Solana Explorer, permanent metadata immutability, collection verification, and active utility in the OASIS Portal is what defines the legitimacy of your NFT — not the display status in a third-party wallet app.</p>
+    </section>
+
+    <section>
+      <h2>We Are Continuing to Work on Every Front</h2>
+      <p>Resolving the Phantom and Solflare display issues and the RugCheck score requires engagement with multiple third parties. We are actively in contact with or pursuing contact with all of the following:</p>
+      <div class="chip-row">
+        <span class="chip">Phantom</span>
+        <span class="chip">Solflare</span>
+        <span class="chip">Helius</span>
+        <span class="chip">RugCheck</span>
+        <span class="chip">Magic Eden</span>
+        <span class="chip">Tensor</span>
+        <span class="chip">Jupiter</span>
+        <span class="chip">CoinGecko</span>
+        <span class="chip">Bluprynt</span>
+        <span class="chip">Solana Foundation</span>
+        <span class="chip">Independent Verifiers</span>
       </div>
-    </div>
-    <div class="sc g">
-      <div class="sc-dot"></div>
-      <div>
-        <div class="sc-label">OASIS Web4 Wallet</div>
-        <div class="sc-value">Fully visible &amp; usable</div>
-      </div>
-    </div>
-    <div class="sc a">
-      <div class="sc-dot"></div>
-      <div>
-        <div class="sc-label">Phantom / Solflare</div>
-        <div class="sc-value">Indexing in progress</div>
-      </div>
+      <p style="margin-top:16px">We will update this page as the situation progresses. If you have any questions please reach out to us on our <strong>Telegram</strong> — we check that most regularly.</p>
+    </section>
+
+    <div class="footer">
+      <a href="index.html">Return to the founder page</a>
+      <span>Last updated July 2026</span>
     </div>
   </div>
-
-  <!-- Section 1: Where to see -->
-  <section class="section">
-    <div class="eyebrow">Right now</div>
-    <h2>Where you can view your NFT today</h2>
-    <p>Your NFT is live on Solana mainnet and visible in multiple places right now. The <strong>OASIS Portal</strong> is the primary home — this is where its Web4 utility lives, and it is the definitive record of your ownership.</p>
-
-    <ul class="viewer-list">
-      <li class="viewer-item">
-        <div class="vi-icon gold">🌐</div>
-        <div>
-          <div class="vi-name">OASIS Portal (oportal.oasisomniverse.one)</div>
-          <div class="vi-desc">Your Web4 Wallet — primary home, full utility, verified ownership</div>
-        </div>
-        <div class="vi-tag">Primary</div>
-      </li>
-      <li class="viewer-item">
-        <div class="vi-icon blue">🔍</div>
-        <div>
-          <div class="vi-name">Solscan.io</div>
-          <div class="vi-desc">Full on-chain detail, verified collection badge, metadata</div>
-        </div>
-      </li>
-      <li class="viewer-item">
-        <div class="vi-icon blue">🔭</div>
-        <div>
-          <div class="vi-name">Solana Explorer (explorer.solana.com)</div>
-          <div class="vi-desc">Official Solana Foundation explorer — verified on-chain</div>
-        </div>
-      </li>
-      <li class="viewer-item">
-        <div class="vi-icon blue">📡</div>
-        <div>
-          <div class="vi-name">Solana FM (solana.fm)</div>
-          <div class="vi-desc">Alternative explorer showing full transaction and metadata history</div>
-        </div>
-      </li>
-    </ul>
-  </section>
-
-  <!-- Section 2: Phantom / Solflare -->
-  <section class="section">
-    <div class="eyebrow">Known issue</div>
-    <h2>Why Phantom and Solflare may not be showing your NFT yet</h2>
-    <p>Phantom and Solflare do not read NFT data directly from the Solana blockchain. Instead, they rely on a third-party indexing service called the <strong>Helius DAS API</strong>, which crawls the chain and builds a searchable database of NFTs. Your NFT is not missing from the blockchain — it is missing from that database.</p>
-    <p>This is a well-known, common issue affecting all new Solana NFT projects. When a collection is newly created or updated, Helius can take anywhere from a few hours to several days to re-index it. This is entirely outside our control.</p>
-
-    <div class="callout">
-      <strong>This is not a sign anything is wrong.</strong> The NFT exists on-chain, is verified, and is fully usable in the OASIS ecosystem right now. Phantom and Solflare simply have not caught up yet.
-    </div>
-
-    <p>We are actively engaging with <strong>Helius, Phantom, and Solflare</strong> directly to request prioritised re-indexing of the OASIS Founders Collection. We are also exploring listing on Magic Eden and Tensor, as marketplace listings are known to trigger immediate indexer pickup.</p>
-    <p>This is a frustrating limitation of the current Solana wallet ecosystem. We share that frustration and are doing everything we can to accelerate it.</p>
-  </section>
-
-  <!-- Section 3: RugCheck -->
-  <section class="section">
-    <div class="eyebrow">Score explanation</div>
-    <h2>The RugCheck score — understanding the flags</h2>
-    <p>RugCheck is a tool designed primarily to detect fraudulent <strong>meme coins and fungible tokens</strong>, where a live Mint Authority means the creator can print unlimited supply and dump on holders. It applies the same logic to NFTs, which creates several false positives.</p>
-    <p>Here is a breakdown of every flag that may appear on your OASIS Founders NFT:</p>
-
-    <div class="flag-list">
-      <div class="flag-row">
-        <div class="flag-body">
-          <div class="flag-name">Mint Authority enabled</div>
-          <div class="flag-exp">RugCheck flags this because on a meme coin it would allow minting unlimited tokens. For a Metaplex NFT it is a <em>false positive</em>. When Metaplex creates the Master Edition (which enforces supply = 1), it transfers the Mint Authority to a Program Derived Address (PDA) controlled entirely by the Metaplex program — not any wallet. Nobody can mint more of this token. This is the same state as every major Solana NFT collection including DeGods, Mad Lads, and Okay Bears.</div>
-        </div>
-        <div class="flag-badge fp">False positive</div>
-      </div>
-      <div class="flag-row">
-        <div class="flag-body">
-          <div class="flag-name">Freeze Authority enabled</div>
-          <div class="flag-exp">Same root cause as above. The Freeze Authority is also held by the Metaplex Master Edition PDA, not by any human-controlled wallet. No one can freeze your token account. This flag applies to every standard Metaplex NFT on Solana.</div>
-        </div>
-        <div class="flag-badge fp">False positive</div>
-      </div>
-      <div class="flag-row">
-        <div class="flag-body">
-          <div class="flag-name">Mutable metadata</div>
-          <div class="flag-exp">This flag would be legitimate if metadata could still be changed. We have set <code>isMutable = false</code> on all OASIS Founders NFTs — the metadata is permanently frozen on-chain and can never be altered by anyone, including us.</div>
-        </div>
-        <div class="flag-badge ok">Fixed — immutable</div>
-      </div>
-    </div>
-
-    <div class="callout" style="margin-top: 20px;">
-      We have reported these false positives to RugCheck. The Mint and Freeze Authority flags are a structural characteristic of <em>all</em> Metaplex NFTs — fixing them is not possible without destroying the NFT standard itself. We are continuing to engage with RugCheck to ensure their tool correctly classifies NFTs differently from fungible tokens.
-    </div>
-  </section>
-
-  <!-- Section 4: Real utility -->
-  <section class="section">
-    <div class="eyebrow">What matters</div>
-    <h2>This is a real NFT with real utility</h2>
-    <p>Your OASIS Founders NFT is a legitimate, on-chain Metaplex Non-Fungible Token on Solana mainnet. It is part of a <strong>verified, sized collection</strong> — the collection NFT is itself verified on-chain, and each Founders NFT is cryptographically linked to it.</p>
-    <p>Beyond being an NFT, it carries genuine utility within the <strong>OASIS Web4 ecosystem</strong>. Your NFT is linked to your OASIS avatar, unlocking Founders-tier access, governance rights, and features within the OASIS Platform as they become available. This utility lives in the OASIS Portal and does not depend on Phantom or Solflare.</p>
-    <p>The combination of on-chain verification via Solscan and the Solana Explorer, permanent metadata immutability, collection verification, and active utility in the OASIS Portal is what defines the legitimacy of your NFT — not the display status in a third-party wallet app.</p>
-  </section>
-
-  <!-- Section 5: Working on it -->
-  <section class="section">
-    <div class="eyebrow">Ongoing</div>
-    <h2>We are continuing to work on every front</h2>
-    <p>Resolving the Phantom and Solflare display issues, and the RugCheck score, requires engagement with multiple third parties. We are actively in contact with or pursuing contact with all of the following:</p>
-
-    <div class="chip-list">
-      <span class="chip">Phantom</span>
-      <span class="chip">Solflare</span>
-      <span class="chip">Helius</span>
-      <span class="chip">RugCheck</span>
-      <span class="chip">Magic Eden</span>
-      <span class="chip">Tensor</span>
-      <span class="chip">Jupiter</span>
-      <span class="chip">CoinGecko</span>
-      <span class="chip">Bluprynt</span>
-      <span class="chip">Solana Foundation</span>
-      <span class="chip">Independent Verifiers</span>
-    </div>
-
-    <p style="margin-top: 20px;">We will update this page as the situation progresses. If you have any questions please reach out to us on our <strong>Telegram</strong> — we check that most regularly.</p>
-  </section>
-
-  <hr>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <span class="footer-logo">OASIS</span>
-    <span class="footer-note">
-      <a href="https://oasisfoundernfts.icu">← Back to Founders Page</a>
-    </span>
-    <span class="footer-note">Last updated July 2026</span>
-  </footer>
-
-</div>
 </body>
 </html>
