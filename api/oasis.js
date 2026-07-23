@@ -289,9 +289,6 @@ function buildActivationUrl({ email, activationKey }) {
 
 export default async function handler(req, res) {
 
-  if (req.method === 'GET') {
-    return res.status(200).json({ mintOpen: process.env.MINT_OPEN === 'true' });
-  }
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -303,6 +300,7 @@ export default async function handler(req, res) {
 
     await ensureRedis();
     const { payload } = req.body;
+    console.log('[oasis] VERSION: 2026-07-22-v3 | testMode env:', process.env.TEST_MODE);
     console.log('Received mint request — orderId:', payload?.MetaData?.orderId, 'wallet:', payload?.SendToAddressAfterMinting);
     const testMode = process.env.TEST_MODE === 'true';
 
@@ -322,10 +320,10 @@ export default async function handler(req, res) {
     // 1. CREATE MINT LOCK
     // =========================
 
-    if (process.env.MINT_OPEN !== 'true') {
-      return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
-    }
-    console.log('[oasis] step 1: mint gate open');
+    // if (!testMode) {
+    //   return res.status(403).json({ error: "Minting is not yet open. Please check back soon." });
+    // }
+    console.log('[oasis] step 1: mint lock skipped');
 
     // =========================
     // 2. FETCH ORDER
@@ -419,10 +417,12 @@ export default async function handler(req, res) {
 
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
-      ? ("HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
+      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
       : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
 
-    payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF";
+    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
+    //payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
+
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
     console.log('[oasis] CollectionPublicKey:', payload.CollectionPublicKey);
@@ -521,26 +521,6 @@ export default async function handler(req, res) {
     // Force OffChainProvider to MongoDB so the holon is stored in the OASIS DB where OPORTAL can find it.
     payload.OffChainProvider = 'MongoDBOASIS';
     payload.Price = order.priceSOL || 0;
-
-    const EARLYBIRD_EMAILS = new Set([
-      'cjsendwksro@gmail.com',
-      'joshuamartinez@jettoptics.ai',
-      'dan.garza3@gmail.com',
-      'rzerounian@hansonbridgett.com',
-      'tri0906090655@gmail.com',
-      'yanouv@protonmail.com',
-      'paulafolayan95@gmail.com',
-      'olanipekunseun828@gmail.com',
-      'kido201196@gmail.com',
-      'mohanmv1711@gmail.com',
-      'yoshiroyce26@gmail.com',
-      'goldie@luminacasa.co',
-      'davidellams@hotmail.com',
-      'davidellams777@gmail.com',
-    ]);
-    if (payload.MetaData) {
-      payload.MetaData.earlybird = EARLYBIRD_EMAILS.has(recipientEmail.toLowerCase()) ? 'true' : 'false';
-    }
     console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'OffChainProvider:', payload.OffChainProvider, 'SendToAvatarAfterMintingId:', payload.SendToAvatarAfterMintingId, 'Price:', payload.Price);
     console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
@@ -668,33 +648,6 @@ export default async function handler(req, res) {
 
     const tier = payload.MetaData?.tier;
     if (tier) await redis.incr(`mint_count:${tier}`);
-
-    // Email notification to admin
-    try {
-      if (process.env.RESEND_API_KEY) {
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            from: 'OASIS Mint <noreply@oasisfoundernfts.icu>',
-            to: 'davidellams@hotmail.com',
-            subject: `New Mint: ${tier || 'unknown'} NFT`,
-            html: `<p><strong>New NFT minted!</strong></p>
-<p>Tier: ${tier || 'unknown'}</p>
-<p>Email: ${recipientEmail || 'unknown'}</p>
-<p>Wallet: ${payload?.SendToAddressAfterMinting || 'unknown'}</p>
-<p>Mint TX: ${order.mintTx || 'unknown'}</p>
-<p>Avatar created: ${avatarProvision.createdNewAvatar}</p>
-<p>Avatar ID: ${avatarProvision.avatarId || 'none'}</p>`
-          })
-        });
-      }
-    } catch (emailErr) {
-      console.warn('[oasis] email notification failed (non-fatal):', emailErr.message);
-    }
 
     return res.status(200).json({
       success: true,
