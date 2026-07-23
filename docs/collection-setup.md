@@ -117,7 +117,7 @@ Trigger a redeploy after saving.
 Due to some odd issues with Vercel env variables not working correctly (needs further investigation) to switch between dev/live:
 
 1. Change SOL connection string in OASISDNA in Railway to dev/main net.
-2. In oasis.js vercel api backend function for founders make sure testMode is true/false.
+2. In oasis.js vercel api backend function for founders make sure testMode is true/false. (should be automatic now with testMode env var in vercel)
 3. Make sure in oasis.js that CollectionPublicKey is set to the correct key for devnet/mainnet.
 4. When going LIVE make sure you set the correct price in create-sol-order.js and createPayment.js (for testing these are set to 0 or near 0!).
 5. Remember to switch the line in config.js to use stripe live/test keys. (should be automatic now with testMode env var in vercel)
