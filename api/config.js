@@ -26,10 +26,19 @@ export default async function handler(req, res) {
 
   // ── Admin POST ──
   if (req.method === 'POST') {
-    const { password } = req.body || {};
+    const { password, action } = req.body || {};
     const adminPw = process.env.ADMIN_PASSWORD;
     if (!adminPw) return res.status(500).json({ error: 'ADMIN_PASSWORD env var not set' });
     if (!safeEqual(password, adminPw)) return res.status(401).json({ error: 'Unauthorized' });
+
+    if (action === 'reset-mint-counts') {
+      await Promise.all([
+        redis.set('mint_count:genesis', '0'),
+        redis.set('mint_count:core', '0'),
+        redis.set('mint_count:supporter', '0'),
+      ]);
+      return res.json({ success: true, message: 'Mint counts reset to 0' });
+    }
 
     const [g, c, s] = await Promise.all([
       redis.get('mint_count:genesis'),
