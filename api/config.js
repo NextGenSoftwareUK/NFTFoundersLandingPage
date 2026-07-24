@@ -45,12 +45,9 @@ export default async function handler(req, res) {
     const waitlistEmails = await redis.sMembers('waitlist:emails');
 
     const orderKeys = [];
-    let cursor = 0;
-    do {
-      const result = await redis.scan(cursor, { MATCH: 'order:*', COUNT: 200 });
-      cursor = result.cursor;
-      orderKeys.push(...result.keys);
-    } while (cursor !== 0);
+    for await (const key of redis.scanIterator({ MATCH: 'order:*', COUNT: 200 })) {
+      orderKeys.push(key);
+    }
 
     let orders = [];
     if (orderKeys.length) {
