@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 
   // ── Admin POST ──
   if (req.method === 'POST') {
-    const { password, action } = req.body || {};
+    const { password, action, namespace } = req.body || {};
     const adminPw = process.env.ADMIN_PASSWORD;
     if (!adminPw) return res.status(500).json({ error: 'ADMIN_PASSWORD env var not set' });
     if (!safeEqual(password, adminPw)) return res.status(401).json({ error: 'Unauthorized' });
@@ -58,10 +58,16 @@ export default async function handler(req, res) {
       return res.json({ success: true, message: `Mint counts reset and ${orderKeys.length} orders deleted` });
     }
 
+    // Determine the prefix used for reading data (supports archived: namespace in test mode)
+    const VALID_NS = ['test', 'archived'];
+    const RP = (TEST_MODE && namespace && VALID_NS.includes(namespace))
+      ? `${namespace}:`
+      : P;
+
     const [g, c, s] = await Promise.all([
-      redis.get(`${P}mint_count:genesis`),
-      redis.get(`${P}mint_count:core`),
-      redis.get(`${P}mint_count:supporter`),
+      redis.get(`${RP}mint_count:genesis`),
+      redis.get(`${RP}mint_count:core`),
+      redis.get(`${RP}mint_count:supporter`),
     ]);
     const mintCounts = {
       genesis:   parseInt(g || '0'),
@@ -69,9 +75,9 @@ export default async function handler(req, res) {
       supporter: parseInt(s || '0'),
     };
 
-    const waitlistEmails = await redis.sMembers(`${P}waitlist:emails`);
+    const waitlistEmails = await redis.sMembers(`${RP}waitlist:emails`);
 
-    const orderKeys = await redis.keys(`${P}order:*`);
+    const orderKeys = await redis.keys(`${RP}order:*`);
 
     let orders = [];
     if (orderKeys.length) {
@@ -84,6 +90,7 @@ export default async function handler(req, res) {
 
     return res.json({
       testMode: TEST_MODE,
+      namespace: RP.replace(/:$/, '') || 'live',
       mintCounts,
       limits: MINT_LIMITS,
       waitlist: { count: waitlistEmails.length, emails: waitlistEmails.slice().sort() },

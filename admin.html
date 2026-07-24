@@ -82,6 +82,12 @@ body::before{
 .env-badge{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:5px 12px;border-radius:20px;border:1px solid;}
 .env-badge.live{background:rgba(0,200,80,.12);color:#00e676;border-color:rgba(0,200,80,.4);}
 .env-badge.test{background:rgba(255,160,0,.14);color:#ffb300;border-color:rgba(255,160,0,.5);}
+.ns-select{
+  display:none;background:#060d24;border:1px solid rgba(0,229,255,.25);color:var(--cyan);
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.12em;
+  padding:5px 10px;border-radius:7px;cursor:pointer;outline:none;
+}
+.ns-select:hover{border-color:rgba(0,229,255,.5);}
 
 .main{padding:28px;max-width:1400px;margin:0 auto;position:relative;z-index:1;}
 
@@ -249,6 +255,10 @@ tbody td{padding:11px 14px;vertical-align:middle;}
     </div>
     <div class="topbar-spacer"></div>
     <span id="env-badge" class="env-badge" style="display:none"></span>
+    <select id="ns-select" class="ns-select" onchange="onNamespaceChange(this.value)">
+      <option value="test">TEST</option>
+      <option value="archived">ARCHIVED</option>
+    </select>
     <span id="refresh-time" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);"></span>
     <button class="btn-sm btn-refresh" onclick="loadData()">&#8635; REFRESH</button>
     <button class="btn-sm btn-logout" onclick="logout()">LOGOUT</button>
@@ -261,6 +271,7 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 
 <script>
 let sessionPw = sessionStorage.getItem('oasis_admin_pw') || '';
+let currentNamespace = 'test';
 
 function fmt(ts) {
   if (!ts) return '—';
@@ -312,7 +323,7 @@ async function loadData() {
     const res = await fetch('/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: sessionPw })
+      body: JSON.stringify({ password: sessionPw, namespace: currentNamespace })
     });
 
     if (res.status === 401) {
@@ -333,6 +344,11 @@ async function loadData() {
       badge.textContent = data.testMode ? '⬡ TEST' : '● LIVE';
       badge.className = 'env-badge ' + (data.testMode ? 'test' : 'live');
       badge.style.display = '';
+    }
+    const nsSel = document.getElementById('ns-select');
+    if (nsSel) {
+      nsSel.style.display = data.testMode ? '' : 'none';
+      nsSel.value = currentNamespace;
     }
     return true;
 
@@ -527,6 +543,11 @@ function toggleDetail(id) {
   const chevron = document.getElementById('chevron-' + id);
   const open = row.classList.toggle('open');
   if (chevron) chevron.classList.toggle('open', open);
+}
+
+function onNamespaceChange(ns) {
+  currentNamespace = ns;
+  loadData();
 }
 
 function copyEmails(emails) {
