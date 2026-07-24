@@ -360,8 +360,8 @@ function render({ mintCounts, limits, waitlist, orders }) {
                 <td><span class="badge badge-${o.type === 'sol' ? 'sol' : 'card'}">${(o.type || '?').toUpperCase()}</span></td>
                 <td><span class="badge badge-${o.status}">${(o.status || '?').toUpperCase()}</span></td>
                 <td class="mono">$${o.priceUSD != null ? Number(o.priceUSD).toLocaleString() : '—'}${o.priceSOL ? `<br><span style="color:var(--dim);font-size:10px">${o.priceSOL} SOL</span>` : ''}</td>
-                <td class="addr">${trunc(o.wallet, 20) || '—'}</td>
-                <td class="addr">${trunc(o.signature || o.paymentIntentId, 18) || '—'}</td>
+                <td class="addr">${o.wallet || '—'}</td>
+                <td class="addr">${o.signature || o.paymentIntentId || '—'}</td>
               </tr>
             `).join('')
           }
