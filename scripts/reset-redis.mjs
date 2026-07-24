@@ -1,22 +1,27 @@
 /**
  * Full Redis reset script for the NFT Founders Landing Page.
  *
+ * Live keys are unprefixed.  Test keys use a "test:" prefix — same Redis
+ * instance, isolated by prefix when TEST_MODE=true.
+ *
  * Usage:
  *   node scripts/reset-redis.mjs [options]
  *
  * Options:
- *   --test         Target REDIS_URL_TEST instead of REDIS_URL
+ *   --test         Target test: prefixed keys instead of live keys
  *   --dry-run      Print what would be deleted without making changes
- *   --counts       Reset only mint counts (mint_count:*)
- *   --orders       Delete only orders (order:*)
- *   --locks        Delete only price locks (lock:*)
+ *   --counts       Reset only mint counts
+ *   --orders       Delete only orders
+ *   --locks        Delete only price locks
  *   --waitlist     Clear only waitlist:emails set
  *   --all          Reset everything (default when no scope flag given)
+ *   --yes          Skip confirmation prompt (for non-interactive use)
  *
  * Examples:
+ *   node scripts/reset-redis.mjs --dry-run
  *   node scripts/reset-redis.mjs --test --dry-run
- *   node scripts/reset-redis.mjs --test --counts --orders
- *   node scripts/reset-redis.mjs --all
+ *   node scripts/reset-redis.mjs --test --all --yes
+ *   node scripts/reset-redis.mjs --counts --yes
  */
 
 import { createClient } from 'redis';
@@ -40,12 +45,21 @@ const doOrders   = doAll || flag('--orders');
 const doLocks    = doAll || flag('--locks');
 const doWaitlist = doAll || flag('--waitlist');
 
+// ── Key prefix ────────────────────────────────────────────────────────────────
+const P = useTest ? 'test:' : '';
+
+const MINT_KEYS = [
+  `${P}mint_count:genesis`,
+  `${P}mint_count:core`,
+  `${P}mint_count:supporter`,
+];
+const MINT_LIMITS = { genesis: 20, core: 50, supporter: 100 };
+
 // ── Connection ────────────────────────────────────────────────────────────────
-const redisUrl = useTest ? process.env.REDIS_URL_TEST : process.env.REDIS_URL;
+const redisUrl = process.env.REDIS_URL;
 
 if (!redisUrl) {
-  const varName = useTest ? 'REDIS_URL_TEST' : 'REDIS_URL';
-  console.error(`\n  Error: ${varName} is not set.\n`);
+  console.error('\n  Error: REDIS_URL is not set.\n');
   process.exit(1);
 }
 
@@ -77,50 +91,39 @@ async function fetchOrders(keys) {
 }
 
 function orderBreakdown(orders) {
-  const tiers   = ['genesis', 'core', 'supporter'];
-  const statuses = ['paid', 'pending', 'used'];
-
-  // count by tier × status
   const byTier = {};
-  for (const tier of tiers) {
-    byTier[tier] = { total: 0, paid: 0, pending: 0, used: 0, other: 0 };
-  }
-  const unknown = { total: 0, paid: 0, pending: 0, used: 0, other: 0 };
-
   for (const o of orders) {
-    const bucket = byTier[o.tier] ?? unknown;
-    bucket.total++;
-    if (statuses.includes(o.status)) bucket[o.status]++;
-    else bucket.other++;
+    const tier = o.tier ?? 'unknown';
+    if (!byTier[tier]) byTier[tier] = { total: 0, paid: 0, pending: 0, used: 0, other: 0 };
+    byTier[tier].total++;
+    const s = o.status;
+    if (s === 'paid' || s === 'pending' || s === 'used') byTier[tier][s]++;
+    else byTier[tier].other++;
   }
-
-  return { byTier, unknown };
+  return byTier;
 }
 
 async function deleteKeys(keys, label) {
-  if (!keys.length) { console.log(`  ${label}: none found`); return 0; }
+  if (!keys.length) { console.log(`  ${label}: none found`); return; }
   if (dryRun) {
     console.log(`  ${label}: would delete ${fmt(keys.length, 'key')}`);
-    return 0;
+    return;
   }
   await client.del(keys);
   console.log(`  ${label}: deleted ${fmt(keys.length, 'key')}`);
-  return keys.length;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 await client.connect();
 
-const db = useTest ? 'TEST (REDIS_URL_TEST)' : 'LIVE (REDIS_URL)';
+const scope = useTest ? `TEST (prefix: "test:")` : 'LIVE (no prefix)';
 console.log(`\n── NFT Founders Redis Reset ──────────────────────────────────────`);
-console.log(`   Database : ${db}`);
+console.log(`   Scope    : ${scope}`);
 console.log(`   Mode     : ${dryRun ? 'DRY RUN — no changes will be made' : 'LIVE — changes will be applied'}`);
-console.log(`   Scope    : ${[doCounts && 'counts', doOrders && 'orders', doLocks && 'locks', doWaitlist && 'waitlist'].filter(Boolean).join(', ')}`);
+console.log(`   Targets  : ${[doCounts && 'counts', doOrders && 'orders', doLocks && 'locks', doWaitlist && 'waitlist'].filter(Boolean).join(', ')}`);
 console.log(`──────────────────────────────────────────────────────────────────\n`);
 
 // ── Current state ─────────────────────────────────────────────────────────────
-const MINT_KEYS = ['mint_count:genesis', 'mint_count:core', 'mint_count:supporter'];
-const MINT_LIMITS = { genesis: 20, core: 50, supporter: 100 };
 const [g, c, s] = await client.mGet(MINT_KEYS);
 const mintCounts = {
   genesis:   parseInt(g ?? '0', 10),
@@ -135,18 +138,14 @@ for (const [tier, count] of Object.entries(mintCounts)) {
   console.log(`  ${tier.padEnd(10)} ${String(count).padStart(3)} / ${limit}  (${pct}%)`);
 }
 
-const orderKeys = await scanKeys('order:*');
-const lockKeys  = await scanKeys('lock:*');
+const orderKeys = await scanKeys(`${P}order:*`);
+const lockKeys  = await scanKeys(`${P}lock:*`);
 const orders    = await fetchOrders(orderKeys);
 
 console.log(`\nOrders: ${fmt(orders.length, 'total')}`);
 if (orders.length) {
-  const { byTier, unknown } = orderBreakdown(orders);
-  const tierEntries = [
-    ...Object.entries(byTier).filter(([, b]) => b.total > 0),
-    ...(unknown.total > 0 ? [['unknown', unknown]] : []),
-  ];
-  for (const [tier, b] of tierEntries) {
+  const byTier = orderBreakdown(orders);
+  for (const [tier, b] of Object.entries(byTier)) {
     const parts = [];
     if (b.paid)    parts.push(`${b.paid} paid`);
     if (b.pending) parts.push(`${b.pending} pending`);
@@ -158,7 +157,8 @@ if (orders.length) {
 
 console.log(`\nLocks:     ${fmt(lockKeys.length, 'price lock')}`);
 
-const waitlistCount = await client.sCard('waitlist:emails');
+const waitlistKey   = `${P}waitlist:emails`;
+const waitlistCount = await client.sCard(waitlistKey);
 console.log(`Waitlist:  ${fmt(waitlistCount, 'email')}`);
 
 // ── Confirmation ──────────────────────────────────────────────────────────────
@@ -191,16 +191,16 @@ if (doCounts) {
     console.log('  mint counts: would reset genesis, core, supporter → 0');
   } else {
     await client.mSet([
-      'mint_count:genesis',   '0',
-      'mint_count:core',      '0',
-      'mint_count:supporter', '0',
+      MINT_KEYS[0], '0',
+      MINT_KEYS[1], '0',
+      MINT_KEYS[2], '0',
     ]);
     console.log('  mint counts: reset genesis, core, supporter → 0');
   }
 }
 
-if (doOrders) await deleteKeys(orderKeys, 'orders');
-if (doLocks)  await deleteKeys(lockKeys,  'price locks');
+if (doOrders)   await deleteKeys(orderKeys, 'orders');
+if (doLocks)    await deleteKeys(lockKeys,  'price locks');
 
 if (doWaitlist) {
   if (waitlistCount === 0) {
@@ -208,7 +208,7 @@ if (doWaitlist) {
   } else if (dryRun) {
     console.log(`  waitlist:emails: would clear ${fmt(waitlistCount, 'email')}`);
   } else {
-    await client.del('waitlist:emails');
+    await client.del(waitlistKey);
     console.log(`  waitlist:emails: cleared ${fmt(waitlistCount, 'email')}`);
   }
 }
