@@ -32,9 +32,9 @@ for (const f of ['.env.local', '.env']) {
 const args = process.argv.slice(2);
 const flag = (f) => args.includes(f);
 
-const useTest  = flag('--test');
-const dryRun   = flag('--dry-run');
-const doAll    = flag('--all') || !['--counts','--orders','--locks','--waitlist'].some(f => args.includes(f));
+const useTest    = flag('--test');
+const dryRun     = flag('--dry-run');
+const doAll      = flag('--all') || !['--counts','--orders','--locks','--waitlist'].some(f => args.includes(f));
 const doCounts   = doAll || flag('--counts');
 const doOrders   = doAll || flag('--orders');
 const doLocks    = doAll || flag('--locks');
@@ -55,19 +55,52 @@ client.on('error', err => console.error('Redis error:', err));
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmt = (n, label) => `${n} ${label}${n !== 1 ? 's' : ''}`;
 
+// redis v5 scanIterator yields batches (string[]), not individual strings
 async function scanKeys(pattern) {
   const keys = [];
-  for await (const key of client.scanIterator({ MATCH: pattern, COUNT: 200 })) {
-    keys.push(key);
+  for await (const batch of client.scanIterator({ MATCH: pattern, COUNT: 200 })) {
+    if (Array.isArray(batch)) keys.push(...batch);
+    else keys.push(batch);
   }
   return keys;
+}
+
+async function fetchOrders(keys) {
+  if (!keys.length) return [];
+  const raws = await client.mGet(keys);
+  const orders = [];
+  for (const raw of raws) {
+    if (!raw) continue;
+    try { orders.push(JSON.parse(raw)); } catch {}
+  }
+  return orders;
+}
+
+function orderBreakdown(orders) {
+  const tiers   = ['genesis', 'core', 'supporter'];
+  const statuses = ['paid', 'pending', 'used'];
+
+  // count by tier × status
+  const byTier = {};
+  for (const tier of tiers) {
+    byTier[tier] = { total: 0, paid: 0, pending: 0, used: 0, other: 0 };
+  }
+  const unknown = { total: 0, paid: 0, pending: 0, used: 0, other: 0 };
+
+  for (const o of orders) {
+    const bucket = byTier[o.tier] ?? unknown;
+    bucket.total++;
+    if (statuses.includes(o.status)) bucket[o.status]++;
+    else bucket.other++;
+  }
+
+  return { byTier, unknown };
 }
 
 async function deleteKeys(keys, label) {
   if (!keys.length) { console.log(`  ${label}: none found`); return 0; }
   if (dryRun) {
-    console.log(`  ${label}: would delete ${fmt(keys.length, 'key')}:`);
-    for (const k of keys) console.log(`    - ${k}`);
+    console.log(`  ${label}: would delete ${fmt(keys.length, 'key')}`);
     return 0;
   }
   await client.del(keys);
@@ -85,28 +118,54 @@ console.log(`   Mode     : ${dryRun ? 'DRY RUN — no changes will be made' : 'L
 console.log(`   Scope    : ${[doCounts && 'counts', doOrders && 'orders', doLocks && 'locks', doWaitlist && 'waitlist'].filter(Boolean).join(', ')}`);
 console.log(`──────────────────────────────────────────────────────────────────\n`);
 
-// ── Show current state ────────────────────────────────────────────────────────
+// ── Current state ─────────────────────────────────────────────────────────────
 const MINT_KEYS = ['mint_count:genesis', 'mint_count:core', 'mint_count:supporter'];
+const MINT_LIMITS = { genesis: 20, core: 50, supporter: 100 };
 const [g, c, s] = await client.mGet(MINT_KEYS);
-console.log('Current state:');
-console.log(`  mint_count:genesis   = ${g ?? 0}`);
-console.log(`  mint_count:core      = ${c ?? 0}`);
-console.log(`  mint_count:supporter = ${s ?? 0}`);
+const mintCounts = {
+  genesis:   parseInt(g ?? '0', 10),
+  core:      parseInt(c ?? '0', 10),
+  supporter: parseInt(s ?? '0', 10),
+};
+
+console.log('Mint counts:');
+for (const [tier, count] of Object.entries(mintCounts)) {
+  const limit = MINT_LIMITS[tier];
+  const pct   = limit ? Math.round((count / limit) * 100) : 0;
+  console.log(`  ${tier.padEnd(10)} ${String(count).padStart(3)} / ${limit}  (${pct}%)`);
+}
 
 const orderKeys = await scanKeys('order:*');
-console.log(`  order:*              = ${fmt(orderKeys.length, 'key')}`);
+const lockKeys  = await scanKeys('lock:*');
+const orders    = await fetchOrders(orderKeys);
 
-const lockKeys = await scanKeys('lock:*');
-console.log(`  lock:*               = ${fmt(lockKeys.length, 'key')}`);
+console.log(`\nOrders: ${fmt(orders.length, 'total')}`);
+if (orders.length) {
+  const { byTier, unknown } = orderBreakdown(orders);
+  const tierEntries = [
+    ...Object.entries(byTier).filter(([, b]) => b.total > 0),
+    ...(unknown.total > 0 ? [['unknown', unknown]] : []),
+  ];
+  for (const [tier, b] of tierEntries) {
+    const parts = [];
+    if (b.paid)    parts.push(`${b.paid} paid`);
+    if (b.pending) parts.push(`${b.pending} pending`);
+    if (b.used)    parts.push(`${b.used} used`);
+    if (b.other)   parts.push(`${b.other} other`);
+    console.log(`  ${tier.padEnd(10)} ${String(b.total).padStart(3)} total  (${parts.join(', ') || 'no status'})`);
+  }
+}
+
+console.log(`\nLocks:     ${fmt(lockKeys.length, 'price lock')}`);
 
 const waitlistCount = await client.sCard('waitlist:emails');
-console.log(`  waitlist:emails      = ${fmt(waitlistCount, 'member')}\n`);
+console.log(`Waitlist:  ${fmt(waitlistCount, 'email')}`);
 
+// ── Confirmation ──────────────────────────────────────────────────────────────
 if (!dryRun) {
-  // Safety prompt — require explicit --yes in non-interactive environments
   const hasYes = flag('--yes');
   if (!hasYes && process.stdin.isTTY) {
-    process.stdout.write('  Proceed? [y/N] ');
+    process.stdout.write('\n  Proceed? [y/N] ');
     const answer = await new Promise(resolve => {
       process.stdin.setEncoding('utf8');
       process.stdin.once('data', chunk => resolve(chunk.trim().toLowerCase()));
@@ -118,18 +177,18 @@ if (!dryRun) {
     }
     console.log();
   } else if (!hasYes) {
-    console.log('  Pass --yes to confirm in non-interactive mode, or add --dry-run to preview.\n');
+    console.log('\n  Pass --yes to confirm in non-interactive mode, or add --dry-run to preview.\n');
     await client.disconnect();
     process.exit(1);
   }
 }
 
 // ── Apply resets ──────────────────────────────────────────────────────────────
-console.log('Changes:');
+console.log('\nChanges:');
 
 if (doCounts) {
   if (dryRun) {
-    console.log('  mint counts: would reset genesis, core, supporter to 0');
+    console.log('  mint counts: would reset genesis, core, supporter → 0');
   } else {
     await client.mSet([
       'mint_count:genesis',   '0',
@@ -140,16 +199,14 @@ if (doCounts) {
   }
 }
 
-if (doOrders)   await deleteKeys(orderKeys, 'orders');
-if (doLocks)    await deleteKeys(lockKeys,  'price locks');
+if (doOrders) await deleteKeys(orderKeys, 'orders');
+if (doLocks)  await deleteKeys(lockKeys,  'price locks');
 
 if (doWaitlist) {
   if (waitlistCount === 0) {
     console.log('  waitlist:emails: empty, nothing to clear');
   } else if (dryRun) {
-    const emails = await client.sMembers('waitlist:emails');
-    console.log(`  waitlist:emails: would remove ${fmt(waitlistCount, 'email')}:`);
-    for (const e of emails.sort()) console.log(`    - ${e}`);
+    console.log(`  waitlist:emails: would clear ${fmt(waitlistCount, 'email')}`);
   } else {
     await client.del('waitlist:emails');
     console.log(`  waitlist:emails: cleared ${fmt(waitlistCount, 'email')}`);
