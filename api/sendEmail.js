@@ -4,7 +4,7 @@ let redisClient = null;
 let redisReady = null;
 async function ensureRedis() {
   if (!redisClient) {
-    redisClient = createClient({ url: process.env.REDIS_URL });
+    redisClient = createClient({ url: process.env.REDIS_URL_TEST || process.env.REDIS_URL });
     redisClient.on("error", (err) => console.error("Redis error:", err));
   }
   if (!redisReady) redisReady = redisClient.connect();

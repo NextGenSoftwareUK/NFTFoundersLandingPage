@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 import crypto from 'crypto';
 
-const redis = createClient({ url: process.env.REDIS_URL });
+const redis = createClient({ url: process.env.REDIS_URL_TEST || process.env.REDIS_URL });
 redis.on('error', () => {});
 let redisReady = null;
 async function ensureRedis() {
