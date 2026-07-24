@@ -2,8 +2,10 @@
 const { createClient } = require("redis");
 const Stripe = require("stripe");
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
 const redis = createClient({
-  url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL,
+  url: process.env.REDIS_URL,
   socket: { reconnectStrategy: false },
 });
 
@@ -38,7 +40,7 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: "Not paid" });
     }
 
-    const orderRaw = await redis.get(`order:${orderId}`);
+    const orderRaw = await redis.get(`${P}order:${orderId}`);
 
     if (!orderRaw) {
       return res.status(404).json({ error: "Order not found" });
@@ -55,7 +57,7 @@ export default async function handler(req, res) {
     order.paidAt = Date.now();
     order.paymentIntentId = paymentIntentId;
 
-    await redis.set(`order:${orderId}`, JSON.stringify(order));
+    await redis.set(`${P}order:${orderId}`, JSON.stringify(order));
 
     return res.json({ success: true });
   }

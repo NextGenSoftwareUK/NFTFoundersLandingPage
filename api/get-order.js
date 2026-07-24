@@ -1,8 +1,10 @@
 //import { kv } from "@vercel/kv";
 const { createClient } = require("redis");
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
 const redis = createClient({
-  url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL,
+  url: process.env.REDIS_URL,
   socket: { reconnectStrategy: false },
 });
 
@@ -25,7 +27,7 @@ export default async function handler(req, res) {
 
   //const order = await kv.get(`order:${orderId}`);
   await ensureRedis();
-  const order = await redis.get(`order:${orderId}`);
+  const order = await redis.get(`${P}order:${orderId}`);
 
   if (!order) return res.status(404).json({ error: "Not found" });
 

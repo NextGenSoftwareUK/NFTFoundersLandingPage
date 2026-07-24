@@ -10,8 +10,10 @@ const { rateLimit } = require("../lib/rateLimit");
 const { getSolPriceUSD } = require("../lib/solPrice");
 const { createClient } = require("redis");
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
 const redis = createClient({
-  url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL,
+  url: process.env.REDIS_URL,
   socket: { reconnectStrategy: false },
 });
 
@@ -95,7 +97,7 @@ module.exports = async function handler(req, res) {
     };
 
     ensureRedis();
-    await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
+    await redis.set(`${P}order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
 
     return res.status(200).json({
       orderId,

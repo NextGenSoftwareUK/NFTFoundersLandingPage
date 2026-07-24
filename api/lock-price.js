@@ -6,8 +6,10 @@ const crypto = require("crypto");
 const { verifySolPayment } = require("../lib/verifySolTx");
 const { createClient } = require("redis");
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
 const redis = createClient({
-  url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL,
+  url: process.env.REDIS_URL,
   socket: { reconnectStrategy: false },
 });
 
@@ -56,7 +58,7 @@ export default async function handler(req, res) {
   };
 
   await ensureRedis();
-  await redis.set(`lock:${lockId}`, JSON.stringify(lock), { EX: 300 });
+  await redis.set(`${P}lock:${lockId}`, JSON.stringify(lock), { EX: 300 });
 
   return res.status(200).json(lock);
 }
