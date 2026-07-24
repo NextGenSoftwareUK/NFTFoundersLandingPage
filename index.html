@@ -4142,28 +4142,25 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
   resize();init();draw();window.addEventListener('resize',()=>{resize();init()});
 })();
 
-// ── TEST MODE INIT ──
-(function initTestMode() {
-  // Always show env badge
+// ── TEST MODE INIT — called after loadConfig() sets TEST_MODE ──
+function initTestMode() {
   const badge = document.getElementById('envBadge');
   if (badge) {
-    badge.textContent = TEST_MODE ? '⬡ TEST' : '● LIVE';
-    badge.className   = TEST_MODE ? 'test' : 'live';
+    badge.textContent   = TEST_MODE ? '⬡ TEST' : '● LIVE';
+    badge.className     = TEST_MODE ? 'test' : 'live';
     badge.style.opacity = '1';
   }
 
+  const sb = document.getElementById('stripeTestBanner');
   if (!TEST_MODE) {
-    const sb = document.getElementById('stripeTestBanner');
     if (sb) sb.style.display = 'none';
     return;
   }
-  // Show global banner + body class
   document.getElementById('testModeBanner').style.display = 'block';
   document.body.classList.add('test-mode-on');
   document.title = '[TESTNET] ' + document.title;
-  const sb = document.getElementById('stripeTestBanner');
   if (sb) sb.style.display = 'block';
-})();
+}
 
 // Detect Edge + tracking prevention and warn user
 async function checkMintCounts() {
@@ -4236,6 +4233,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   //showSuccess('evm', '0xabc123def456abc123def456abc123def456abc123', 'https://etherscan.io');
 
   await loadConfig();
+  initTestMode();
   updateOasisWalletUI();
   preWarmPhantom();
   checkEdgeTracking();
