@@ -1,10 +1,13 @@
 import { createClient } from "redis";
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
+
 let redisClient = null;
 let redisReady = null;
 async function ensureRedis() {
   if (!redisClient) {
-    redisClient = createClient({ url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL });
+    redisClient = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
     redisClient.on("error", (err) => console.error("Redis error:", err));
   }
   if (!redisReady) redisReady = redisClient.connect();
@@ -48,7 +51,7 @@ async function handleActivate(req, res) {
 
   await ensureRedis();
 
-  const raw = await redisClient.get(`avatar-activation:${key}`);
+  const raw = await redisClient.get(`${P}avatar-activation:${key}`);
   console.log('[activate] redis record found:', !!raw);
   if (!raw) {
     return res.status(404).json({ error: "Activation link has expired or already been used. Please contact support." });
@@ -152,7 +155,7 @@ async function handleActivate(req, res) {
     : null;
   console.log('[activate] portalAvatar username:', portalAvatar?.username, 'jwtToken set:', !!portalAvatar?.jwtToken);
 
-  await redisClient.del(`avatar-activation:${key}`);
+  await redisClient.del(`${P}avatar-activation:${key}`);
   console.log('[activate] success — redis key deleted');
 
   return res.status(200).json({ success: true, avatar: portalAvatar });
@@ -199,7 +202,7 @@ async function handleResendActivation(req, res) {
   // Store fresh activation record
   const activationKey = randomUUID();
   const record = { email, username, avatarId, tempPassword, verificationToken: avatar.verificationToken || "", testMode: false, createdAt: Date.now() };
-  await redisClient.set(`avatar-activation:${activationKey}`, JSON.stringify(record), { EX: ACTIVATION_TTL_SECONDS });
+  await redisClient.set(`${P}avatar-activation:${activationKey}`, JSON.stringify(record), { EX: ACTIVATION_TTL_SECONDS });
 
   // Build activation URL and resend email
   const activationUrl = `${ACTIVATION_PORTAL_URL}?email=${encodeURIComponent(email)}&key=${activationKey}`;

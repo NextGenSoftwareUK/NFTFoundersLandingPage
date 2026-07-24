@@ -2,12 +2,13 @@
 
 import Stripe from 'stripe';
 //const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST);
-const { createClient } = require("redis");
-const crypto = require("crypto");
+import { createClient } from 'redis';
+import crypto from 'crypto';
 
-const redis = createClient({
-  url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL,
-});
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
+
+const redis = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
 
 redis.on("error", (err) => {
   console.error("Redis error:", err);
@@ -124,7 +125,7 @@ export default async function handler(req, res) {
       createdAt: Date.now()
     };
 
-    await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
+    await redis.set(`${P}order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
 
 
 

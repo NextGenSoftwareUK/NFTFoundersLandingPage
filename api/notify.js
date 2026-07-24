@@ -1,10 +1,13 @@
 import { createClient } from "redis";
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
+
 let redisClient = null;
 let redisReady = null;
 async function ensureRedis() {
   if (!redisClient) {
-    redisClient = createClient({ url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL });
+    redisClient = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
     redisClient.on("error", (err) => console.error("Redis error:", err));
   }
   if (!redisReady) redisReady = redisClient.connect();
@@ -23,7 +26,7 @@ export default async function handler(req, res) {
   try {
     // Store email in Redis waitlist set so mint flow can check it
     await ensureRedis();
-    await redisClient.sAdd('waitlist:emails', email.toLowerCase().trim());
+    await redisClient.sAdd(`${P}waitlist:emails`, email.toLowerCase().trim());
     console.log('[notify] added to waitlist:', email);
 
     const response = await fetch('https://api.resend.com/emails', {
