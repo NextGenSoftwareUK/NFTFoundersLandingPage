@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OASIS Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cyan:#00e5ff;
+  --bg:#030714;
+  --bg-card:#0a1535;
+  --bg-card2:#071028;
+  --text:#d0e4ff;
+  --dim:#6a80a8;
+  --genesis:#f0a500;
+  --core:#a0c4ff;
+  --supporter:#00cc44;
+  --border:rgba(0,229,255,.12);
+  --radius:12px;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px}
+
+/* ── Stars ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,80,180,.18) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(0,229,255,.06) 0%,transparent 60%);
+}
+
+/* ── Login ── */
+#login-screen{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;
+  background:var(--bg);
+}
+.login-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:20px;
+  padding:48px 44px;width:100%;max-width:400px;text-align:center;
+  box-shadow:0 0 80px rgba(0,229,255,.07);
+}
+.login-title{
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;letter-spacing:.15em;
+  color:var(--cyan);margin-bottom:4px;
+}
+.login-sub{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;
+  color:var(--dim);margin-bottom:36px;
+}
+.login-card input[type=password]{
+  width:100%;padding:13px 16px;background:#060d24;border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:14px;
+  outline:none;transition:border-color .2s;margin-bottom:14px;
+}
+.login-card input[type=password]:focus{border-color:rgba(0,229,255,.5);}
+.btn-login{
+  width:100%;padding:13px;background:linear-gradient(135deg,#0044aa,#00a8cc);
+  border:none;border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;
+  font-size:12px;letter-spacing:.15em;font-weight:700;cursor:pointer;transition:opacity .2s;
+}
+.btn-login:hover{opacity:.85}
+.login-error{color:#ff4d6d;font-size:13px;margin-top:12px;min-height:20px;}
+
+/* ── Dashboard ── */
+#dashboard{display:none}
+.topbar{
+  position:sticky;top:0;z-index:50;background:rgba(3,7,20,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:0 28px;height:56px;
+  display:flex;align-items:center;gap:16px;
+}
+.topbar-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--cyan);}
+.topbar-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.12em;}
+.topbar-spacer{flex:1}
+.btn-sm{
+  padding:7px 16px;border-radius:7px;font-family:'Orbitron',sans-serif;font-size:10px;
+  font-weight:600;letter-spacing:.1em;cursor:pointer;border:none;transition:opacity .2s;
+}
+.btn-sm:hover{opacity:.8}
+.btn-refresh{background:rgba(0,229,255,.12);color:var(--cyan);border:1px solid rgba(0,229,255,.25);}
+.btn-logout{background:rgba(255,77,109,.1);color:#ff4d6d;border:1px solid rgba(255,77,109,.25);}
+
+.main{padding:28px;max-width:1400px;margin:0 auto;position:relative;z-index:1;}
+
+/* ── Section ── */
+.section{margin-bottom:36px;}
+.section-title{
+  font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.22em;color:var(--dim);
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── Stat cards ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 22px;
+}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--dim);margin-bottom:6px;}
+.stat-value{font-family:'Orbitron',monospace;font-size:28px;font-weight:700;line-height:1;}
+.stat-sub{font-size:12px;color:var(--dim);margin-top:4px;}
+.stat-card.total .stat-value{color:var(--cyan);}
+.stat-card.genesis-card .stat-value{color:var(--genesis);}
+.stat-card.core-card .stat-value{color:var(--core);}
+.stat-card.supporter-card .stat-value{color:var(--supporter);}
+
+/* ── Progress ── */
+.progress-section{display:flex;flex-direction:column;gap:14px;}
+.progress-row{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;}
+.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.progress-tier{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.15em;}
+.progress-nums{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);}
+.progress-track{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.genesis-fill{background:linear-gradient(90deg,#b37800,#f0a500);}
+.core-fill{background:linear-gradient(90deg,#1a4080,#a0c4ff);}
+.supporter-fill{background:linear-gradient(90deg,#006622,#00cc44);}
+
+/* ── Orders table ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;
+  color:var(--dim);padding:10px 14px;text-align:left;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+tbody tr:hover{background:rgba(0,229,255,.03);}
+tbody td{padding:11px 14px;vertical-align:middle;}
+.empty-row td{text-align:center;color:var(--dim);padding:32px;font-family:'Share Tech Mono',monospace;font-size:12px;}
+
+/* ── Badges ── */
+.badge{
+  display:inline-block;padding:3px 9px;border-radius:20px;font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:.1em;font-weight:700;white-space:nowrap;
+}
+.badge-genesis{background:rgba(240,165,0,.15);color:var(--genesis);border:1px solid rgba(240,165,0,.3);}
+.badge-core{background:rgba(160,196,255,.1);color:var(--core);border:1px solid rgba(160,196,255,.25);}
+.badge-supporter{background:rgba(0,204,68,.1);color:var(--supporter);border:1px solid rgba(0,204,68,.25);}
+.badge-paid{background:rgba(0,204,68,.12);color:#00cc44;border:1px solid rgba(0,204,68,.3);}
+.badge-pending{background:rgba(240,165,0,.12);color:#f0a500;border:1px solid rgba(240,165,0,.3);}
+.badge-sol{background:rgba(153,69,255,.15);color:#c084fc;border:1px solid rgba(153,69,255,.3);}
+.badge-card{background:rgba(0,140,255,.12);color:#60aaff;border:1px solid rgba(0,140,255,.3);}
+
+.mono{font-family:'Share Tech Mono',monospace;font-size:12px;}
+.addr{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);}
+
+/* ── Waitlist ── */
+.waitlist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.waitlist-count{
+  font-family:'Orbitron',sans-serif;font-size:32px;font-weight:700;color:var(--cyan);
+  display:inline-block;margin-right:10px;
+}
+.waitlist-box{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;
+}
+.email-list{
+  max-height:280px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(0,229,255,.2) transparent;
+}
+.email-item{
+  font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 10px;
+  border-radius:6px;color:var(--text);display:flex;align-items:center;gap:8px;
+}
+.email-item:nth-child(odd){background:rgba(255,255,255,.02);}
+.email-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);opacity:.4;flex-shrink:0;}
+.btn-copy{
+  background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.25);color:var(--cyan);
+  padding:7px 16px;border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:11px;
+  cursor:pointer;letter-spacing:.08em;transition:opacity .2s;
+}
+.btn-copy:hover{opacity:.75}
+
+/* ── Spinner ── */
+.spinner{
+  display:inline-block;width:16px;height:16px;border:2px solid rgba(0,229,255,.2);
+  border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-bar{text-align:center;padding:40px;color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.1em;}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-title">OASIS</div>
+    <div class="login-sub">ADMIN PORTAL</div>
+    <input type="password" id="pw-input" placeholder="Enter admin password" autocomplete="current-password">
+    <button class="btn-login" onclick="doLogin()">ACCESS</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">OASIS ADMIN</div>
+      <div class="topbar-sub">FOUNDER NFT BACK OFFICE</div>
+    </div>
+    <div class="topbar-spacer"></div>
+    <span id="refresh-time" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);"></span>
+    <button class="btn-sm btn-refresh" onclick="loadData()">&#8635; REFRESH</button>
+    <button class="btn-sm btn-logout" onclick="logout()">LOGOUT</button>
+  </div>
+
+  <div class="main" id="main-content">
+    <div class="loading-bar"><span class="spinner"></span>&nbsp; Loading...</div>
+  </div>
+</div>
+
+<script>
+let sessionPw = sessionStorage.getItem('oasis_admin_pw') || '';
+
+function fmt(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function trunc(str, n) {
+  if (!str) return '—';
+  if (str.length <= n) return str;
+  return str.slice(0, 6) + '…' + str.slice(-4);
+}
+function pct(val, max) { return Math.min(100, Math.round((val / max) * 100)); }
+
+async function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!pw) { errEl.textContent = 'Please enter the password.'; return; }
+
+  sessionStorage.setItem('oasis_admin_pw', pw);
+  sessionPw = pw;
+  const ok = await loadData();
+  if (ok) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+  } else {
+    sessionStorage.removeItem('oasis_admin_pw');
+    sessionPw = '';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('oasis_admin_pw');
+  location.reload();
+}
+
+async function loadData() {
+  const main = document.getElementById('main-content');
+  if (document.getElementById('dashboard').style.display === 'block') {
+    main.innerHTML = '<div class="loading-bar"><span class="spinner"></span>&nbsp; Refreshing...</div>';
+  }
+
+  try {
+    const res = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: sessionPw })
+    });
+
+    if (res.status === 401) {
+      document.getElementById('login-error').textContent = 'Wrong password.';
+      return false;
+    }
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      document.getElementById('login-error').textContent = d.error || 'Server error';
+      return false;
+    }
+
+    const data = await res.json();
+    render(data);
+    document.getElementById('refresh-time').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    return true;
+
+  } catch (e) {
+    document.getElementById('login-error').textContent = 'Network error: ' + e.message;
+    return false;
+  }
+}
+
+function render({ mintCounts, limits, waitlist, orders }) {
+  const total     = mintCounts.genesis + mintCounts.core + mintCounts.supporter;
+  const totalCap  = limits.genesis + limits.core + limits.supporter;
+  const paidOrds  = orders.filter(o => o.status === 'paid');
+
+  const html = `
+  <!-- Mint Stats -->
+  <div class="section">
+    <div class="section-title">MINT PROGRESS</div>
+    <div class="stats-grid" style="margin-bottom:18px">
+      <div class="stat-card total">
+        <div class="stat-label">TOTAL MINTED</div>
+        <div class="stat-value">${total}</div>
+        <div class="stat-sub">of ${totalCap} available</div>
+      </div>
+      <div class="stat-card genesis-card">
+        <div class="stat-label">GENESIS</div>
+        <div class="stat-value">${mintCounts.genesis}</div>
+        <div class="stat-sub">of ${limits.genesis} · $1,499 each</div>
+      </div>
+      <div class="stat-card core-card">
+        <div class="stat-label">CORE</div>
+        <div class="stat-value">${mintCounts.core}</div>
+        <div class="stat-sub">of ${limits.core} · $499 each</div>
+      </div>
+      <div class="stat-card supporter-card">
+        <div class="stat-label">SUPPORTER</div>
+        <div class="stat-value">${mintCounts.supporter}</div>
+        <div class="stat-sub">of ${limits.supporter} · $149 each</div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      ${[
+        { key:'genesis', label:'GENESIS', cls:'genesis', fillCls:'genesis-fill' },
+        { key:'core',    label:'CORE',    cls:'core',    fillCls:'core-fill' },
+        { key:'supporter', label:'SUPPORTER', cls:'supporter', fillCls:'supporter-fill' },
+      ].map(t => `
+        <div class="progress-row">
+          <div class="progress-header">
+            <span class="progress-tier" style="color:var(--${t.cls})">${t.label}</span>
+            <span class="progress-nums">${mintCounts[t.key]} / ${limits[t.key]} &nbsp;(${pct(mintCounts[t.key], limits[t.key])}%)</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill ${t.fillCls}" style="width:${pct(mintCounts[t.key], limits[t.key])}%"></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+
+  <!-- Orders -->
+  <div class="section">
+    <div class="section-title">ORDERS &nbsp;<span style="color:var(--cyan);font-family:'Share Tech Mono',monospace">${orders.length} total · ${paidOrds.length} paid</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>DATE</th>
+            <th>TIER</th>
+            <th>TYPE</th>
+            <th>STATUS</th>
+            <th>AMOUNT (USD)</th>
+            <th>WALLET / IDENTIFIER</th>
+            <th>REF</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orders.length === 0
+            ? '<tr class="empty-row"><td colspan="7">No orders found in Redis</td></tr>'
+            : orders.map(o => `
+              <tr>
+                <td class="mono" style="font-size:11px;color:var(--dim)">${fmt(o.createdAt)}</td>
+                <td><span class="badge badge-${o.tier}">${(o.tier || '?').toUpperCase()}</span></td>
+                <td><span class="badge badge-${o.type === 'sol' ? 'sol' : 'card'}">${(o.type || '?').toUpperCase()}</span></td>
+                <td><span class="badge badge-${o.status}">${(o.status || '?').toUpperCase()}</span></td>
+                <td class="mono">$${o.priceUSD != null ? Number(o.priceUSD).toLocaleString() : '—'}${o.priceSOL ? `<br><span style="color:var(--dim);font-size:10px">${o.priceSOL} SOL</span>` : ''}</td>
+                <td class="addr">${trunc(o.wallet, 20) || '—'}</td>
+                <td class="addr">${trunc(o.signature || o.paymentIntentId, 18) || '—'}</td>
+              </tr>
+            `).join('')
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Waitlist -->
+  <div class="section">
+    <div class="section-title">WAITLIST</div>
+    <div class="waitlist-box">
+      <div class="waitlist-header">
+        <div>
+          <span class="waitlist-count">${waitlist.count}</span>
+          <span style="color:var(--dim);font-size:13px">registered emails</span>
+        </div>
+        <button class="btn-copy" onclick="copyEmails(${JSON.stringify(waitlist.emails).replace(/"/g,'&quot;')})">COPY ALL</button>
+      </div>
+      <div class="email-list">
+        ${waitlist.emails.length === 0
+          ? '<div style="text-align:center;color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px;padding:20px">No emails in waitlist</div>'
+          : waitlist.emails.map(e => `<div class="email-item"><span class="email-dot"></span>${e}</div>`).join('')
+        }
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.getElementById('main-content').innerHTML = html;
+}
+
+function copyEmails(emails) {
+  navigator.clipboard.writeText(emails.join('\n')).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    if (btn) { btn.textContent = 'COPIED!'; setTimeout(() => btn.textContent = 'COPY ALL', 2000); }
+  });
+}
+
+// Auto-login if password already in session
+window.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('pw-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  if (sessionPw) {
+    const ok = await loadData();
+    if (ok) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    } else {
+      sessionStorage.removeItem('oasis_admin_pw');
+      sessionPw = '';
+    }
+  }
+});
+</script>
+</body>
+</html>
