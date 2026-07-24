@@ -305,8 +305,8 @@ export default async function handler(req, res) {
     const testMode = process.env.TEST_MODE === 'true';
 
     const OASIS_CFG = {
-       //apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
-      apiUrl:   'https://api.web4.oasisomniverse.one',
+      apiUrl:   testMode ? process.env.OASIS_API_URL_TEST   : process.env.OASIS_API_URL_LIVE,
+      //apiUrl:   'https://api.web4.oasisomniverse.one',
       username: testMode ? process.env.OASIS_AVATAR_USERNAME_TEST  : process.env.OASIS_AVATAR_USERNAME_LIVE,
       password: testMode ? process.env.OASIS_AVATAR_PASSWORD_TEST  : process.env.OASIS_AVATAR_PASSWORD_LIVE,
       avatarId: testMode ? process.env.OASIS_AVATAR_ID_TEST        : process.env.OASIS_AVATAR_ID_LIVE,
@@ -418,11 +418,11 @@ export default async function handler(req, res) {
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
-      : "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj";
+      : (process.env.COLLECTION_PUBLIC_KEY_MAINNET || "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj");
 
-    payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
+    //payload.CollectionPublicKey = "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj"; //SOL MAINNET
     //payload.CollectionPublicKey = "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF"; //SOL DEVNET
-
+s
     console.log('[oasis] testMode:', testMode);
     console.log('[oasis] apiUrl:', OASIS_CFG.apiUrl);
     console.log('[oasis] CollectionPublicKey:', payload.CollectionPublicKey);
@@ -671,7 +671,7 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` },
         body: JSON.stringify({
           from: process.env.EMAIL_FROM,
-          to: 'davidellams@hotmail.com',
+          to: 'davidellams@hotmail.com;david.ellams@oasisomniverse.one',
           subject: `🌌 New Founder Mint — ${tierLabel} (${recipientEmail || 'no email'})`,
           html: `
             <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:32px;max-width:520px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
