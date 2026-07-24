@@ -232,7 +232,7 @@ tbody td{padding:11px 14px;vertical-align:middle;}
     <div class="login-title">OASIS</div>
     <div class="login-sub">ADMIN PORTAL</div>
     <input type="password" id="pw-input" placeholder="Enter admin password" autocomplete="current-password">
-    <button class="btn-login" onclick="doLogin()">ACCESS</button>
+    <button class="btn-login" id="login-btn" onclick="doLogin()">ACCESS</button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
@@ -272,8 +272,12 @@ function pct(val, max) { return Math.min(100, Math.round((val / max) * 100)); }
 async function doLogin() {
   const pw = document.getElementById('pw-input').value;
   const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
   errEl.textContent = '';
   if (!pw) { errEl.textContent = 'Please enter the password.'; return; }
+
+  btn.textContent = 'CHECKING...';
+  btn.disabled = true;
 
   sessionStorage.setItem('oasis_admin_pw', pw);
   sessionPw = pw;
@@ -284,6 +288,8 @@ async function doLogin() {
   } else {
     sessionStorage.removeItem('oasis_admin_pw');
     sessionPw = '';
+    btn.textContent = 'ACCESS';
+    btn.disabled = false;
   }
 }
 
