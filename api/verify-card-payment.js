@@ -3,7 +3,7 @@ const { createClient } = require("redis");
 const Stripe = require("stripe");
 
 const redis = createClient({
-  url: process.env.REDIS_URL,
+  url: process.env.REDIS_URL_TEST || process.env.REDIS_URL,
 });
 
 redis.on("error", (err) => {
