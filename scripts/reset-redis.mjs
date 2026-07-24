@@ -20,6 +20,13 @@
  */
 
 import { createClient } from 'redis';
+import { existsSync } from 'fs';
+import { config } from 'dotenv';
+
+// Auto-load .env.local if present (never committed — see .gitignore)
+for (const f of ['.env.local', '.env']) {
+  if (existsSync(f)) { config({ path: f }); break; }
+}
 
 // ── Args ──────────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);

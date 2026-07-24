@@ -1,11 +1,11 @@
 {
   "scripts": {
-    "reset:db":      "node scripts/reset-redis.mjs --all --yes",
+    "reset:db": "node scripts/reset-redis.mjs --all --yes",
     "reset:db:test": "node scripts/reset-redis.mjs --all --yes --test",
-    "reset:counts":  "node scripts/reset-redis.mjs --counts --yes",
-    "reset:orders":  "node scripts/reset-redis.mjs --orders --locks --yes",
-    "reset:dry":     "node scripts/reset-redis.mjs --dry-run",
-    "reset:dry:test":"node scripts/reset-redis.mjs --dry-run --test"
+    "reset:counts": "node scripts/reset-redis.mjs --counts --yes",
+    "reset:orders": "node scripts/reset-redis.mjs --orders --locks --yes",
+    "reset:dry": "node scripts/reset-redis.mjs --dry-run",
+    "reset:dry:test": "node scripts/reset-redis.mjs --dry-run --test"
   },
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
@@ -17,5 +17,8 @@
     "rpc-websockets": "^7.7.0",
     "stripe": "^22.1.1",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2"
   }
 }
