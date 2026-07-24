@@ -1,8 +1,9 @@
 import { createClient } from 'redis';
 import crypto from 'crypto';
 
-const redis = createClient({ url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL });
-redis.on('error', () => {});
+const REDIS_URL = process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL;
+const redis = createClient({ url: REDIS_URL, socket: { reconnectStrategy: false } });
+redis.on('error', (e) => console.error('[redis]', e.message));
 let redisReady = null;
 async function ensureRedis() {
   if (!redisReady) redisReady = redis.connect();
@@ -22,7 +23,10 @@ function safeEqual(a, b) {
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
-  await ensureRedis();
+  try { await ensureRedis(); } catch (e) {
+    const hint = process.env.TEST_MODE === 'true' ? ' — check REDIS_URL_TEST env var in Vercel (Preview scope)' : '';
+    return res.status(503).json({ error: `Redis connection failed${hint}` });
+  }
 
   // ── Admin POST ──
   if (req.method === 'POST') {

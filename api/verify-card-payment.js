@@ -4,6 +4,7 @@ const Stripe = require("stripe");
 
 const redis = createClient({
   url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL,
+  socket: { reconnectStrategy: false },
 });
 
 redis.on("error", (err) => {
