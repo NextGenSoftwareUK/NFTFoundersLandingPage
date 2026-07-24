@@ -216,12 +216,12 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 <!-- Reset confirm modal -->
 <div class="modal-overlay" id="reset-modal">
   <div class="modal-box">
-    <div class="modal-icon">⚠️</div>
-    <div class="modal-title">RESET MINT COUNTS?</div>
-    <div class="modal-body">This will set <strong>Genesis, Core and Supporter</strong> counts back to <strong>0</strong> and <strong>delete all orders</strong> from the database.<br><br>Only do this to clear test data. <strong>Do not run on live.</strong></div>
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeReset()">CANCEL</button>
-      <button class="btn-danger" onclick="confirmReset()">YES, RESET</button>
+      <button class="btn-danger" id="modal-confirm-btn" onclick="confirmReset()">CONFIRM</button>
     </div>
   </div>
 </div>
@@ -375,8 +375,9 @@ function render({ mintCounts, limits, waitlist, orders }) {
         </div>
       `).join('')}
     </div>
-    <div style="text-align:right;margin-top:12px;">
-      <button class="btn-reset" onclick="openReset()">⚠ RESET MINT COUNTS</button>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px;">
+      <button class="btn-reset" onclick="openReset('counts')">⚠ RESET COUNTS</button>
+      <button class="btn-reset" style="background:rgba(200,0,30,.22);border-color:rgba(200,0,30,.7);color:#ff2244;" onclick="openReset('all')">☢ NUKE EVERYTHING</button>
     </div>
   </div>
 
@@ -470,18 +471,30 @@ function render({ mintCounts, limits, waitlist, orders }) {
   document.getElementById('main-content').innerHTML = html;
 }
 
-function openReset() { document.getElementById('reset-modal').classList.add('open'); }
+let resetAction = null;
+
+function openReset(type) {
+  resetAction = type;
+  const isNuke = type === 'all';
+  document.getElementById('modal-icon').textContent   = isNuke ? '☢️' : '⚠️';
+  document.getElementById('modal-title').textContent  = isNuke ? 'NUKE EVERYTHING?' : 'RESET MINT COUNTS?';
+  document.getElementById('modal-body').innerHTML     = isNuke
+    ? 'This will reset all mint counts to <strong>0</strong> and <strong>permanently delete every order</strong> in the database.<br><br>Use this to clear test data before launch.'
+    : 'This will set <strong>Genesis, Core and Supporter</strong> counts back to <strong>0</strong>.<br><br>Existing orders are <strong>kept</strong>.';
+  document.getElementById('modal-confirm-btn').textContent = isNuke ? 'YES, NUKE IT' : 'YES, RESET';
+  document.getElementById('reset-modal').classList.add('open');
+}
 function closeReset() { document.getElementById('reset-modal').classList.remove('open'); }
 
 async function confirmReset() {
-  const btn = document.querySelector('.btn-danger');
-  btn.textContent = 'RESETTING...';
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.textContent = 'WORKING...';
   btn.disabled = true;
   try {
     const res = await fetch('/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: sessionPw, action: 'reset-mint-counts' })
+      body: JSON.stringify({ password: sessionPw, action: resetAction === 'all' ? 'reset-all' : 'reset-counts' })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed');
@@ -489,7 +502,7 @@ async function confirmReset() {
     await loadData();
   } catch (e) {
     btn.textContent = 'ERROR: ' + e.message;
-    setTimeout(() => { btn.textContent = 'YES, RESET'; btn.disabled = false; }, 3000);
+    setTimeout(() => { btn.textContent = resetAction === 'all' ? 'YES, NUKE IT' : 'YES, RESET'; btn.disabled = false; }, 3000);
   }
 }
 

@@ -31,7 +31,16 @@ export default async function handler(req, res) {
     if (!adminPw) return res.status(500).json({ error: 'ADMIN_PASSWORD env var not set' });
     if (!safeEqual(password, adminPw)) return res.status(401).json({ error: 'Unauthorized' });
 
-    if (action === 'reset-mint-counts') {
+    if (action === 'reset-counts') {
+      await Promise.all([
+        redis.set('mint_count:genesis', '0'),
+        redis.set('mint_count:core', '0'),
+        redis.set('mint_count:supporter', '0'),
+      ]);
+      return res.json({ success: true, message: 'Mint counts reset to 0' });
+    }
+
+    if (action === 'reset-all') {
       await Promise.all([
         redis.set('mint_count:genesis', '0'),
         redis.set('mint_count:core', '0'),
