@@ -1,8 +1,10 @@
 import { createClient } from 'redis';
 import crypto from 'crypto';
 
-const REDIS_URL = process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL;
-const redis = createClient({ url: REDIS_URL, socket: { reconnectStrategy: false } });
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : ''; // key prefix — keeps dev/live data separate in same Redis
+
+const redis = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
 redis.on('error', (e) => console.error('[redis]', e.message));
 let redisReady = null;
 async function ensureRedis() {
@@ -24,8 +26,7 @@ function safeEqual(a, b) {
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   try { await ensureRedis(); } catch (e) {
-    const hint = process.env.TEST_MODE === 'true' ? ' — check REDIS_URL_TEST env var in Vercel (Preview scope)' : '';
-    return res.status(503).json({ error: `Redis connection failed${hint}` });
+    return res.status(503).json({ error: 'Redis connection failed' });
   }
 
   // ── Admin POST ──
@@ -37,28 +38,30 @@ export default async function handler(req, res) {
 
     if (action === 'reset-counts') {
       await Promise.all([
-        redis.set('mint_count:genesis', '0'),
-        redis.set('mint_count:core', '0'),
-        redis.set('mint_count:supporter', '0'),
+        redis.set(`${P}mint_count:genesis`, '0'),
+        redis.set(`${P}mint_count:core`, '0'),
+        redis.set(`${P}mint_count:supporter`, '0'),
       ]);
       return res.json({ success: true, message: 'Mint counts reset to 0' });
     }
 
     if (action === 'reset-all') {
       await Promise.all([
-        redis.set('mint_count:genesis', '0'),
-        redis.set('mint_count:core', '0'),
-        redis.set('mint_count:supporter', '0'),
+        redis.set(`${P}mint_count:genesis`, '0'),
+        redis.set(`${P}mint_count:core`, '0'),
+        redis.set(`${P}mint_count:supporter`, '0'),
       ]);
-      const orderKeys = await redis.keys('order:*');
+      const orderKeys = await redis.keys(`${P}order:*`);
       if (orderKeys.length) await redis.del(orderKeys);
+      const lockKeys = await redis.keys(`${P}lock:*`);
+      if (lockKeys.length) await redis.del(lockKeys);
       return res.json({ success: true, message: `Mint counts reset and ${orderKeys.length} orders deleted` });
     }
 
     const [g, c, s] = await Promise.all([
-      redis.get('mint_count:genesis'),
-      redis.get('mint_count:core'),
-      redis.get('mint_count:supporter'),
+      redis.get(`${P}mint_count:genesis`),
+      redis.get(`${P}mint_count:core`),
+      redis.get(`${P}mint_count:supporter`),
     ]);
     const mintCounts = {
       genesis:   parseInt(g || '0'),
@@ -66,9 +69,9 @@ export default async function handler(req, res) {
       supporter: parseInt(s || '0'),
     };
 
-    const waitlistEmails = await redis.sMembers('waitlist:emails');
+    const waitlistEmails = await redis.sMembers(`${P}waitlist:emails`);
 
-    const orderKeys = await redis.keys('order:*');
+    const orderKeys = await redis.keys(`${P}order:*`);
 
     let orders = [];
     if (orderKeys.length) {
@@ -88,13 +91,12 @@ export default async function handler(req, res) {
   }
 
   // ── Public GET ──
-  const testMode = process.env.TEST_MODE === 'true';
   let mintCounts = { genesis: 0, core: 0, supporter: 0 };
   try {
     const [genesis, core, supporter] = await Promise.all([
-      redis.get('mint_count:genesis'),
-      redis.get('mint_count:core'),
-      redis.get('mint_count:supporter'),
+      redis.get(`${P}mint_count:genesis`),
+      redis.get(`${P}mint_count:core`),
+      redis.get(`${P}mint_count:supporter`),
     ]);
     mintCounts = {
       genesis:   parseInt(genesis   || '0', 10),
@@ -106,12 +108,12 @@ export default async function handler(req, res) {
   }
 
   res.status(200).json({
-    testMode,
-    stripePk: testMode ? process.env.STRIPE_PK_TEST : process.env.STRIPE_PK_LIVE,
+    testMode: TEST_MODE,
+    stripePk: TEST_MODE ? process.env.STRIPE_PK_TEST : process.env.STRIPE_PK_LIVE,
     evmReceiver: process.env.EVM_RECEIVER,
     btcAddr: process.env.BTC_ADDR,
     solAddr: process.env.TREASURY_WALLET_SOL,
-    usdtContracts: testMode ? {
+    usdtContracts: TEST_MODE ? {
       ETH:   process.env.USDT_ETH_TEST,
       BNB:   process.env.USDT_BNB_TEST,
       MATIC: process.env.USDT_MATIC_TEST,
@@ -121,7 +123,7 @@ export default async function handler(req, res) {
       MATIC: process.env.USDT_MATIC_LIVE,
     },
     oasis: {
-      apiUrl:   testMode ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
+      apiUrl:   TEST_MODE ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE,
       imageUrl: process.env.OASIS_IMAGE_URL,
     },
     mintCounts,

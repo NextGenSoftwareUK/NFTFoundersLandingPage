@@ -1,7 +1,9 @@
 //import { kv } from '@vercel/kv';
 const crypto = require("crypto");
 const { createClient } = require("redis");
-const redis = createClient({ url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL, socket: { reconnectStrategy: false } });
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
+const redis = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
 
 redis.on("error", (err) => {
   console.error("Redis error:", err);
@@ -273,7 +275,7 @@ async function storeActivationRecord({ email, username, activationKey, avatarId,
     createdAt: Date.now()
   };
 
-  await redis.set(`avatar-activation:${activationKey}`, JSON.stringify(record), {
+  await redis.set(`${P}avatar-activation:${activationKey}`, JSON.stringify(record), {
     EX: ACTIVATION_TTL_SECONDS
   });
 
@@ -330,7 +332,7 @@ export default async function handler(req, res) {
     // =========================
 
     console.log('[oasis] step 2: fetching order', payload.MetaData?.orderId);
-    const orderRaw = await redis.get(`order:${payload.MetaData.orderId}`);
+    const orderRaw = await redis.get(`${P}order:${payload.MetaData.orderId}`);
 
     if (!orderRaw) {
       return res.status(404).json({
@@ -528,7 +530,7 @@ export default async function handler(req, res) {
     // =========================
 
     const isEarlyBird = recipientEmail
-      ? !!(await redis.sIsMember('waitlist:emails', recipientEmail.toLowerCase().trim()))
+      ? !!(await redis.sIsMember(`${P}waitlist:emails`, recipientEmail.toLowerCase().trim()))
       : false;
     console.log('[oasis] step 5c: earlyBird:', isEarlyBird, 'for email:', recipientEmail);
     payload.MetaData = { ...(payload.MetaData || {}), earlyBird: String(isEarlyBird) };
@@ -539,7 +541,7 @@ export default async function handler(req, res) {
 
     console.log('[oasis] step 6: marking order as minting');
     order.status = "minting";
-    await redis.set(`order:${order.orderId}`, JSON.stringify(order));
+    await redis.set(`${P}order:${order.orderId}`, JSON.stringify(order));
 
     // =========================
     // 7. MINT NFT
@@ -653,10 +655,10 @@ export default async function handler(req, res) {
     //   sendTx: order.sendTx
     // };
 
-    await redis.set(`order:${order.orderId}`, JSON.stringify(order));
+    await redis.set(`${P}order:${order.orderId}`, JSON.stringify(order));
 
     const tier = payload.MetaData?.tier;
-    if (tier) await redis.incr(`mint_count:${tier}`);
+    if (tier) await redis.incr(`${P}mint_count:${tier}`);
 
     // =========================
     // 10. NOTIFY OWNER
@@ -711,7 +713,7 @@ export default async function handler(req, res) {
       order.status = "paid";
 
       await redis.set(
-        `order:${order.orderId}`,
+        `${P}order:${order.orderId}`,
         JSON.stringify(order)
       );
     }
