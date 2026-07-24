@@ -437,7 +437,7 @@ function render({ mintCounts, limits, waitlist, orders }) {
               return `
               <tr class="order-row" onclick="toggleDetail('${id}')">
                 <td><span class="chevron" id="chevron-${id}">▶</span></td>
-                <td class="mono" style="font-size:11px;color:var(--dim)">${fmt(o.createdAt)}</td>
+                <td class="mono" style="font-size:11px;color:var(--dim);white-space:nowrap">${fmt(o.createdAt)}</td>
                 <td><span class="badge badge-${o.tier}">${(o.tier || '?').toUpperCase()}</span></td>
                 <td><span class="badge badge-${o.type === 'sol' ? 'sol' : 'card'}">${(o.type || '?').toUpperCase()}</span></td>
                 <td><span class="badge badge-${o.status}">${(o.status || '?').toUpperCase()}</span></td>
