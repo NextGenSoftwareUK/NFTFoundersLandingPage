@@ -347,7 +347,7 @@ async function loadData() {
     }
     const nsSel = document.getElementById('ns-select');
     if (nsSel) {
-      nsSel.style.display = data.testMode ? '' : 'none';
+      nsSel.style.display = data.testMode ? 'inline-block' : 'none';
       nsSel.value = currentNamespace;
     }
     return true;
