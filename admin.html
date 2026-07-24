@@ -143,6 +143,22 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 .detail-val a:hover{text-decoration:underline;}
 .detail-warn{color:#f0a500;font-size:11px;font-family:'Share Tech Mono',monospace;margin-top:10px;padding:8px 12px;background:rgba(240,165,0,.08);border-radius:6px;border:1px solid rgba(240,165,0,.2);}
 
+/* ── Reset modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#0a0f28;border:1px solid rgba(255,60,80,.4);border-radius:16px;padding:36px 40px;max-width:420px;width:100%;text-align:center;box-shadow:0 0 60px rgba(255,40,60,.15);}
+.modal-icon{font-size:40px;margin-bottom:12px;}
+.modal-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:#ff4d6d;letter-spacing:.1em;margin-bottom:10px;}
+.modal-body{color:var(--dim);font-size:14px;line-height:1.6;margin-bottom:28px;}
+.modal-body strong{color:var(--text);}
+.modal-btns{display:flex;gap:12px;justify-content:center;}
+.btn-cancel{padding:11px 28px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--dim);font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.1em;cursor:pointer;transition:opacity .2s;}
+.btn-cancel:hover{opacity:.75}
+.btn-danger{padding:11px 28px;border-radius:8px;background:linear-gradient(135deg,#8b0000,#cc0022);border:none;color:#fff;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 20px rgba(200,0,30,.35);}
+.btn-danger:hover{opacity:.85}
+.btn-reset{padding:10px 22px;border-radius:8px;background:rgba(200,0,30,.12);border:1px solid rgba(200,0,30,.4);color:#ff4d6d;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:opacity .2s;margin-top:16px;}
+.btn-reset:hover{opacity:.8}
+
 /* ── Badges ── */
 .badge{
   display:inline-block;padding:3px 9px;border-radius:20px;font-family:'Share Tech Mono',monospace;
@@ -196,6 +212,19 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 </style>
 </head>
 <body>
+
+<!-- Reset confirm modal -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">RESET MINT COUNTS?</div>
+    <div class="modal-body">This will set <strong>Genesis, Core and Supporter</strong> counts back to <strong>0</strong>.<br><br>This affects the <strong>live sold-out counter</strong>. Only do this to clear test data.</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeReset()">CANCEL</button>
+      <button class="btn-danger" onclick="confirmReset()">YES, RESET</button>
+    </div>
+  </div>
+</div>
 
 <!-- Login -->
 <div id="login-screen">
@@ -346,6 +375,9 @@ function render({ mintCounts, limits, waitlist, orders }) {
         </div>
       `).join('')}
     </div>
+    <div style="text-align:right;margin-top:12px;">
+      <button class="btn-reset" onclick="openReset()">⚠ RESET MINT COUNTS</button>
+    </div>
   </div>
 
   <!-- Orders -->
@@ -436,6 +468,29 @@ function render({ mintCounts, limits, waitlist, orders }) {
   `;
 
   document.getElementById('main-content').innerHTML = html;
+}
+
+function openReset() { document.getElementById('reset-modal').classList.add('open'); }
+function closeReset() { document.getElementById('reset-modal').classList.remove('open'); }
+
+async function confirmReset() {
+  const btn = document.querySelector('.btn-danger');
+  btn.textContent = 'RESETTING...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: sessionPw, action: 'reset-mint-counts' })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    closeReset();
+    await loadData();
+  } catch (e) {
+    btn.textContent = 'ERROR: ' + e.message;
+    setTimeout(() => { btn.textContent = 'YES, RESET'; btn.disabled = false; }, 3000);
+  }
 }
 
 function toggleDetail(id) {
