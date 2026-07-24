@@ -346,13 +346,14 @@ function render({ mintCounts, limits, waitlist, orders }) {
             <th>TYPE</th>
             <th>STATUS</th>
             <th>AMOUNT (USD)</th>
-            <th>WALLET / IDENTIFIER</th>
+            <th>EMAIL</th>
+            <th>WALLET</th>
             <th>REF</th>
           </tr>
         </thead>
         <tbody>
           ${orders.length === 0
-            ? '<tr class="empty-row"><td colspan="7">No orders found in Redis</td></tr>'
+            ? '<tr class="empty-row"><td colspan="8">No orders found in Redis</td></tr>'
             : orders.map(o => `
               <tr>
                 <td class="mono" style="font-size:11px;color:var(--dim)">${fmt(o.createdAt)}</td>
@@ -360,6 +361,7 @@ function render({ mintCounts, limits, waitlist, orders }) {
                 <td><span class="badge badge-${o.type === 'sol' ? 'sol' : 'card'}">${(o.type || '?').toUpperCase()}</span></td>
                 <td><span class="badge badge-${o.status}">${(o.status || '?').toUpperCase()}</span></td>
                 <td class="mono">$${o.priceUSD != null ? Number(o.priceUSD).toLocaleString() : '—'}${o.priceSOL ? `<br><span style="color:var(--dim);font-size:10px">${o.priceSOL} SOL</span>` : ''}</td>
+                <td class="addr">${o.email || '—'}</td>
                 <td class="addr">${o.wallet || '—'}</td>
                 <td class="addr">${o.signature || o.paymentIntentId || '—'}</td>
               </tr>
