@@ -128,6 +128,20 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15
 tbody tr:hover{background:rgba(0,229,255,.03);}
 tbody td{padding:11px 14px;vertical-align:middle;}
 .empty-row td{text-align:center;color:var(--dim);padding:32px;font-family:'Share Tech Mono',monospace;font-size:12px;}
+.order-row{cursor:pointer;user-select:none;}
+.chevron{display:inline-block;color:var(--dim);font-size:11px;transition:transform .2s,color .2s;width:14px;}
+.chevron.open{transform:rotate(90deg);color:var(--cyan);}
+.detail-row{display:none;}
+.detail-row.open{display:table-row;}
+.detail-row > td{padding:0 !important;border-bottom:1px solid rgba(0,229,255,.12) !important;}
+.detail-panel{background:rgba(0,8,28,.7);padding:18px 24px 20px;}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px 32px;}
+.detail-field{display:flex;flex-direction:column;gap:4px;}
+.detail-key{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--dim);}
+.detail-val{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text);word-break:break-all;line-height:1.5;}
+.detail-val a{color:var(--cyan);text-decoration:none;}
+.detail-val a:hover{text-decoration:underline;}
+.detail-warn{color:#f0a500;font-size:11px;font-family:'Share Tech Mono',monospace;margin-top:10px;padding:8px 12px;background:rgba(240,165,0,.08);border-radius:6px;border:1px solid rgba(240,165,0,.2);}
 
 /* ── Badges ── */
 .badge{
@@ -341,6 +355,7 @@ function render({ mintCounts, limits, waitlist, orders }) {
       <table>
         <thead>
           <tr>
+            <th></th>
             <th>DATE</th>
             <th>TIER</th>
             <th>TYPE</th>
@@ -353,9 +368,26 @@ function render({ mintCounts, limits, waitlist, orders }) {
         </thead>
         <tbody>
           ${orders.length === 0
-            ? '<tr class="empty-row"><td colspan="8">No orders found in Redis</td></tr>'
-            : orders.map(o => `
-              <tr>
+            ? '<tr class="empty-row"><td colspan="9">No orders found in Redis</td></tr>'
+            : orders.map(o => {
+              const id = o.orderId || Math.random().toString(36).slice(2);
+              const solscan = tx => tx ? `<a href="https://solscan.io/tx/${tx}" target="_blank">${tx}</a>` : '—';
+              const fields = [
+                ['ORDER ID',         o.orderId || '—'],
+                ['MINTED AT',        fmt(o.mintedAt)],
+                ['PAID AT',          fmt(o.paidAt)],
+                ['MINT TX',          solscan(o.mintTx)],
+                ['SEND TX',          solscan(o.sendTx)],
+                ['SOL PRICE AT ORDER', o.solPriceUSD ? `$${o.solPriceUSD.toLocaleString()}` : '—'],
+                ['AVATAR ID',        o.avatarId || '—'],
+                ['AVATAR CREATED',   o.avatarCreated != null ? String(o.avatarCreated) : '—'],
+                ['ACTIVATION URL',   o.avatarActivationUrl ? `<a href="${o.avatarActivationUrl}" target="_blank">${o.avatarActivationUrl}</a>` : '—'],
+                ['ACTIVATION KEY',   o.avatarActivationKey || '—'],
+                ['PAYMENT SIG',      o.paymentSignature || '—'],
+              ];
+              return `
+              <tr class="order-row" onclick="toggleDetail('${id}')">
+                <td><span class="chevron" id="chevron-${id}">▶</span></td>
                 <td class="mono" style="font-size:11px;color:var(--dim)">${fmt(o.createdAt)}</td>
                 <td><span class="badge badge-${o.tier}">${(o.tier || '?').toUpperCase()}</span></td>
                 <td><span class="badge badge-${o.type === 'sol' ? 'sol' : 'card'}">${(o.type || '?').toUpperCase()}</span></td>
@@ -365,7 +397,17 @@ function render({ mintCounts, limits, waitlist, orders }) {
                 <td class="addr">${o.wallet || '—'}</td>
                 <td class="addr">${o.signature || o.paymentIntentId || '—'}</td>
               </tr>
-            `).join('')
+              <tr class="detail-row" id="detail-${id}">
+                <td colspan="9">
+                  <div class="detail-panel">
+                    <div class="detail-grid">
+                      ${fields.map(([k,v]) => `<div class="detail-field"><div class="detail-key">${k}</div><div class="detail-val">${v}</div></div>`).join('')}
+                    </div>
+                    ${o.avatarProvisionWarning ? `<div class="detail-warn">⚠ ${o.avatarProvisionWarning}</div>` : ''}
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')
           }
         </tbody>
       </table>
@@ -394,6 +436,13 @@ function render({ mintCounts, limits, waitlist, orders }) {
   `;
 
   document.getElementById('main-content').innerHTML = html;
+}
+
+function toggleDetail(id) {
+  const row = document.getElementById('detail-' + id);
+  const chevron = document.getElementById('chevron-' + id);
+  const open = row.classList.toggle('open');
+  if (chevron) chevron.classList.toggle('open', open);
 }
 
 function copyEmails(emails) {
