@@ -2,7 +2,7 @@
 const { createClient } = require("redis");
 
 const redis = createClient({
-  url: process.env.REDIS_URL_TEST || process.env.REDIS_URL,
+  url: process.env.TEST_MODE === 'true' ? process.env.REDIS_URL_TEST : process.env.REDIS_URL,
 });
 
 redis.on("error", (err) => {
