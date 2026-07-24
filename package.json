@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "reset:db": "node scripts/reset-redis.mjs --all --yes",
-    "reset:db:test": "node scripts/reset-redis.mjs --all --yes --test",
+    "reset:live": "node scripts/reset-redis.mjs --all --yes",
+    "reset:test": "node scripts/reset-redis.mjs --all --yes --test",
     "reset:counts": "node scripts/reset-redis.mjs --counts --yes",
     "reset:orders": "node scripts/reset-redis.mjs --orders --locks --yes",
     "reset:dry": "node scripts/reset-redis.mjs --dry-run",
