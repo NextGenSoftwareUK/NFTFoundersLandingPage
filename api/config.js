@@ -37,7 +37,9 @@ export default async function handler(req, res) {
         redis.set('mint_count:core', '0'),
         redis.set('mint_count:supporter', '0'),
       ]);
-      return res.json({ success: true, message: 'Mint counts reset to 0' });
+      const orderKeys = await redis.keys('order:*');
+      if (orderKeys.length) await redis.del(orderKeys);
+      return res.json({ success: true, message: `Mint counts reset and ${orderKeys.length} orders deleted` });
     }
 
     const [g, c, s] = await Promise.all([
