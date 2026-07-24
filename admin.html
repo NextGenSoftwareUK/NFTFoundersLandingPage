@@ -79,6 +79,9 @@ body::before{
 .btn-sm:hover{opacity:.8}
 .btn-refresh{background:rgba(0,229,255,.12);color:var(--cyan);border:1px solid rgba(0,229,255,.25);}
 .btn-logout{background:rgba(255,77,109,.1);color:#ff4d6d;border:1px solid rgba(255,77,109,.25);}
+.env-badge{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:5px 12px;border-radius:20px;border:1px solid;}
+.env-badge.live{background:rgba(0,200,80,.12);color:#00e676;border-color:rgba(0,200,80,.4);}
+.env-badge.test{background:rgba(255,160,0,.14);color:#ffb300;border-color:rgba(255,160,0,.5);}
 
 .main{padding:28px;max-width:1400px;margin:0 auto;position:relative;z-index:1;}
 
@@ -245,6 +248,7 @@ tbody td{padding:11px 14px;vertical-align:middle;}
       <div class="topbar-sub">FOUNDER NFT BACK OFFICE</div>
     </div>
     <div class="topbar-spacer"></div>
+    <span id="env-badge" class="env-badge" style="display:none"></span>
     <span id="refresh-time" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);"></span>
     <button class="btn-sm btn-refresh" onclick="loadData()">&#8635; REFRESH</button>
     <button class="btn-sm btn-logout" onclick="logout()">LOGOUT</button>
@@ -324,6 +328,12 @@ async function loadData() {
     const data = await res.json();
     render(data);
     document.getElementById('refresh-time').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    const badge = document.getElementById('env-badge');
+    if (badge) {
+      badge.textContent = data.testMode ? '⬡ TEST' : '● LIVE';
+      badge.className = 'env-badge ' + (data.testMode ? 'test' : 'live');
+      badge.style.display = '';
+    }
     return true;
 
   } catch (e) {

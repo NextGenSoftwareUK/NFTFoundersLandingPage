@@ -83,6 +83,7 @@ export default async function handler(req, res) {
     orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
     return res.json({
+      testMode: TEST_MODE,
       mintCounts,
       limits: MINT_LIMITS,
       waitlist: { count: waitlistEmails.length, emails: waitlistEmails.slice().sort() },
