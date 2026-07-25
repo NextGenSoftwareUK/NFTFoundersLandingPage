@@ -390,7 +390,7 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .form-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
 #stripe-card-element{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:13px 14px;transition:border-color .2s}
 #stripe-card-errors{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;font-family:'Share Tech Mono',monospace}
-.test-banner{background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#ffd166;font-family:'Share Tech Mono',monospace;text-align:center;line-height:1.6}
+.test-banner{display:none;background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#ffd166;font-family:'Share Tech Mono',monospace;text-align:center;line-height:1.6}
 
 /* ── ENV BADGE (always visible) ── */
 #envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
@@ -2215,7 +2215,10 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   let evmAddress = null;
 
   async function loadConfig() {
-    const data = await fetch('/api/config').then(r => r.json());
+    const r = await fetch('/api/config');
+    if (!r.ok) throw new Error(`config ${r.status}`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
     TEST_MODE = data.testMode;
     CFG = {
       stripePk:      data.stripePk,
@@ -4232,7 +4235,16 @@ window.addEventListener('DOMContentLoaded', async () => {
   //currentTier = 'supporter';
   //showSuccess('evm', '0xabc123def456abc123def456abc123def456abc123', 'https://etherscan.io');
 
-  await loadConfig();
+  try {
+    await loadConfig();
+  } catch (e) {
+    console.error('[config]', e.message);
+    const badge = document.getElementById('envBadge');
+    if (badge) {
+      badge.textContent = '⚠ CONFIG ERROR';
+      badge.style.cssText += ';background:rgba(255,50,50,.18);color:#ff5555;border-color:rgba(255,50,50,.5);opacity:1';
+    }
+  }
   initTestMode();
   updateOasisWalletUI();
   preWarmPhantom();
