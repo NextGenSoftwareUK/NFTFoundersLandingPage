@@ -1,6 +1,6 @@
 //import { kv } from "@vercel/kv";
 //import { verifySolPayment } from "../lib/verifySolTx";
-const { verifySolPayment } = require("../lib/verifySolTx");
+const { verifySolPayment } = require("../_lib/verifySolTx");
 const { createClient } = require("redis");
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
