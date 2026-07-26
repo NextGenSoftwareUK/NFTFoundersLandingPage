@@ -1809,6 +1809,13 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         <button class="pay-tab"        id="tabOasis"  onclick="switchTab('oasis')">🌀 OASIS</button>
       </div>
 
+      <!-- Gift override banner — shown across all tabs when a $0 override is detected -->
+      <div id="giftBanner" style="display:none;background:linear-gradient(90deg,rgba(0,130,50,.18),rgba(0,200,80,.18),rgba(0,130,50,.18));border:1px solid rgba(0,200,80,.4);border-radius:10px;padding:13px 18px;margin-bottom:14px;text-align:center;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#00cc44;letter-spacing:.1em;margin-bottom:4px;">🎁 FREE GIFT DETECTED</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#a8ffc0;margin-bottom:12px;">Your email has a gift override for this tier — no payment required.</div>
+        <button id="giftBannerBtn" onclick="claimGiftFromModal()" style="background:linear-gradient(135deg,#005520,#00aa36);border:none;border-radius:8px;padding:11px 28px;color:#fff;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:opacity .2s;">🎁 CLAIM FREE GIFT</button>
+      </div>
+
       <!-- ══ FIAT PANEL ══ -->
       <div class="pay-panel active" id="panelCard">
 
@@ -3691,6 +3698,33 @@ async function handleOasisMint() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>CONNECTING TO OASIS...';
 
+  // ── GIFT FLOW: free override bypasses SOL payment ──
+  if (giftOverridePrice === 0) {
+    try {
+      const giftRes = await fetch('/api/gift-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, tier: currentTier, wallet, testMode: TEST_MODE })
+      });
+      const giftData = await giftRes.json();
+      if (!giftData.success) {
+        errEl.textContent = giftData.error || 'Gift order failed.';
+        errEl.style.display = 'block';
+        return;
+      }
+      currentOasisChain = 'SolanaOASIS';
+      await mint(giftData.orderId, 'GIFT', wallet, email);
+    } catch(e) {
+      console.error(e);
+      errEl.textContent = 'Unexpected error. Please try again.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🎁 CLAIM FREE GIFT';
+    }
+    return;
+  }
+
   try {
 
     const tier  = TIERS[currentTier];
@@ -4216,29 +4250,80 @@ async function checkEmailOverride(email) {
 }
 
 function updateGiftUI(overridePrice) {
-  const priceEl    = document.getElementById('fiatPrice');
-  const noteEl     = document.getElementById('giftNote');
-  const cardEl     = document.getElementById('stripe-card-section');
-  const btnEl      = document.getElementById('fiatConfirm');
-  const t          = TIERS[currentTier];
+  const priceEl      = document.getElementById('fiatPrice');
+  const oasisPriceEl = document.getElementById('oasisPrice');
+  const noteEl       = document.getElementById('giftNote');
+  const cardEl       = document.getElementById('stripe-card-section');
+  const bannerEl     = document.getElementById('giftBanner');
+  const fiatBtnEl    = document.getElementById('fiatConfirm');
+  const oasisBtnEl   = document.getElementById('oasisConfirm');
+  const t            = TIERS[currentTier];
 
   if (overridePrice === null || overridePrice === undefined) {
-    if (noteEl) noteEl.style.display = 'none';
-    if (cardEl) cardEl.style.display = '';
+    if (bannerEl)     bannerEl.style.display = 'none';
+    if (noteEl)       noteEl.style.display = 'none';
+    if (cardEl)       cardEl.style.display = '';
     if (priceEl && t) { priceEl.textContent = t.fiatDisplay; priceEl.style.color = t.fiatColor || 'var(--gold)'; }
-    if (btnEl) btnEl.textContent = '🔒 CONFIRM MINT';
+    if (fiatBtnEl)    fiatBtnEl.textContent = '🔒 CONFIRM MINT';
+    if (oasisBtnEl && !oasisBtnEl.disabled) oasisBtnEl.textContent = '🌀 MINT WITH OASIS';
     return;
   }
   if (overridePrice === 0) {
-    if (priceEl) { priceEl.textContent = 'FREE GIFT'; priceEl.style.color = '#00cc44'; }
-    if (noteEl)  { noteEl.style.display = 'block'; noteEl.textContent = '🎁 Gift override detected — no payment required'; }
-    if (cardEl)  cardEl.style.display = 'none';
-    if (btnEl)   btnEl.textContent = '🎁 CLAIM FREE GIFT';
+    if (bannerEl)     bannerEl.style.display = 'block';
+    if (priceEl)      { priceEl.textContent = 'FREE GIFT'; priceEl.style.color = '#00cc44'; }
+    if (oasisPriceEl) { oasisPriceEl.textContent = 'FREE GIFT'; oasisPriceEl.style.color = '#00cc44'; }
+    if (noteEl)       { noteEl.style.display = 'block'; noteEl.textContent = '🎁 Gift override — no payment required'; }
+    if (cardEl)       cardEl.style.display = 'none';
+    if (fiatBtnEl)    fiatBtnEl.textContent = '🎁 CLAIM FREE GIFT';
+    if (oasisBtnEl)   oasisBtnEl.textContent = '🎁 CLAIM FREE GIFT';
   } else {
-    if (priceEl) { priceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; priceEl.style.color = '#ffb300'; }
-    if (noteEl)  { noteEl.style.display = 'block'; noteEl.textContent = `⚡ Special price applied for your email`; noteEl.style.color = '#ffb300'; }
-    if (cardEl)  cardEl.style.display = '';
-    if (btnEl)   btnEl.textContent = '🔒 CONFIRM MINT';
+    if (bannerEl)     bannerEl.style.display = 'none';
+    if (priceEl)      { priceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; priceEl.style.color = '#ffb300'; }
+    if (oasisPriceEl) { oasisPriceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; oasisPriceEl.style.color = '#ffb300'; }
+    if (noteEl)       { noteEl.style.display = 'block'; noteEl.textContent = '⚡ Special price applied for your email'; noteEl.style.color = '#ffb300'; }
+    if (cardEl)       cardEl.style.display = '';
+    if (fiatBtnEl)    fiatBtnEl.textContent = '🔒 CONFIRM MINT';
+    if (oasisBtnEl && !oasisBtnEl.disabled) oasisBtnEl.textContent = '🌀 MINT WITH OASIS';
+  }
+}
+
+async function claimGiftFromModal() {
+  const email  = document.getElementById('oasisEmail').value.trim()
+               || document.getElementById('cardEmail').value.trim();
+  const wallet = document.getElementById('oasisWalletAddr').value.trim()
+               || document.getElementById('stripeWalletAddr').value.trim();
+  const errEl  = document.getElementById('oasisError');
+  errEl.style.display = 'none'; errEl.textContent = '';
+
+  if (!email || !email.includes('@')) {
+    errEl.textContent = 'Please enter your email address first.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const btn = document.getElementById('giftBannerBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>CLAIMING...';
+  try {
+    const giftRes = await fetch('/api/gift-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, tier: currentTier, wallet, testMode: TEST_MODE })
+    });
+    const giftData = await giftRes.json();
+    if (!giftData.success) {
+      errEl.textContent = giftData.error || 'Gift claim failed.';
+      errEl.style.display = 'block';
+      return;
+    }
+    currentOasisChain = 'SolanaOASIS';
+    await mint(giftData.orderId, 'GIFT', wallet, email);
+  } catch(e) {
+    console.error(e);
+    errEl.textContent = 'Unexpected error. Please try again.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎁 CLAIM FREE GIFT';
   }
 }
 
@@ -4314,6 +4399,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   try {
     document.getElementById('cardEmail').addEventListener('blur', e => checkEmailOverride(e.target.value.trim()));
+  document.getElementById('oasisEmail').addEventListener('blur', e => checkEmailOverride(e.target.value.trim()));
 
   await loadConfig();
   } catch (e) {
