@@ -553,18 +553,17 @@ Two hook targets:
 - Snapshot: `POST https://hub.snapshot.org/api/spaces/{space}/members` or via Snapshot strategies (token-gated by NFT ownership — no active call needed, just NFT ownership is enough)
 - Aragon / custom: configurable webhook-style call with `{ wallet, tier, weight, campaignId }`
 
-**Platform-wide: ODAO (OASIS Super DAO)**
-- NOT every OASISNFTStore mint grants ODAO membership — only NFTs that are directly OASIS-related (e.g. the Founders NFTs from NFTFoundersLandingPage)
-- The ODAO hook for Founders NFTs belongs in `NFTFoundersLandingPage/api/oasis.js`, not in the generic OASISNFTStore platform
-- For OASISNFTStore: each campaign creator opts in by configuring their own DAO target — the platform does not force ODAO membership on unrelated campaigns
+**ODAO (OASIS Super DAO) — per-campaign opt-in**
+- NOT every OASISNFTStore campaign hooks into the ODAO — only OASIS-owned campaigns do (current Founders NFTs, and future OASIS NFT campaigns run through OASISNFTStore)
+- Third-party creator campaigns are unaffected — the hook is off by default
+- Implemented as a campaign-level flag: `odao: { enabled: true, weights: { genesis: 100, core: 10, supporter: 1 } }` on the campaign holon
+- On mint in `api/oasis.js`: check if `campaign.odao?.enabled`, then POST to ODAO membership API with `{ wallet, avatarId, tier, weight, campaignId }`
+- Non-blocking fire-and-forget with error log (mint must never fail because ODAO is down)
 - ODAO membership API endpoint TBD — depends on ODAO backend (see `C:\Source\ODAO`)
 
-**ODAO site** (`C:\Source\ODAO`) needs building out as a separate project — proposal listing, voting, treasury, member registry. To be done after OASISNFTStore.
+**NFTFoundersLandingPage** — the existing Founders site also needs the ODAO hook added to its `api/oasis.js` directly (it doesn't go through OASISNFTStore). Same pattern: fire after successful mint, non-blocking, weights Genesis=100/Core=10/Supporter=1.
 
-**NFTFoundersLandingPage ODAO hook** — add to `NFTFoundersLandingPage/api/oasis.js` after successful mint:
-- Register buyer wallet + avatarId in ODAO with weight by tier (Genesis=100, Core=10, Supporter=1)
-- Non-blocking fire-and-forget with error log
-- To be wired once ODAO backend (`C:\Source\ODAO`) exposes a membership API
+**ODAO site** (`C:\Source\ODAO`) needs building out as a separate project — proposal listing, voting, treasury, member registry. To be built after OASISNFTStore.
 
 ### Phase 10 — Secondary Market / Resale (BLOCKED)
 - [ ] Secondary market / resale listing (OASIS marketplace feed)
