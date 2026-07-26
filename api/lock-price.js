@@ -3,7 +3,7 @@
 // import { v4 as uuidv4 } from "uuid";
 
 const crypto = require("crypto");
-const { verifySolPayment } = require("../lib/verifySolTx");
+const { verifySolPayment } = require("../_lib/verifySolTx");
 const { createClient } = require("redis");
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
