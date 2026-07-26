@@ -41,8 +41,8 @@ OASISNFTStore is a **white-label, multi-tenant NFT campaign platform** built on 
 |---|---|
 | Frontend | Vanilla HTML/CSS/JS (same as Founders) — no framework, Vercel-hosted |
 | API | Vercel Serverless Functions (Node.js ESM) |
-| **CMS / Persistent Data** | **OASIS Web4 Data API** (holons in MongoDB via OASIS) |
-| **AI Generation** | **OASIS Web6 npm package** (prompt → campaign config JSON) |
+| **CMS / Persistent Data** | **OASIS Web4 Data API** via `@oasisomniverse/web4-api` npm package |
+| **AI Generation** | **OASIS Web6** via `@oasisomniverse/web6-api` npm package (same pattern) |
 | Transactional / Real-time | Redis (Upstash) — mint counts, locks, orders, waitlists, sessions |
 | Payments | Stripe + Solana (Phantom) + EVM USDT (ETH/BNB/MATIC) + BTC |
 | Minting | OASIS Web4 API (`/api/nft/mint-nft`) — same as Founders |
@@ -158,26 +158,31 @@ Vercel Hobby limit is **12 serverless functions**. Carefully planned:
 
 ## OASIS Web4 Data API Usage
 
-All CMS data goes through the OASIS Web4 npm package. The key operations:
+All CMS data goes through `@oasisomniverse/web4-api` (installed from GitHub: `NextGenSoftwareUK/OASIS-API-Javascipt-Package-WEB4`). Already installed and in use in NFTFoundersLandingPage. The key operations for OASISNFTStore:
 
 ```js
-// Save/update a campaign
-await web4.Data.SaveHolon(campaignHolon);
+const { OASISClient } = require('@oasisomniverse/web4-api');
+const oasis = new OASISClient({ baseUrl: process.env.OASIS_API_URL_LIVE });
+await oasis.auth.login({ username, password }); // stores JWT in tokenStore automatically
+
+// Save/update a campaign holon
+await oasis.data.saveHolon({ /* campaign JSON — arbitrary fields accepted */ });
 
 // Load a campaign by ID
-const campaign = await web4.Data.LoadHolon(campaignId);
+const res = await oasis.data.loadHolon({ holonId: campaignId });
+const campaign = res.result; // SDK unwraps double-nested envelope, normalises key casing
 
-// List all published campaigns (marketplace)
-const campaigns = await web4.Data.LoadAllHolons({ type: 'Campaign', filter: { status: 'published' } });
+// List all holons (marketplace — filter client-side or pass server filter params)
+const list = await oasis.data.loadAllHolons({ /* filter params */ });
 
-// Load campaigns owned by a creator avatar
-const myCampaigns = await web4.Data.LoadHolonsForAvatar(avatarId, 'Campaign');
+// Load child holons (tiers under a campaign)
+const tiers = await oasis.data.loadHolonsForParent({ parentId: campaignId });
 
 // Delete a campaign (admin only)
-await web4.Data.DeleteHolon(campaignId);
+await oasis.data.deleteHolon({ holonId: campaignId });
 ```
 
-The OASIS Web4 package handles JWT auth internally after initial avatar authentication.
+Auth is managed the same way as in NFTFoundersLandingPage's `api/oasis.js` — a module-level `OASISClient` singleton, re-authenticated when `oasis.auth.isAuthenticated()` returns false. Creators log in as their own avatar via `oasis.auth.login()`, which then gates their campaign CRUD.
 
 ---
 
@@ -615,8 +620,9 @@ USDT_MATIC_LIVE=...
 
 ## Open Questions
 
-1. **OASIS Web4/Web6 npm package names** — what are the exact package names on npm? Is auth handled by the package or do we still call `/api/avatar/authenticate` manually?
-2. **OASIS holon schema** — does the OASIS Web4 Data API accept arbitrary JSON fields on a holon, or must we define a schema/type upfront? How do we query holons by type and filter by field (e.g. `status: "published"`)?
-3. **Image hosting** — OASIS image CDN vs Vercel Blob for creator-uploaded images? Recommend OASIS CDN to keep everything in the OASIS ecosystem.
-4. **Pannax-style features** — DAO governance hooks (proposal voting, community treasury) — Phase 8 or later?
-5. **Platform fee** — free to create for launch, or charge a small creation/listing fee from day one?
+1. **Web4 package name confirmed**: `@oasisomniverse/web4-api`, installed from `github:NextGenSoftwareUK/OASIS-API-Javascipt-Package-WEB4`. Auth, avatar, NFT and data modules all available. Already live in NFTFoundersLandingPage.
+2. **Web6 package name**: assumed `@oasisomniverse/web6-api` from same GitHub org — confirm before Phase 3.
+3. **OASIS holon schema**: the `data.saveHolon` and `data.loadAllHolons` endpoints accept arbitrary JSON. Confirm what filter/query params `loadAllHolons` supports for filtering by status/type server-side vs. client-side.
+4. **Image hosting** — OASIS image CDN vs Vercel Blob for creator-uploaded images? Recommend OASIS CDN to keep everything in the OASIS ecosystem.
+5. **Pannax-style features** — DAO governance hooks (proposal voting, community treasury) — Phase 8 or later?
+6. **Platform fee** — free to create for launch, or charge a small creation/listing fee from day one?
