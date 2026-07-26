@@ -19,7 +19,7 @@ OASISNFTStore is a **white-label, multi-tenant NFT campaign platform** built on 
 - Adds the OASIS Web4 Data API as the CMS backend for all persistent campaign data
 - Adds the OASIS Web6 npm package for AI campaign generation
 
-> **Note:** The current NFTFoundersLandingPage uses raw `fetch()` calls to the OASIS REST API — it does NOT use an npm package. OASISNFTStore will be the first project to adopt the Web4/Web6 npm packages properly. Confirm package names with the OASIS team before Phase 1 (likely `@oasis-omniverse/web4` and `@oasis-omniverse/web6` or similar).
+> **Note:** NFTFoundersLandingPage's `api/oasis.js` was refactored in July 2026 to use the `@oasisomniverse/web4-api` SDK (installed from `github:NextGenSoftwareUK/OASIS-API-Javascipt-Package-WEB4`). OASISNFTStore inherits this pattern. Web6 package name to confirm with OASIS team before Phase 3.
 
 ---
 
@@ -621,7 +621,7 @@ USDT_MATIC_LIVE=...
 ## Open Questions
 
 1. **Web4 package name confirmed**: `@oasisomniverse/web4-api`, installed from `github:NextGenSoftwareUK/OASIS-API-Javascipt-Package-WEB4`. Auth, avatar, NFT and data modules all available. Already live in NFTFoundersLandingPage.
-2. **Web6 package name**: assumed `@oasisomniverse/web6-api` from same GitHub org — confirm before Phase 3.
+2. **Web6 package name confirmed**: `@oasisomniverse/web6-api`, install from `github:NextGenSoftwareUK/OASIS-API-Javascript-Package-WEB6`. Client class is `Web6Client`. No auth of its own — reuse WEB4 JWT via `web6.setToken(jwtToken)`. Key modules: `web6.completion.complete()`, `web6.images.generate()`, `web6.orchestrator.*`.
 3. **OASIS holon schema**: the `data.saveHolon` and `data.loadAllHolons` endpoints accept arbitrary JSON. Confirm what filter/query params `loadAllHolons` supports for filtering by status/type server-side vs. client-side.
 4. **Image hosting** — OASIS image CDN vs Vercel Blob for creator-uploaded images? Recommend OASIS CDN to keep everything in the OASIS ecosystem.
 5. **Pannax-style features** — DAO governance hooks (proposal voting, community treasury) — Phase 8 or later?
