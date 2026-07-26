@@ -1924,7 +1924,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         </div>
 
         <!-- Stripe card -->
-        <div class="form-group">
+        <div class="form-group" id="stripe-card-section">
           <label class="form-label">
             CARD DETAILS
           </label>
@@ -1948,6 +1948,9 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
             $1,499 USD
           </span>
         </div>
+
+        <!-- Gift override note -->
+        <div id="giftNote" style="display:none;padding:10px 14px;border-radius:8px;background:rgba(0,200,80,.1);border:1px solid rgba(0,200,80,.25);font-family:'Share Tech Mono',monospace;font-size:12px;color:#00cc44;text-align:center;margin-bottom:8px;"></div>
 
         <!-- Confirm -->
         <button
@@ -2213,6 +2216,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   let OASIS_CFG = {};
   let TEST_MODE = false;
   let evmAddress = null;
+  let giftOverridePrice = null; // null = no override, 0 = free, >0 = custom USD price
 
   async function loadConfig() {
     const r = await fetch('/api/config');
@@ -2414,6 +2418,12 @@ function openModal(tier) {
   document.getElementById('mintModal').classList.add('open');
   document.body.style.overflow = 'hidden';
   if (!stripeReady) setTimeout(initStripe, 100);
+
+  // Re-check override for already-entered email (tier may have changed)
+  giftOverridePrice = null;
+  updateGiftUI(null);
+  const existingEmail = document.getElementById('cardEmail').value.trim();
+  if (existingEmail) checkEmailOverride(existingEmail);
 }
 
 function closeModal() {
@@ -3231,6 +3241,30 @@ async function handleFiatPayment() {
   if (!wallet) {
     errEl.textContent =
       'Please enter wallet address.';
+    return;
+  }
+
+  // ── GIFT FLOW: free or admin-overridden price ──
+  if (giftOverridePrice === 0) {
+    const btn = document.getElementById('fiatConfirm');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>CLAIMING GIFT...';
+    try {
+      const giftRes = await fetch('/api/gift-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, tier: currentTier, wallet, name, testMode: TEST_MODE })
+      });
+      const giftData = await giftRes.json();
+      if (!giftData.success) { errEl.textContent = giftData.error || 'Gift order failed.'; return; }
+      currentOasisChain = 'SolanaOASIS';
+      await mint(giftData.orderId, 'GIFT', wallet, email);
+    } catch(e) {
+      console.error(e);
+      errEl.textContent = 'Unexpected error. Please try again.';
+    } finally {
+      resetFiatBtn();
+    }
     return;
   }
 
@@ -4165,6 +4199,49 @@ function initTestMode() {
   if (sb) sb.style.display = 'block';
 }
 
+// ── GIFT OVERRIDE UI ──
+async function checkEmailOverride(email) {
+  giftOverridePrice = null;
+  if (!email || !email.includes('@')) { updateGiftUI(null); return; }
+  try {
+    const res = await fetch(`/api/get-override?email=${encodeURIComponent(email)}`);
+    if (!res.ok) { updateGiftUI(null); return; }
+    const data = await res.json();
+    if (data.overrides) {
+      const op = data.overrides[`${currentTier}Price`];
+      giftOverridePrice = (op !== null && op !== undefined) ? op : null;
+    }
+  } catch { /* non-fatal — fall through to normal flow */ }
+  updateGiftUI(giftOverridePrice);
+}
+
+function updateGiftUI(overridePrice) {
+  const priceEl    = document.getElementById('fiatPrice');
+  const noteEl     = document.getElementById('giftNote');
+  const cardEl     = document.getElementById('stripe-card-section');
+  const btnEl      = document.getElementById('fiatConfirm');
+  const t          = TIERS[currentTier];
+
+  if (overridePrice === null || overridePrice === undefined) {
+    if (noteEl) noteEl.style.display = 'none';
+    if (cardEl) cardEl.style.display = '';
+    if (priceEl && t) { priceEl.textContent = t.fiatDisplay; priceEl.style.color = t.fiatColor || 'var(--gold)'; }
+    if (btnEl) btnEl.textContent = '🔒 CONFIRM MINT';
+    return;
+  }
+  if (overridePrice === 0) {
+    if (priceEl) { priceEl.textContent = 'FREE GIFT'; priceEl.style.color = '#00cc44'; }
+    if (noteEl)  { noteEl.style.display = 'block'; noteEl.textContent = '🎁 Gift override detected — no payment required'; }
+    if (cardEl)  cardEl.style.display = 'none';
+    if (btnEl)   btnEl.textContent = '🎁 CLAIM FREE GIFT';
+  } else {
+    if (priceEl) { priceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; priceEl.style.color = '#ffb300'; }
+    if (noteEl)  { noteEl.style.display = 'block'; noteEl.textContent = `⚡ Special price applied for your email`; noteEl.style.color = '#ffb300'; }
+    if (cardEl)  cardEl.style.display = '';
+    if (btnEl)   btnEl.textContent = '🔒 CONFIRM MINT';
+  }
+}
+
 // Detect Edge + tracking prevention and warn user
 async function checkMintCounts() {
   const LIMITS = { genesis: 20, core: 50, supporter: 100 };
@@ -4236,7 +4313,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   //showSuccess('evm', '0xabc123def456abc123def456abc123def456abc123', 'https://etherscan.io');
 
   try {
-    await loadConfig();
+    document.getElementById('cardEmail').addEventListener('blur', e => checkEmailOverride(e.target.value.trim()));
+
+  await loadConfig();
   } catch (e) {
     console.error('[config]', e.message);
     const badge = document.getElementById('envBadge');

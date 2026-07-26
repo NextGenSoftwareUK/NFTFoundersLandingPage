@@ -45,6 +45,37 @@ export default async function handler(req, res) {
       return res.json({ success: true, message: 'Mint counts reset to 0' });
     }
 
+    if (action === 'add-emails') {
+      const { emails } = req.body;
+      if (!Array.isArray(emails) || !emails.length) return res.status(400).json({ error: 'No emails provided' });
+      const valid = [...new Set(
+        emails.map(e => String(e).trim().toLowerCase()).filter(e => e.includes('@') && e.length < 255)
+      )].slice(0, 1000);
+      if (valid.length) await redis.sAdd(`${P}waitlist:emails`, valid);
+      const total = await redis.sCard(`${P}waitlist:emails`);
+      return res.json({ success: true, added: valid.length, total });
+    }
+
+    if (action === 'set-override') {
+      const { email, genesisPrice, corePrice, supporterPrice } = req.body;
+      if (!email) return res.status(400).json({ error: 'email required' });
+      const key = email.toLowerCase().trim();
+      const meta = {};
+      const toNum = v => (v === '' || v === null || v === undefined) ? null : Number(v);
+      if (genesisPrice !== undefined) meta.genesisPrice = toNum(genesisPrice);
+      if (corePrice !== undefined) meta.corePrice = toNum(corePrice);
+      if (supporterPrice !== undefined) meta.supporterPrice = toNum(supporterPrice);
+      await redis.set(`${P}waitlist:meta:${key}`, JSON.stringify(meta));
+      return res.json({ success: true });
+    }
+
+    if (action === 'remove-override') {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ error: 'email required' });
+      await redis.del(`${P}waitlist:meta:${email.toLowerCase().trim()}`);
+      return res.json({ success: true });
+    }
+
     if (action === 'reset-all') {
       await Promise.all([
         redis.set(`${P}mint_count:genesis`, '0'),
@@ -77,6 +108,14 @@ export default async function handler(req, res) {
 
     const waitlistEmails = await redis.sMembers(`${RP}waitlist:emails`);
 
+    let overrides = {};
+    if (waitlistEmails.length > 0) {
+      const metaVals = await redis.mGet(waitlistEmails.map(e => `${RP}waitlist:meta:${e}`));
+      waitlistEmails.forEach((e, i) => {
+        if (metaVals[i]) try { overrides[e] = JSON.parse(metaVals[i]); } catch {}
+      });
+    }
+
     const orderKeys = await redis.keys(`${RP}order:*`);
 
     let orders = [];
@@ -93,7 +132,7 @@ export default async function handler(req, res) {
       namespace: RP.replace(/:$/, '') || 'live',
       mintCounts,
       limits: MINT_LIMITS,
-      waitlist: { count: waitlistEmails.length, emails: waitlistEmails.slice().sort() },
+      waitlist: { count: waitlistEmails.length, emails: waitlistEmails.slice().sort(), overrides },
       orders,
     });
   }
