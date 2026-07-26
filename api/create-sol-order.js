@@ -6,7 +6,7 @@
 //const { kv } = require("@vercel/kv");
 //const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
-const { rateLimit } = require("../lib/rateLimit");
+// const { rateLimit } = require("../lib/rateLimit"); // DEAD — rate limiting never wired up, call site is commented out
 const { getSolPriceUSD } = require("../lib/solPrice");
 const { createClient } = require("redis");
 
