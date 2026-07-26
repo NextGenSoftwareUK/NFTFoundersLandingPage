@@ -66,18 +66,32 @@ export default async function handler(req, res) {
 
     // Pricing by tier
     const prices = {
-      genesis: 149900,   // $1,499
-      core: 49900,    // $499
-      supporter: 50//14900     // $149  //TODO: REMEMBER TO REMOVE AFTER!!!!
+      genesis: 149900,
+      core: 49900,
+      supporter: 14900,
     };
 
-    const amount = prices[tier];
-
+    // Check for a custom price override stored in Redis for this email
+    let amount = prices[tier];
     if (!amount) {
       return res.status(400).json({
         success: false,
         error: 'Invalid tier'
       });
+    }
+
+    try {
+      const raw = await redis.get(`${P}waitlist:meta:${(email || '').toLowerCase().trim()}`);
+      if (raw) {
+        const meta = JSON.parse(raw);
+        const op = meta[`${tier}Price`];
+        if (op !== null && op !== undefined && op > 0) {
+          amount = Math.round(op * 100); // USD → cents
+        }
+        // op === 0 means free gift — should use /api/gift-order, not this endpoint
+      }
+    } catch (e) {
+      console.warn('[override-lookup]', e.message);
     }
 
     // Create and confirm payment

@@ -211,6 +211,44 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 }
 .btn-copy:hover{opacity:.75}
 
+/* ── Override chips ── */
+.ov-chip{display:inline-block;padding:2px 7px;border-radius:10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.08em;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+.ov-chip.free{background:rgba(0,200,80,.14);color:#00cc44;border:1px solid rgba(0,200,80,.3);}
+.ov-chip.custom{background:rgba(240,165,0,.14);color:var(--genesis);border:1px solid rgba(240,165,0,.3);}
+
+/* ── Import box ── */
+.import-box{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.1);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+.import-input{flex:1;min-width:0;background:#060d24;border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;}
+.import-input:focus{border-color:rgba(0,229,255,.4);}
+.btn-add{background:rgba(0,200,80,.13);color:#00cc44;border:1px solid rgba(0,200,80,.3);padding:7px 14px;border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;}
+.btn-add:hover{opacity:.8}
+.btn-import-file{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.25);padding:7px 14px;border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;}
+.btn-import-file:hover{opacity:.8}
+.btn-import-confirm{background:rgba(0,200,80,.15);color:#00cc44;border:1px solid rgba(0,200,80,.3);padding:7px 16px;border-radius:7px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;cursor:pointer;}
+.btn-import-confirm:hover{opacity:.8}
+
+/* ── Email list with overrides ── */
+.email-item{font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 10px;border-radius:6px;color:var(--text);display:flex;align-items:center;gap:6px;}
+.email-item:nth-child(odd){background:rgba(255,255,255,.02);}
+.email-addr{flex:1;word-break:break-all;}
+.btn-override-edit{padding:3px 8px;border-radius:5px;background:rgba(0,229,255,.07);color:var(--cyan);border:1px solid rgba(0,229,255,.18);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;opacity:0;transition:opacity .15s;flex-shrink:0;letter-spacing:.06em;}
+.email-item:hover .btn-override-edit{opacity:1;}
+
+/* ── Override modal form ── */
+.ov-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.ov-row:last-child{border-bottom:none;}
+.ov-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em;width:82px;flex-shrink:0;text-align:left;}
+.ov-input{width:100px;background:#060d24;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;}
+.ov-input:focus{border-color:rgba(0,229,255,.4);}
+.btn-free-price{padding:5px 9px;border-radius:5px;background:rgba(0,200,80,.12);color:#00cc44;border:1px solid rgba(0,200,80,.25);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;}
+.btn-free-price:hover{opacity:.8}
+.btn-default-price{padding:5px 9px;border-radius:5px;background:rgba(255,255,255,.04);color:var(--dim);border:1px solid rgba(255,255,255,.1);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;}
+.btn-default-price:hover{opacity:.8}
+.btn-save-ov{padding:11px 28px;border-radius:8px;background:linear-gradient(135deg,#006080,#00b4d8);border:none;color:#fff;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;}
+.btn-save-ov:hover{opacity:.85}
+.btn-remove-ov{width:100%;margin-top:14px;padding:9px;border-radius:7px;background:rgba(255,77,109,.08);color:#ff4d6d;border:1px solid rgba(255,77,109,.2);font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:.1em;cursor:pointer;}
+.btn-remove-ov:hover{opacity:.75}
+
 /* ── Spinner ── */
 .spinner{
   display:inline-block;width:16px;height:16px;border:2px solid rgba(0,229,255,.2);
@@ -232,6 +270,41 @@ tbody td{padding:11px 14px;vertical-align:middle;}
       <button class="btn-cancel" onclick="closeReset()">CANCEL</button>
       <button class="btn-danger" id="modal-confirm-btn" onclick="confirmReset()">CONFIRM</button>
     </div>
+  </div>
+</div>
+
+<!-- Override modal -->
+<div class="modal-overlay" id="override-modal">
+  <div class="modal-box" style="border-color:rgba(0,229,255,.3);box-shadow:0 0 60px rgba(0,229,255,.1);max-width:460px;">
+    <div class="modal-icon">⚡</div>
+    <div class="modal-title" style="color:var(--cyan)">PRICE OVERRIDE</div>
+    <div id="override-email-label" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);margin-bottom:20px;word-break:break-all;"></div>
+    <div style="text-align:left;">
+      <div class="ov-row">
+        <span class="ov-label" style="color:var(--genesis)">GENESIS</span>
+        <input id="ov-genesis" class="ov-input" type="number" min="0" step="1" placeholder="default ($1,499)">
+        <button class="btn-free-price" onclick="setFreePrice('genesis')">FREE</button>
+        <button class="btn-default-price" onclick="clearPrice('genesis')">DEFAULT</button>
+      </div>
+      <div class="ov-row">
+        <span class="ov-label" style="color:var(--core)">CORE</span>
+        <input id="ov-core" class="ov-input" type="number" min="0" step="1" placeholder="default ($499)">
+        <button class="btn-free-price" onclick="setFreePrice('core')">FREE</button>
+        <button class="btn-default-price" onclick="clearPrice('core')">DEFAULT</button>
+      </div>
+      <div class="ov-row">
+        <span class="ov-label" style="color:var(--supporter)">SUPPORTER</span>
+        <input id="ov-supporter" class="ov-input" type="number" min="0" step="1" placeholder="default ($149)">
+        <button class="btn-free-price" onclick="setFreePrice('supporter')">FREE</button>
+        <button class="btn-default-price" onclick="clearPrice('supporter')">DEFAULT</button>
+      </div>
+    </div>
+    <div id="override-result" style="font-family:'Share Tech Mono',monospace;font-size:11px;min-height:16px;margin-top:12px;color:#ff4d6d;"></div>
+    <div class="modal-btns" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeOverrideModal()">CANCEL</button>
+      <button class="btn-save-ov" id="btn-save-ov" onclick="saveOverride()">SAVE</button>
+    </div>
+    <button class="btn-remove-ov" id="btn-remove-ov" onclick="removeAllOverrides()">REMOVE ALL OVERRIDES FOR THIS EMAIL</button>
   </div>
 </div>
 
@@ -272,6 +345,9 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 <script>
 let sessionPw = sessionStorage.getItem('oasis_admin_pw') || '';
 let currentNamespace = 'test';
+let currentOverrides = {};
+let parsedImportEmails = [];
+let currentOverrideEmail = null;
 
 function fmt(ts) {
   if (!ts) return '—';
@@ -358,7 +434,25 @@ async function loadData() {
   }
 }
 
+function renderOverrideChips(email) {
+  const ov = currentOverrides[email];
+  if (!ov) return '';
+  const tiers = [
+    { key: 'genesisPrice',   label: 'G' },
+    { key: 'corePrice',      label: 'C' },
+    { key: 'supporterPrice', label: 'S' },
+  ];
+  return tiers.map(({ key, label }) => {
+    const v = ov[key];
+    if (v === null || v === undefined) return '';
+    return v === 0
+      ? `<span class="ov-chip free">${label}:FREE</span>`
+      : `<span class="ov-chip custom">${label}:$${v}</span>`;
+  }).join('');
+}
+
 function render({ mintCounts, limits, waitlist, orders }) {
+  currentOverrides = waitlist.overrides || {};
   const total     = mintCounts.genesis + mintCounts.core + mintCounts.supporter;
   const totalCap  = limits.genesis + limits.core + limits.supporter;
   const paidOrds  = orders.filter(o => o.status === 'paid');
@@ -490,10 +584,39 @@ function render({ mintCounts, limits, waitlist, orders }) {
         </div>
         <button class="btn-copy" onclick="copyEmails(${JSON.stringify(waitlist.emails).replace(/"/g,'&quot;')})">COPY ALL</button>
       </div>
+
+      <!-- Import tools -->
+      <div class="import-box">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <label class="btn-import-file" style="cursor:pointer;">
+            📁 IMPORT FILE
+            <input type="file" id="importFile" accept=".csv,.txt" style="display:none" onchange="onFileSelect(this)">
+          </label>
+          <input id="addEmailInput" class="import-input" type="email" placeholder="email@example.com"
+            onkeydown="if(event.key==='Enter')addSingleEmail()">
+          <button class="btn-add" onclick="addSingleEmail()">+ ADD</button>
+        </div>
+        <div id="importPreview" style="display:none;margin-top:10px;display:none;">
+          <div id="importSummary" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--cyan);margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-import-confirm" onclick="confirmImport()">IMPORT ALL</button>
+            <button class="btn-sm btn-logout" onclick="cancelImport()">CANCEL</button>
+          </div>
+        </div>
+        <div id="importResult" style="font-family:'Share Tech Mono',monospace;font-size:11px;min-height:16px;margin-top:8px;"></div>
+      </div>
+
+      <!-- Email list -->
       <div class="email-list">
         ${waitlist.emails.length === 0
           ? '<div style="text-align:center;color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px;padding:20px">No emails in waitlist</div>'
-          : waitlist.emails.map(e => `<div class="email-item"><span class="email-dot"></span>${e}</div>`).join('')
+          : waitlist.emails.map(e => `
+              <div class="email-item">
+                <span class="email-dot"></span>
+                <span class="email-addr">${e}</span>
+                ${renderOverrideChips(e)}
+                <button class="btn-override-edit" onclick="openOverrideModal('${e.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">OVERRIDE</button>
+              </div>`).join('')
         }
       </div>
     </div>
@@ -555,6 +678,136 @@ function copyEmails(emails) {
     const btn = document.querySelector('.btn-copy');
     if (btn) { btn.textContent = 'COPIED!'; setTimeout(() => btn.textContent = 'COPY ALL', 2000); }
   });
+}
+
+// ── IMPORT FUNCTIONS ──
+function parseEmailsFromText(text) {
+  const matches = text.match(/[^\s,;"'<>\r\n]+@[^\s,;"'<>\r\n]+\.[^\s,;"'<>\r\n]+/g) || [];
+  return [...new Set(matches.map(e => e.toLowerCase().trim()).filter(e => e.includes('@') && e.length < 255))];
+}
+
+function onFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const emails = parseEmailsFromText(e.target.result);
+    parsedImportEmails = emails;
+    input.value = '';
+    const preview = document.getElementById('importPreview');
+    const result  = document.getElementById('importResult');
+    if (!emails.length) { result.style.color = '#ff4d6d'; result.textContent = 'No valid emails found in file.'; return; }
+    document.getElementById('importSummary').textContent = `Found ${emails.length} valid email${emails.length !== 1 ? 's' : ''}`;
+    preview.style.display = 'block';
+    result.textContent = '';
+  };
+  reader.readAsText(file);
+}
+
+async function addSingleEmail() {
+  const input  = document.getElementById('addEmailInput');
+  const result = document.getElementById('importResult');
+  const email  = input.value.trim().toLowerCase();
+  if (!email || !email.includes('@')) { result.style.color = '#ff4d6d'; result.textContent = 'Please enter a valid email.'; return; }
+  result.style.color = ''; result.textContent = 'Adding...';
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'add-emails', emails: [email] }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    input.value = '';
+    result.style.color = '#00cc44';
+    result.textContent = `Added! Waitlist total: ${data.total}`;
+    setTimeout(() => { result.textContent = ''; }, 3000);
+    await loadData();
+  } catch(e) { result.style.color = '#ff4d6d'; result.textContent = 'Error: ' + e.message; }
+}
+
+async function confirmImport() {
+  if (!parsedImportEmails.length) return;
+  const result = document.getElementById('importResult');
+  result.style.color = 'var(--dim)'; result.textContent = 'Importing...';
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'add-emails', emails: parsedImportEmails }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Import failed');
+    parsedImportEmails = [];
+    document.getElementById('importPreview').style.display = 'none';
+    result.style.color = '#00cc44';
+    result.textContent = `Imported ${data.added} email${data.added !== 1 ? 's' : ''} · Waitlist total: ${data.total}`;
+    setTimeout(() => { result.textContent = ''; }, 4000);
+    await loadData();
+  } catch(e) { result.style.color = '#ff4d6d'; result.textContent = 'Error: ' + e.message; }
+}
+
+function cancelImport() {
+  parsedImportEmails = [];
+  const preview = document.getElementById('importPreview');
+  if (preview) preview.style.display = 'none';
+  const result = document.getElementById('importResult');
+  if (result) result.textContent = '';
+}
+
+// ── OVERRIDE MODAL FUNCTIONS ──
+function openOverrideModal(email) {
+  currentOverrideEmail = email;
+  document.getElementById('override-email-label').textContent = email;
+  const ov = currentOverrides[email] || {};
+  const toVal = v => (v !== null && v !== undefined) ? v : '';
+  document.getElementById('ov-genesis').value   = toVal(ov.genesisPrice);
+  document.getElementById('ov-core').value      = toVal(ov.corePrice);
+  document.getElementById('ov-supporter').value = toVal(ov.supporterPrice);
+  const hasAny = ['genesisPrice','corePrice','supporterPrice'].some(k => ov[k] !== null && ov[k] !== undefined);
+  document.getElementById('btn-remove-ov').style.display = hasAny ? 'block' : 'none';
+  document.getElementById('override-result').textContent = '';
+  document.getElementById('btn-save-ov').textContent = 'SAVE';
+  document.getElementById('btn-save-ov').disabled = false;
+  document.getElementById('override-modal').classList.add('open');
+}
+
+function closeOverrideModal() {
+  document.getElementById('override-modal').classList.remove('open');
+  currentOverrideEmail = null;
+}
+
+function setFreePrice(tier) { document.getElementById(`ov-${tier}`).value = '0'; }
+function clearPrice(tier)   { document.getElementById(`ov-${tier}`).value = ''; }
+
+async function saveOverride() {
+  if (!currentOverrideEmail) return;
+  const btn = document.getElementById('btn-save-ov');
+  btn.textContent = 'SAVING...'; btn.disabled = true;
+  const toNum = v => v === '' ? null : Number(v);
+  const body = {
+    password: sessionPw, action: 'set-override', email: currentOverrideEmail,
+    genesisPrice:   toNum(document.getElementById('ov-genesis').value),
+    corePrice:      toNum(document.getElementById('ov-core').value),
+    supporterPrice: toNum(document.getElementById('ov-supporter').value),
+  };
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Save failed');
+    closeOverrideModal();
+    await loadData();
+  } catch(e) {
+    document.getElementById('override-result').textContent = 'Error: ' + e.message;
+    btn.textContent = 'SAVE'; btn.disabled = false;
+  }
+}
+
+async function removeAllOverrides() {
+  if (!currentOverrideEmail) return;
+  if (!confirm(`Remove all price overrides for ${currentOverrideEmail}?`)) return;
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'remove-override', email: currentOverrideEmail }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Remove failed');
+    closeOverrideModal();
+    await loadData();
+  } catch(e) { document.getElementById('override-result').textContent = 'Error: ' + e.message; }
 }
 
 // Auto-login if password already in session
