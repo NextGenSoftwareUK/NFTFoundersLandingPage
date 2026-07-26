@@ -4204,7 +4204,7 @@ async function checkEmailOverride(email) {
   giftOverridePrice = null;
   if (!email || !email.includes('@')) { updateGiftUI(null); return; }
   try {
-    const res = await fetch(`/api/get-override?email=${encodeURIComponent(email)}`);
+    const res = await fetch(`/api/config?email=${encodeURIComponent(email)}`);
     if (!res.ok) { updateGiftUI(null); return; }
     const data = await res.json();
     if (data.overrides) {

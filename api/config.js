@@ -138,6 +138,17 @@ export default async function handler(req, res) {
   }
 
   // ── Public GET ──
+
+  // ?email=... — return per-email price overrides (replaces /api/get-override)
+  if (req.query.email) {
+    const email = String(req.query.email).toLowerCase().trim();
+    if (!email.includes('@')) return res.status(400).json({ error: 'valid email required' });
+    const raw = await redis.get(`${P}waitlist:meta:${email}`);
+    if (!raw) return res.json({ overrides: null });
+    try { return res.json({ overrides: JSON.parse(raw) }); }
+    catch { return res.json({ overrides: null }); }
+  }
+
   let mintCounts = { genesis: 0, core: 0, supporter: 0 };
   try {
     const [genesis, core, supporter] = await Promise.all([
