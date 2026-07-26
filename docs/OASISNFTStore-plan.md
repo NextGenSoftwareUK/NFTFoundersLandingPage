@@ -481,67 +481,101 @@ Each template's `render.js` takes the config JSON and writes the DOM. The Founde
 
 ## Phase Plan
 
-### Phase 1 — Core Infrastructure (Week 1–2)
-- [ ] Create `OASISNFTStore` repo, copy Founders site as starting point
-- [ ] Install OASIS Web4 npm package — confirm package name with OASIS team
-- [ ] Implement OASIS Web4 Data API wrapper (`lib/oasisData.js`) for campaign holons CRUD
-- [ ] Redis schema for transactional data only (mint counts, locks, orders, waitlists, sessions)
-- [ ] `api/campaigns.js` — campaign CRUD via OASIS Web4
-- [ ] `api/auth.js` — creator register/login/me via OASIS avatar API
-- [ ] `api/config.js` — serve campaign config by slug (reads OASIS + Redis mint counts)
-- [ ] Slug → campaignId lookup cached in Redis (mirrored from OASIS on save)
-- [ ] Seed the Founders campaign as a live OASIS holon (slug: `oasis-founders`)
-- [ ] Existing payment APIs copied and updated for `campaign:{id}:*` Redis keys
+### Phase 1 — Core Infrastructure ✅ COMPLETE
+- [x] Create `OASISNFTStore` repo, copy Founders site as starting point
+- [x] Install OASIS Web4 npm package (`@oasisomniverse/web4-api`)
+- [x] Implement OASIS Web4 Data API wrapper (`lib/oasisData.js`) for campaign holons CRUD
+- [x] Redis schema for transactional data only (mint counts, locks, orders, waitlists, sessions)
+- [x] `api/campaigns.js` — campaign CRUD via OASIS Web4
+- [x] `api/auth.js` — creator register/login/me via OASIS avatar API
+- [x] `api/config.js` — serve campaign config by slug (reads OASIS + Redis mint counts)
+- [x] Slug → campaignId lookup cached in Redis (mirrored from OASIS on save)
+- [x] Seed the Founders campaign as a live OASIS holon (slug: `oasis-founders`)
+- [x] Existing payment APIs copied and updated for `campaign:{id}:*` Redis keys
 
-### Phase 2 — Founders Template (Week 2–3)
-- [ ] Extract current `index.html` into `templates/founders/render.js`
-- [ ] Parameterise all hardcoded values to read from campaign config
-- [ ] `campaign.html` — dynamic campaign page shell
-- [ ] Verify Founders campaign renders pixel-perfect via the template system
-- [ ] `templates.html` — template gallery with screenshot previews
+### Phase 2 — Founders Template ✅ COMPLETE
+- [x] Parameterise all hardcoded values to read from campaign config
+- [x] `campaign.html` — dynamic campaign page shell
+- [x] Verify Founders campaign renders pixel-perfect via the template system
+- [x] `templates.html` — template gallery with screenshot previews
 
-### Phase 3 — AI Generator (Week 3–4)
-- [ ] Install OASIS Web6 npm package — confirm package name with OASIS team
-- [ ] `api/generate.js` — Web6 AI call, returns campaign config JSON
-- [ ] `create.html` — AI wizard UI: prompt input → loading → live preview
-- [ ] Tier image prompt suggestions displayed in CMS editor
-- [ ] Save as `draft` — creator directed to dashboard editor
+### Phase 3 — AI Generator ✅ COMPLETE
+- [x] Install OASIS Web6 npm package (`@oasisomniverse/web6-api`)
+- [x] `api/generate.js` — Web6 AI call, returns campaign config JSON
+- [x] `create.html` — AI wizard UI: prompt input → loading → live preview
+- [x] Save as `draft` — creator directed to dashboard editor
 
-### Phase 4 — Creator Dashboard (Week 4–5)
-- [ ] `dashboard.html` — campaign list, status badges, mint progress, quick stats
-- [ ] `dashboard-edit.html` — tabbed CMS editor with live preview panel (iframe)
-- [ ] Submit for Review button → updates holon status to `pending_review`
-- [ ] `dashboard-orders.html` — creator-scoped orders (read Redis for campaign)
-- [ ] `dashboard-analytics.html` — per-campaign charts (inline Chart.js, no CDN)
+### Phase 4 — Creator Dashboard ✅ COMPLETE
+- [x] `dashboard.html` — campaign list, status badges, mint progress, quick stats
+- [x] `dashboard-edit.html` — CMS editor with live preview panel, webhook config, embed widget, STARNET status, custom domain
+- [x] Submit for Review button → updates holon status to `pending_review`
+- [x] `dashboard-orders.html` — creator-scoped orders (read Redis for campaign)
+- [x] `dashboard-analytics.html` — per-campaign charts
 
-### Phase 5 — Marketplace (Week 5–6)
-- [ ] `index.html` — campaign discovery grid (queries OASIS for published campaigns)
-- [ ] Campaign card component (shared HTML/JS across pages)
-- [ ] Featured campaigns (admin-curated field on holon)
-- [ ] Filter/sort controls
+### Phase 5 — Marketplace ✅ COMPLETE
+- [x] `index.html` — campaign discovery grid (queries OASIS for published campaigns)
+- [x] Campaign card component (shared HTML/JS across pages)
+- [x] Featured campaigns (admin-curated field on holon)
+- [x] Filter/sort controls
 
-### Phase 6 — Platform Admin (Week 6–7)
-- [ ] `admin.html` — platform home with approval queue
-- [ ] `admin-campaigns.html` — approval workflow, approve/reject with email notification
-- [ ] `admin-creators.html` — creator management + pricing overrides
-- [ ] `admin-analytics.html` — platform-wide charts
+### Phase 6 — Platform Admin ✅ COMPLETE
+- [x] `admin.html` — platform home with approval queue
+- [x] `admin-campaigns.html` — approval workflow, approve/reject with email notification
+- [x] `admin-creators.html` — creator management + pricing overrides
+- [x] `admin-analytics.html` — platform-wide charts
 
-### Phase 7 — Additional Templates (Week 7–8)
-- [ ] Template 2: Clean Minimal
-- [ ] Template 3: Dark Luxury
-- [ ] Template 4: Gaming Guild
-- [ ] Template 5: DeFi Protocol
-- [ ] Template 6: Art Collection
+### Phase 7 — Additional Templates ✅ COMPLETE
+- [x] Template 2: Clean Minimal (`data-theme="minimal"`)
+- [x] Template 3: Dark Luxury (`data-theme="dark-luxury"`)
+- [x] Template 4: Gaming Guild (`data-theme="gaming-guild"`)
+- [x] Template 5: DeFi Protocol (`data-theme="defi-protocol"`)
+- [x] Template 6: Art Collection (`data-theme="art-collection"`)
+- All implemented as CSS `[data-theme="X"]` overrides in `campaign.html` — single file, no build step
 
-### Phase 8 — Advanced Features (Week 8+)
-- [ ] Platform fee system (revenue share taken at order creation)
-- [ ] Royalties config in campaign settings (passed to OASIS mint payload)
-- [ ] Custom domain per campaign (Vercel domain API — Pro feature)
-- [ ] Embed widget (iframe snippet for external sites)
-- [ ] Webhook system (creators get POST on each sale)
-- [ ] Bulk CSV import for waitlists
+### Phase 8 — Advanced Features ✅ COMPLETE (see notes below for blocked items)
+- [x] Platform fee system — `lib/platformFee.js`, `PLATFORM_FEE_PCT` env var (default 2.5%)
+- [x] Royalties config — `royaltyBps` field on campaign, passed to OASIS mint payload
+- [x] Embed widget — `embed.html`, iframeable at `/embed.html?campaign={slug}`
+- [x] Webhook system — `lib/webhooks.js`, HMAC-SHA256 signed, events: `nft.minted`, `campaign.published`, `payment.confirmed`
+- [x] Bulk CSV tier import — `action=import-tiers` in `api/campaigns.js` (CSV: name,badge,supply,price_usd,price_sol,perks)
+- [x] STARNET publishing — every published tier creates a WEB5 NFT Smartbrick via `@oasisomniverse/web5-api`; per-tier error tracking, retry UI in dashboard-edit.html
+- [x] Custom domain per campaign — UI built in `dashboard-edit.html`; domain saved to campaign holon; `api/config.js` supports `?host=` lookup; `campaign.html` detects custom-domain requests. **Vercel API registration commented out — uncomment when upgrading to Vercel Pro** (see `api/campaigns.js` for the commented `add-domain`/`remove-domain` handlers and env vars `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID`)
+
+### Phase 9 — DAO Governance Hooks (TODO)
+
+After a successful mint, register the buyer's wallet as a DAO member/voter.
+
+Two hook targets:
+
+**Per-campaign: External DAOs**
+- Creator configures DAO settings on their campaign: platform (Snapshot / Aragon / custom contract), space slug or contract address, voting weight per tier
+- On mint, `api/oasis.js` fires a POST to the relevant DAO API to register the wallet
+- Snapshot: `POST https://hub.snapshot.org/api/spaces/{space}/members` or via Snapshot strategies (token-gated by NFT ownership — no active call needed, just NFT ownership is enough)
+- Aragon / custom: configurable webhook-style call with `{ wallet, tier, weight, campaignId }`
+
+**Platform-wide: ODAO (OASIS Super DAO)**
+- NOT every OASISNFTStore mint grants ODAO membership — only NFTs that are directly OASIS-related (e.g. the Founders NFTs from NFTFoundersLandingPage)
+- The ODAO hook for Founders NFTs belongs in `NFTFoundersLandingPage/api/oasis.js`, not in the generic OASISNFTStore platform
+- For OASISNFTStore: each campaign creator opts in by configuring their own DAO target — the platform does not force ODAO membership on unrelated campaigns
+- ODAO membership API endpoint TBD — depends on ODAO backend (see `C:\Source\ODAO`)
+
+**ODAO site** (`C:\Source\ODAO`) needs building out as a separate project — proposal listing, voting, treasury, member registry. To be done after OASISNFTStore.
+
+**NFTFoundersLandingPage ODAO hook** — add to `NFTFoundersLandingPage/api/oasis.js` after successful mint:
+- Register buyer wallet + avatarId in ODAO with weight by tier (Genesis=100, Core=10, Supporter=1)
+- Non-blocking fire-and-forget with error log
+- To be wired once ODAO backend (`C:\Source\ODAO`) exposes a membership API
+
+### Phase 10 — Secondary Market / Resale (BLOCKED)
 - [ ] Secondary market / resale listing (OASIS marketplace feed)
-- [ ] DAO governance hooks (Pannax-style — snapshot.org or OASIS native voting)
+- **Blocked on**: OASIS Web5 ownership-transfer tracking, listing/offer system, and STARNET WebUI being functional enough to surface listings. No integration target exists yet — revisit when OASIS Web5 secondary-market infrastructure is ready.
+
+### Phase 11 — Custom Domain (Vercel Pro activation)
+- [ ] Upgrade Vercel project to Pro
+- [ ] Set `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID` env vars
+- [ ] Uncomment `add-domain`/`remove-domain` blocks in `api/campaigns.js`
+- [ ] Uncomment Vercel API call in `saveCustomDomain()` in `dashboard-edit.html`
+- All other custom domain code (host-based config lookup, campaign.html detection, UI) is already live
 
 ---
 
