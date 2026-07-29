@@ -14,8 +14,12 @@ async function ensureRedis() {
   return redisReady;
 }
 
-const OASIS_API_URL = "https://api.web4.oasisomniverse.one";
-const ACTIVATION_PORTAL_URL = "https://oportal.oasisomniverse.one/activate.html";
+const OASIS_API_URL = TEST_MODE
+  ? "https://dev.api.web4.oasisomniverse.one"
+  : "https://api.web4.oasisomniverse.one";
+const ACTIVATION_PORTAL_URL = TEST_MODE
+  ? "https://dev.oportal.oasisomniverse.one/activate.html"
+  : "https://oportal.oasisomniverse.one/activate.html";
 const ACTIVATION_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 function randomPassword(length = 20) {

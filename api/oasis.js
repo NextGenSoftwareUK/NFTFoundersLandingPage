@@ -36,7 +36,9 @@ async function ensurePlatformAuth(oasis) {
   console.log('[oasis] platform auth ok, avatarId:', res.session.avatarId);
 }
 
-const ACTIVATION_PORTAL_URL = "https://oportal.oasisomniverse.one/activate.html";
+const ACTIVATION_PORTAL_URL = TEST_MODE
+  ? "https://dev.oportal.oasisomniverse.one/activate.html"
+  : "https://oportal.oasisomniverse.one/activate.html";
 const ACTIVATION_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 function randomString(length = 24) {
