@@ -108,19 +108,25 @@ export default async function handler(req, res) {
 
     const waitlistEmails = await redis.sMembers(`${RP}waitlist:emails`);
 
+    // Cap mGet to 500 emails to avoid pulling unbounded data into heap
+    const EMAIL_CAP = 500;
+    const emailsForMeta = waitlistEmails.slice(0, EMAIL_CAP);
     let overrides = {};
-    if (waitlistEmails.length > 0) {
-      const metaVals = await redis.mGet(waitlistEmails.map(e => `${RP}waitlist:meta:${e}`));
-      waitlistEmails.forEach((e, i) => {
+    if (emailsForMeta.length > 0) {
+      const metaVals = await redis.mGet(emailsForMeta.map(e => `${RP}waitlist:meta:${e}`));
+      emailsForMeta.forEach((e, i) => {
         if (metaVals[i]) try { overrides[e] = JSON.parse(metaVals[i]); } catch {}
       });
     }
 
     const orderKeys = await redis.keys(`${RP}order:*`);
 
+    // Cap order fetch to 500 to avoid pulling the full order history into heap
+    const ORDERS_CAP = 500;
+    const keysToFetch = orderKeys.length > ORDERS_CAP ? orderKeys.slice(0, ORDERS_CAP) : orderKeys;
     let orders = [];
-    if (orderKeys.length) {
-      const rawOrders = await redis.mGet(orderKeys);
+    if (keysToFetch.length) {
+      const rawOrders = await redis.mGet(keysToFetch);
       for (const raw of rawOrders) {
         if (raw) { try { orders.push(JSON.parse(raw)); } catch {} }
       }
@@ -132,8 +138,10 @@ export default async function handler(req, res) {
       namespace: RP.replace(/:$/, '') || 'live',
       mintCounts,
       limits: MINT_LIMITS,
-      waitlist: { count: waitlistEmails.length, emails: waitlistEmails.slice().sort(), overrides },
+      waitlist: { count: waitlistEmails.length, emails: emailsForMeta.slice().sort(), overrides, truncated: waitlistEmails.length > EMAIL_CAP },
       orders,
+      orderCount: orderKeys.length,
+      ordersTruncated: orderKeys.length > ORDERS_CAP,
     });
   }
 

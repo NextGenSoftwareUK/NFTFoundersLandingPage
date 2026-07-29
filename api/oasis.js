@@ -326,7 +326,7 @@ export default async function handler(req, res) {
     order.avatarActivationKey    = avatarProvision.activationKey || null;
     order.avatarActivationUrl    = avatarProvision.activationUrl || null;
     order.avatarProvisionWarning = avatarProvision.warning || null;
-    order.oasisResponse          = JSON.stringify(mintRes.raw);
+    console.log('[oasis] raw mint response:', JSON.stringify(mintRes.raw));
 
     await redis.set(`${P}order:${order.orderId}`, JSON.stringify(order));
 

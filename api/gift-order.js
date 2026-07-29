@@ -66,7 +66,7 @@ export default async function handler(req, res) {
 
   await Promise.all([
     redis.incr(`${P}mint_count:${tier}`),
-    redis.set(`${P}order:${orderId}`, JSON.stringify(order)),
+    redis.set(`${P}order:${orderId}`, JSON.stringify(order), { EX: 60 * 60 * 24 * 90 }),
   ]);
 
   return res.json({ success: true, orderId, priceUSD: overridePrice });
