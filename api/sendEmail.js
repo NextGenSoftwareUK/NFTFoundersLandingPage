@@ -36,11 +36,19 @@ function randomUUID() {
   });
 }
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://oportal.oasisomniverse.one",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type"
-};
+const ALLOWED_ORIGINS = new Set([
+  "https://oportal.oasisomniverse.one",
+  "https://dev.oportal.oasisomniverse.one"
+]);
+
+function getCorsHeaders(req) {
+  const origin = req.headers.origin || '';
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://oportal.oasisomniverse.one",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
+}
 
 async function handleActivate(req, res) {
   const { email, key, newPassword } = req.body || {};
@@ -327,7 +335,7 @@ async function handleSendEmail(req, res) {
 }
 
 export default async function handler(req, res) {
-  Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+  Object.entries(getCorsHeaders(req)).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
