@@ -15,4 +15,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Deploy to Vercel Production
-        run: npx vercel --prod --yes
+        run: npx vercel --prod --yes --scope=oasis-team
