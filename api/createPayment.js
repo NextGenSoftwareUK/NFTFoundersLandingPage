@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     const prices = {
       genesis: 149900,   // $1,499
       core: 49900,    // $499
-      supporter: 50 //14900 // $149  //TODO: REMEMBER TO REMOVE AFTER!!!! //50
+      supporter: 14900 //14900 // $149  //TODO: REMEMBER TO REMOVE AFTER!!!! //50
     };
 
     const amount = prices[tier];

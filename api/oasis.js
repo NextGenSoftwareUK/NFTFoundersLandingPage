@@ -521,6 +521,7 @@ export default async function handler(req, res) {
     // Force OffChainProvider to MongoDB so the holon is stored in the OASIS DB where OPORTAL can find it.
     payload.OffChainProvider = 'MongoDBOASIS';
     payload.Price = order.priceSOL || 0;
+    payload.WaitForNFTToMintInSeconds = 300;
     console.log('[oasis] step 5: payload prepared — OnChainProvider:', payload.OnChainProvider, 'OffChainProvider:', payload.OffChainProvider, 'SendToAvatarAfterMintingId:', payload.SendToAvatarAfterMintingId, 'Price:', payload.Price);
     console.log('[oasis] step 5: Title:', payload.Title, 'Provider:', payload.OnChainProvider, 'Standard:', payload.NFTStandardType);
 
@@ -566,8 +567,9 @@ export default async function handler(req, res) {
     // whether we actually got a minted NFT before treating it as a fatal error.
     const mintedNFT = result?.result?.web3NFTs?.[0];
     const mintSucceeded = mintedNFT?.mintTransactionHash && !mintedNFT.mintTransactionHash.toLowerCase().includes('error');
-    if (result?.isError && !mintSucceeded) {
-      throw new Error(result.message || 'OASIS returned an error');
+    if (!mintSucceeded) {
+      const reason = mintedNFT?.mintTransactionHash || result?.message || 'NFT mint failed';
+      throw new Error(reason.startsWith('Error') ? reason : `NFT mint failed: ${reason}`);
     }
 
     // =========================
