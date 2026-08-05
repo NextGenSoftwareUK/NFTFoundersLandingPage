@@ -213,8 +213,9 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 
 /* ── Override chips ── */
 .ov-chip{display:inline-block;padding:3px 9px;border-radius:10px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.06em;margin-left:4px;vertical-align:middle;white-space:nowrap;}
-.ov-chip.free{background:rgba(0,200,80,.14);color:#00cc44;border:1px solid rgba(0,200,80,.3);}
-.ov-chip.custom{background:rgba(240,165,0,.14);color:var(--genesis);border:1px solid rgba(240,165,0,.3);}
+.ov-chip.ov-genesis{background:rgba(240,165,0,.15);color:#f0a500;border:1px solid rgba(240,165,0,.35);}
+.ov-chip.ov-core{background:rgba(160,196,255,.12);color:#a0c4ff;border:1px solid rgba(160,196,255,.3);}
+.ov-chip.ov-supporter{background:rgba(0,204,68,.12);color:#00cc44;border:1px solid rgba(0,204,68,.3);}
 
 /* ── Import box ── */
 .import-box{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.1);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
@@ -438,16 +439,16 @@ function renderOverrideChips(email) {
   const ov = currentOverrides[email];
   if (!ov) return '';
   const tiers = [
-    { key: 'genesisPrice',   label: 'GENESIS' },
-    { key: 'corePrice',      label: 'CORE' },
-    { key: 'supporterPrice', label: 'SUPPORTER' },
+    { key: 'genesisPrice',   label: 'GENESIS',  cls: 'genesis' },
+    { key: 'corePrice',      label: 'CORE',      cls: 'core' },
+    { key: 'supporterPrice', label: 'SUPPORTER', cls: 'supporter' },
   ];
-  return tiers.map(({ key, label }) => {
+  return tiers.map(({ key, label, cls }) => {
     const v = ov[key];
     if (v === null || v === undefined) return '';
     return v === 0
-      ? `<span class="ov-chip free">🎁 ${label}: FREE</span>`
-      : `<span class="ov-chip custom">⚡ ${label}: $${v}</span>`;
+      ? `<span class="ov-chip ov-${cls}">🎁 ${label}: FREE</span>`
+      : `<span class="ov-chip ov-${cls}">⚡ ${label}: $${v}</span>`;
   }).join('');
 }
 
