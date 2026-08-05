@@ -3509,7 +3509,8 @@ async function showSuccess(method, txHash, extra) {
       nftImage: NFT_IMAGE_URLS[currentTier],
       testMode : TEST_MODE,
       activationUrl: extra?.activationUrl || null,
-      activationLabel: extra?.activationLabel || null
+      activationLabel: extra?.activationLabel || null,
+      earlyBird: extra?.earlyBird || false
     });
   }
 }
@@ -4132,7 +4133,8 @@ async function mint(orderId, paymentSignature, wallet, email) {
       chain: chain.label,
       txLine: `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`,
       activationUrl: data.activationUrl || null,
-      activationLabel: data.activationLabel || null
+      activationLabel: data.activationLabel || null,
+      earlyBird: data.earlyBird || false
     });
 
   } catch(e) {
@@ -4206,12 +4208,12 @@ async function mint(orderId, paymentSignature, wallet, email) {
 // }
 
 
-async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel }) {
+async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird }) {
   try {
     await fetch('/api/sendEmail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel })
+      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird })
     });
   } catch(e) {
     console.warn('Email send failed:', e.message);

@@ -366,6 +366,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       result: mintRes.raw,
+      earlyBird:              isEarlyBird,
       avatarCreated:          avatarProvision.createdNewAvatar,
       avatarId:               avatarProvision.avatarId,
       activationUrl:          avatarProvision.activationUrl,
