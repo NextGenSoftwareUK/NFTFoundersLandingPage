@@ -78,11 +78,14 @@ module.exports = async function handler(req, res) {
         const raw = await redis.get(`${P}waitlist:meta:${email.toLowerCase().trim()}`);
         if (raw) {
           const meta = JSON.parse(raw);
-          const op = meta[`${tier}Price`];
-          if (op !== null && op !== undefined && op > 0) {
-            priceUSD = op;
+          const notExpired = !meta.expiresAt || meta.expiresAt >= Date.now();
+          if (notExpired) {
+            const op = meta[`${tier}Price`];
+            if (op !== null && op !== undefined && op > 0) {
+              priceUSD = op;
+            }
+            // op === 0 = free gift — should use /api/gift-order instead
           }
-          // op === 0 = free gift — should use /api/gift-order instead
         }
       } catch (e) {
         console.warn('[sol-order override-lookup]', e.message);
