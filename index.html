@@ -397,6 +397,11 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 #envBadge.live{background:rgba(0,200,80,.13);color:#00e676;border-color:rgba(0,200,80,.4);}
 #envBadge.test{background:rgba(255,160,0,.16);color:#ffb300;border-color:rgba(255,160,0,.5);}
 
+/* ── ENV BADGE (always visible) ── */
+#envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
+#envBadge.live{background:rgba(0,200,80,.13);color:#00e676;border-color:rgba(0,200,80,.4);}
+#envBadge.test{background:rgba(255,160,0,.16);color:#ffb300;border-color:rgba(255,160,0,.5);}
+
 /* ── TEST MODE BANNER ── */
 #testModeBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#7c2d00,#c45200,#7c2d00);border-bottom:2px solid #ff6600;padding:8px 16px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:12px;color:#ffd166;letter-spacing:.1em;cursor:pointer;user-select:none}
 #testModeBanner strong{color:#fff}
