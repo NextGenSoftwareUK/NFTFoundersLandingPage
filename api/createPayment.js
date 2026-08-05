@@ -132,7 +132,7 @@ export default async function handler(req, res) {
       orderId,
       wallet: wallet || null,
       tier,
-      priceUSD : null,
+      priceUSD : amount / 100,
       priceSOL: null,
       solPriceUSD: null,
       status: "pending",
