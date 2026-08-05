@@ -456,7 +456,7 @@ function render({ mintCounts, limits, waitlist, orders }) {
   currentOverrides = waitlist.overrides || {};
   const total     = mintCounts.genesis + mintCounts.core + mintCounts.supporter;
   const totalCap  = limits.genesis + limits.core + limits.supporter;
-  const paidOrds  = orders.filter(o => o.status === 'paid');
+  const paidOrds  = orders.filter(o => o.status === 'paid' || o.status === 'minted');
 
   const html = `
   <!-- Mint Stats -->
