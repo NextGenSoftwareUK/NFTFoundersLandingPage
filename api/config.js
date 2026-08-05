@@ -76,6 +76,15 @@ export default async function handler(req, res) {
       return res.json({ success: true });
     }
 
+    if (action === 'remove-waitlist-email') {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ error: 'email required' });
+      const key = email.toLowerCase().trim();
+      await redis.sRem(`${P}waitlist:emails`, key);
+      await redis.del(`${P}waitlist:meta:${key}`);
+      return res.json({ success: true });
+    }
+
     if (action === 'reset-all') {
       await Promise.all([
         redis.set(`${P}mint_count:genesis`, '0'),

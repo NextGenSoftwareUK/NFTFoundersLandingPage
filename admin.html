@@ -233,7 +233,8 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 .email-item:nth-child(odd){background:rgba(255,255,255,.02);}
 .email-addr{flex:1;word-break:break-all;}
 .btn-override-edit{padding:3px 8px;border-radius:5px;background:rgba(0,229,255,.07);color:var(--cyan);border:1px solid rgba(0,229,255,.18);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;opacity:0;transition:opacity .15s;flex-shrink:0;letter-spacing:.06em;}
-.email-item:hover .btn-override-edit{opacity:1;}
+.btn-remove-email{padding:3px 8px;border-radius:5px;background:rgba(255,50,50,.08);color:#ff6b6b;border:1px solid rgba(255,50,50,.25);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;opacity:0;transition:opacity .15s;flex-shrink:0;letter-spacing:.06em;}
+.email-item:hover .btn-override-edit,.email-item:hover .btn-remove-email{opacity:1;}
 
 /* ── Override modal form ── */
 .ov-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
@@ -617,6 +618,7 @@ function render({ mintCounts, limits, waitlist, orders }) {
                 <span class="email-addr">${e}</span>
                 ${renderOverrideChips(e)}
                 <button class="btn-override-edit" onclick="openOverrideModal('${e.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">OVERRIDE</button>
+                <button class="btn-remove-email" onclick="removeWaitlistEmail('${e.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">✕ REMOVE</button>
               </div>`).join('')
         }
       </div>
@@ -796,6 +798,17 @@ async function saveOverride() {
     document.getElementById('override-result').textContent = 'Error: ' + e.message;
     btn.textContent = 'SAVE'; btn.disabled = false;
   }
+}
+
+async function removeWaitlistEmail(email) {
+  if (!confirm(`Remove ${email} from the waitlist?`)) return;
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'remove-waitlist-email', email }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Remove failed');
+    await loadData();
+  } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function removeAllOverrides() {
