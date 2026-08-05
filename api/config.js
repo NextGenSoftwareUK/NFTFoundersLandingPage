@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     }
 
     if (action === 'set-override') {
-      const { email, genesisPrice, corePrice, supporterPrice } = req.body;
+      const { email, genesisPrice, corePrice, supporterPrice, expiresAt } = req.body;
       if (!email) return res.status(400).json({ error: 'email required' });
       const key = email.toLowerCase().trim();
       const meta = {};
@@ -65,6 +65,7 @@ export default async function handler(req, res) {
       if (genesisPrice !== undefined) meta.genesisPrice = toNum(genesisPrice);
       if (corePrice !== undefined) meta.corePrice = toNum(corePrice);
       if (supporterPrice !== undefined) meta.supporterPrice = toNum(supporterPrice);
+      if (expiresAt) meta.expiresAt = Number(expiresAt);
       await redis.set(`${P}waitlist:meta:${key}`, JSON.stringify(meta));
       return res.json({ success: true });
     }
@@ -162,8 +163,11 @@ export default async function handler(req, res) {
     if (!email.includes('@')) return res.status(400).json({ error: 'valid email required' });
     const raw = await redis.get(`${P}waitlist:meta:${email}`);
     if (!raw) return res.json({ overrides: null });
-    try { return res.json({ overrides: JSON.parse(raw) }); }
-    catch { return res.json({ overrides: null }); }
+    try {
+      const meta = JSON.parse(raw);
+      if (meta.expiresAt && meta.expiresAt < Date.now()) return res.json({ overrides: null });
+      return res.json({ overrides: meta });
+    } catch { return res.json({ overrides: null }); }
   }
 
   let mintCounts = { genesis: 0, core: 0, supporter: 0 };

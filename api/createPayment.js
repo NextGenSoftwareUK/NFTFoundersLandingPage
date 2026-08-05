@@ -85,11 +85,14 @@ export default async function handler(req, res) {
       const raw = await redis.get(`${P}waitlist:meta:${(email || '').toLowerCase().trim()}`);
       if (raw) {
         const meta = JSON.parse(raw);
-        const op = meta[`${tier}Price`];
-        if (op !== null && op !== undefined && op > 0) {
-          amount = Math.round(op * 100); // USD → cents
+        const notExpired = !meta.expiresAt || meta.expiresAt >= Date.now();
+        if (notExpired) {
+          const op = meta[`${tier}Price`];
+          if (op !== null && op !== undefined && op > 0) {
+            amount = Math.round(op * 100); // USD → cents
+          }
+          // op === 0 means free gift — should use /api/gift-order, not this endpoint
         }
-        // op === 0 means free gift — should use /api/gift-order, not this endpoint
       }
     } catch (e) {
       console.warn('[override-lookup]', e.message);

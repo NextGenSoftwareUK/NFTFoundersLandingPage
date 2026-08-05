@@ -301,6 +301,17 @@ tbody td{padding:11px 14px;vertical-align:middle;}
         <button class="btn-default-price" onclick="clearPrice('supporter')">DEFAULT</button>
       </div>
     </div>
+    <div style="margin-top:16px;text-align:left;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:.08em;">EXPIRY (optional)</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <input id="ov-expiry" type="date" style="background:#060d24;border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;flex:1;min-width:130px;">
+        <button class="btn-free-price" onclick="setExpiry(7)">1W</button>
+        <button class="btn-free-price" onclick="setExpiry(14)">2W</button>
+        <button class="btn-free-price" onclick="setExpiry(30)">1M</button>
+        <button class="btn-free-price" onclick="setExpiry(90)">3M</button>
+        <button class="btn-default-price" onclick="document.getElementById('ov-expiry').value=''">NONE</button>
+      </div>
+    </div>
     <div id="override-result" style="font-family:'Share Tech Mono',monospace;font-size:11px;min-height:16px;margin-top:12px;color:#ff4d6d;"></div>
     <div class="modal-btns" style="margin-top:16px;">
       <button class="btn-cancel" onclick="closeOverrideModal()">CANCEL</button>
@@ -444,13 +455,20 @@ function renderOverrideChips(email) {
     { key: 'corePrice',      label: 'CORE',      cls: 'core' },
     { key: 'supporterPrice', label: 'SUPPORTER', cls: 'supporter' },
   ];
+  const now = Date.now();
+  const expired = ov.expiresAt && ov.expiresAt < now;
+  const expiryTag = ov.expiresAt
+    ? (expired ? ` <span style="color:#ff4d6d;font-size:9px">[EXPIRED]</span>`
+                : ` <span style="color:var(--dim);font-size:9px">exp ${new Date(ov.expiresAt).toLocaleDateString()}</span>`)
+    : '';
   return tiers.map(({ key, label, cls }) => {
     const v = ov[key];
     if (v === null || v === undefined) return '';
+    const chipStyle = expired ? 'opacity:.45;text-decoration:line-through;' : '';
     return v === 0
-      ? `<span class="ov-chip ov-${cls}">🎁 ${label}: FREE</span>`
-      : `<span class="ov-chip ov-${cls}">⚡ ${label}: $${v}</span>`;
-  }).join('');
+      ? `<span class="ov-chip ov-${cls}" style="${chipStyle}">🎁 ${label}: FREE</span>`
+      : `<span class="ov-chip ov-${cls}" style="${chipStyle}">⚡ ${label}: $${v}</span>`;
+  }).join('') + expiryTag;
 }
 
 function render({ mintCounts, limits, waitlist, orders }) {
@@ -761,6 +779,14 @@ function openOverrideModal(email) {
   document.getElementById('ov-genesis').value   = toVal(ov.genesisPrice);
   document.getElementById('ov-core').value      = toVal(ov.corePrice);
   document.getElementById('ov-supporter').value = toVal(ov.supporterPrice);
+  // Load expiry
+  const expiryInput = document.getElementById('ov-expiry');
+  if (ov.expiresAt) {
+    const d = new Date(ov.expiresAt);
+    expiryInput.value = d.toISOString().slice(0, 10);
+  } else {
+    expiryInput.value = '';
+  }
   const hasAny = ['genesisPrice','corePrice','supporterPrice'].some(k => ov[k] !== null && ov[k] !== undefined);
   document.getElementById('btn-remove-ov').style.display = hasAny ? 'block' : 'none';
   document.getElementById('override-result').textContent = '';
@@ -776,17 +802,25 @@ function closeOverrideModal() {
 
 function setFreePrice(tier) { document.getElementById(`ov-${tier}`).value = '0'; }
 function clearPrice(tier)   { document.getElementById(`ov-${tier}`).value = ''; }
+function setExpiry(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  document.getElementById('ov-expiry').value = d.toISOString().slice(0, 10);
+}
 
 async function saveOverride() {
   if (!currentOverrideEmail) return;
   const btn = document.getElementById('btn-save-ov');
   btn.textContent = 'SAVING...'; btn.disabled = true;
   const toNum = v => v === '' ? null : Number(v);
+  const expiryVal = document.getElementById('ov-expiry').value;
+  const expiresAt = expiryVal ? new Date(expiryVal).setHours(23, 59, 59, 999) : null;
   const body = {
     password: sessionPw, action: 'set-override', email: currentOverrideEmail,
     genesisPrice:   toNum(document.getElementById('ov-genesis').value),
     corePrice:      toNum(document.getElementById('ov-core').value),
     supporterPrice: toNum(document.getElementById('ov-supporter').value),
+    expiresAt,
   };
   try {
     const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
