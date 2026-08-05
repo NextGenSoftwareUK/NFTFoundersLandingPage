@@ -1,43 +1,12 @@
 const { getSolPriceUSD } = require("../lib/solPrice");
-//import { getSolPriceUSD } from "../lib/solPrice";
 
 export default async function handler(req, res) {
   try {
-    console.log("STREAM START");
-
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const send = async () => {
-      try {
-        const price = await getSolPriceUSD();
-        //const price = 100;
-
-        // res.write(`data: ${JSON.stringify({
-        //   solPrice: price,
-        //   nftPrice: 1499,
-        //   nftPriceInSOL: 1499 / price
-        // })}\n\n`);
-
-        res.write(`data: ${JSON.stringify({ price })}\n\n`);
-      } catch (e) {
-        console.error("SEND ERROR:", e);
-        res.write(`data: ${JSON.stringify({ error: e.message })}\n\n`);
-      }
-    };
-
-    await send();
-
-    const interval = setInterval(send, 15000);
-
-    req.on("close", () => {
-      clearInterval(interval);
-      res.end();
-    });
-
+    const price = await getSolPriceUSD();
+    res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=60");
+    res.status(200).json({ price });
   } catch (err) {
-    console.error("FATAL STREAM ERROR:", err);
-    res.status(500).json({ error: err.message, stack: err.stack });
+    console.error("sol-price error:", err);
+    res.status(500).json({ error: err.message });
   }
 }
