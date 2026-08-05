@@ -212,7 +212,7 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 .btn-copy:hover{opacity:.75}
 
 /* ── Override chips ── */
-.ov-chip{display:inline-block;padding:2px 7px;border-radius:10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.08em;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+.ov-chip{display:inline-block;padding:3px 9px;border-radius:10px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.06em;margin-left:4px;vertical-align:middle;white-space:nowrap;}
 .ov-chip.free{background:rgba(0,200,80,.14);color:#00cc44;border:1px solid rgba(0,200,80,.3);}
 .ov-chip.custom{background:rgba(240,165,0,.14);color:var(--genesis);border:1px solid rgba(240,165,0,.3);}
 
@@ -438,16 +438,16 @@ function renderOverrideChips(email) {
   const ov = currentOverrides[email];
   if (!ov) return '';
   const tiers = [
-    { key: 'genesisPrice',   label: 'G' },
-    { key: 'corePrice',      label: 'C' },
-    { key: 'supporterPrice', label: 'S' },
+    { key: 'genesisPrice',   label: 'GENESIS' },
+    { key: 'corePrice',      label: 'CORE' },
+    { key: 'supporterPrice', label: 'SUPPORTER' },
   ];
   return tiers.map(({ key, label }) => {
     const v = ov[key];
     if (v === null || v === undefined) return '';
     return v === 0
-      ? `<span class="ov-chip free">${label}:FREE</span>`
-      : `<span class="ov-chip custom">${label}:$${v}</span>`;
+      ? `<span class="ov-chip free">🎁 ${label}: FREE</span>`
+      : `<span class="ov-chip custom">⚡ ${label}: $${v}</span>`;
   }).join('');
 }
 
