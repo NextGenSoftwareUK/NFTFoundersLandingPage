@@ -392,6 +392,11 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 #stripe-card-errors{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;font-family:'Share Tech Mono',monospace}
 .test-banner{background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#ffd166;font-family:'Share Tech Mono',monospace;text-align:center;line-height:1.6}
 
+/* ── ENV BADGE (always visible) ── */
+#envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
+#envBadge.live{background:rgba(0,200,80,.13);color:#00e676;border-color:rgba(0,200,80,.4);}
+#envBadge.test{background:rgba(255,160,0,.16);color:#ffb300;border-color:rgba(255,160,0,.5);}
+
 /* ── TEST MODE BANNER ── */
 #testModeBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#7c2d00,#c45200,#7c2d00);border-bottom:2px solid #ff6600;padding:8px 16px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:12px;color:#ffd166;letter-spacing:.1em;cursor:pointer;user-select:none}
 #testModeBanner strong{color:#fff}
@@ -691,6 +696,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
 </nav>
 
 <!-- ── TEST MODE GLOBAL BANNER ── -->
+<div id="envBadge"></div>
 <div id="testModeBanner">
   🧪 <strong>TESTNET MODE ACTIVE</strong> — No real funds will be sent. All chains are on testnet. Stripe uses test cards.
   <span class="tm-close" onclick="document.getElementById('testModeBanner').style.display='none';document.body.classList.remove('test-mode-on')">✕</span>
@@ -4140,10 +4146,16 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
 })();
 
 // ── TEST MODE INIT ──
-(function initTestMode() 
-{
+(function initTestMode() {
+  // Always show env badge
+  const badge = document.getElementById('envBadge');
+  if (badge) {
+    badge.textContent = TEST_MODE ? '⬡ TEST' : '● LIVE';
+    badge.className   = TEST_MODE ? 'test' : 'live';
+    badge.style.opacity = '1';
+  }
+
   if (!TEST_MODE) {
-    // Hide stripe test banner in live mode
     const sb = document.getElementById('stripeTestBanner');
     if (sb) sb.style.display = 'none';
     return;
