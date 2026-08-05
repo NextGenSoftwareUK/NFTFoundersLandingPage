@@ -44,6 +44,7 @@ export default async function handler(req, res) {
       tier,
       name,
       email,
+      wallet,
       testMode
     } = req.body;
 
@@ -129,7 +130,7 @@ export default async function handler(req, res) {
     const order = {
       type: "card",
       orderId,
-      wallet: null, //maybe store last 4 digits of their card here?
+      wallet: wallet || null,
       tier,
       priceUSD : null,
       priceSOL: null,
