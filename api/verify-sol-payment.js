@@ -89,6 +89,7 @@ export default async function handler(req, res) {
 
     order.status = "paid";
     order.signature = signature;
+    order.paidAt = Date.now();
 
     await redis.set(`${P}order:${orderId}`, JSON.stringify(order));
 
