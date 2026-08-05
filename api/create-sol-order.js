@@ -38,7 +38,7 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   try {
-    const { wallet, tier } = req.body;
+    const { wallet, tier, email } = req.body;
 
     if (!wallet || tier === undefined) {
       return res.status(400).json({ error: "Missing wallet or tier" });
@@ -69,7 +69,25 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "Invalid tier" });
     }
 
-    const priceUSD = tierData.priceUSD;
+    let priceUSD = tierData.priceUSD;
+
+    // Apply per-email price override if set
+    if (email) {
+      try {
+        await ensureRedis();
+        const raw = await redis.get(`${P}waitlist:meta:${email.toLowerCase().trim()}`);
+        if (raw) {
+          const meta = JSON.parse(raw);
+          const op = meta[`${tier}Price`];
+          if (op !== null && op !== undefined && op > 0) {
+            priceUSD = op;
+          }
+          // op === 0 = free gift — should use /api/gift-order instead
+        }
+      } catch (e) {
+        console.warn('[sol-order override-lookup]', e.message);
+      }
+    }
 
     // 🔥 realtime SOL price in USD (1 SOL = X USD)
     const solPriceUSD = await getSolPriceUSD();

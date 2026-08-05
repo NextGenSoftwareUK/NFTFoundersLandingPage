@@ -2229,6 +2229,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   let TEST_MODE = false;
   let evmAddress = null;
   let giftOverridePrice = null; // null = no override, 0 = free, >0 = custom USD price
+  let _fiatSession = null; // { clientSecret, orderId } — reused across retries within same modal open
 
   async function loadConfig() {
     const r = await fetch('/api/config');
@@ -2391,6 +2392,7 @@ function initStripe() {
 // ── MODAL OPEN/CLOSE ──
 function openModal(tier) {
   currentTier = tier;
+  _fiatSession = null;
   const t = TIERS[tier];
   document.getElementById('modalBadge').textContent  = t.badge;
   document.getElementById('modalBadge').style.cssText = t.badgeStyle;
@@ -3318,28 +3320,34 @@ async function handleFiatPayment() {
     console.log("email:", email);
     console.log("wallet:", wallet);
 
-    // 1. Create PaymentIntent first
-    const res = await fetch('/api/createPayment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tier: currentTier,
-        name,
-        email,
-        wallet,
-        testMode: TEST_MODE,
-      })
-    });
+    // 1. Create PaymentIntent (reuse if already created this modal session)
+    if (!_fiatSession) {
+      const res = await fetch('/api/createPayment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tier: currentTier,
+          name,
+          email,
+          wallet,
+          testMode: TEST_MODE,
+        })
+      });
 
-    const data = await res.json();
-    console.log("data=", data);
-    
-    if (!data.success) {
-      errEl.textContent = data.error || 'Payment failed.';
-      return;
+      const data = await res.json();
+      console.log("data=", data);
+
+      if (!data.success) {
+        errEl.textContent = data.error || 'Payment failed.';
+        return;
+      }
+
+      _fiatSession = { clientSecret: data.clientSecret, orderId: data.orderId };
+    } else {
+      console.log('[fiat] reusing existing PaymentIntent for this modal session');
     }
 
-    const clientSecret = data.clientSecret; // 👈 IMPORTANT
+    const { clientSecret, orderId: fiatOrderId } = _fiatSession;
 
     // 2. Confirm payment (THIS is the ONLY Stripe call you need)
     // const { error, paymentIntent } = await stripe.confirmPayment({
@@ -3375,12 +3383,13 @@ async function handleFiatPayment() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       paymentIntentId: paymentIntent.id,
-      orderId: data.orderId,
+      orderId: fiatOrderId,
       testMode: TEST_MODE
     })
   });
 
-   await mint(data.orderId, data.paymentIntentId, wallet, email);
+  _fiatSession = null; // clear so a re-open of the modal starts fresh
+  await mint(fiatOrderId, paymentIntent.id, wallet, email);
 
     // if (paymentIntent.status === "succeeded") {
 
@@ -3762,7 +3771,8 @@ async function handleOasisMint() {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
           wallet,
-          tier: currentTier
+          tier: currentTier,
+          email
         })
       }).then(r => r.json());
 
@@ -4273,15 +4283,26 @@ function updateGiftUI(overridePrice) {
     if (oasisBtnEl && !oasisBtnEl.disabled) oasisBtnEl.textContent = '🌀 MINT WITH OASIS';
     return;
   }
+  const solPriceEl   = document.getElementById('nftSolPrice');
+  const solRateEl    = document.getElementById('solPriceOASIS');
+
   if (overridePrice === 0) {
     if (bannerEl)     bannerEl.style.display = 'block';
     if (priceEl)      { priceEl.textContent = 'FREE GIFT'; priceEl.style.color = '#00cc44'; }
     if (oasisPriceEl) { oasisPriceEl.textContent = 'FREE GIFT'; oasisPriceEl.style.color = '#00cc44'; }
+    if (solPriceEl)   { solPriceEl.textContent = 'FREE GIFT'; solPriceEl.style.color = '#00cc44'; }
     if (noteEl)       { noteEl.style.display = 'block'; noteEl.textContent = '🎁 Gift override — no payment required'; }
     if (cardEl)       cardEl.style.display = 'none';
     if (fiatBtnEl)    fiatBtnEl.textContent = '🎁 CLAIM FREE GIFT';
     if (oasisBtnEl)   oasisBtnEl.textContent = '🎁 CLAIM FREE GIFT';
   } else {
+    // Re-compute SOL equivalent using the live rate shown on screen
+    const rateText = solRateEl ? solRateEl.textContent.replace(/[^0-9.]/g, '') : '';
+    const solRate = parseFloat(rateText);
+    if (solPriceEl && solRate > 0) {
+      solPriceEl.textContent = `${(overridePrice / solRate).toFixed(4)} SOL`;
+      solPriceEl.style.color = '#ffb300';
+    }
     if (bannerEl)     bannerEl.style.display = 'none';
     if (priceEl)      { priceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; priceEl.style.color = '#ffb300'; }
     if (oasisPriceEl) { oasisPriceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; oasisPriceEl.style.color = '#ffb300'; }
