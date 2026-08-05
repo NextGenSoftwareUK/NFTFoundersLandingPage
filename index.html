@@ -4422,17 +4422,24 @@ window.addEventListener('DOMContentLoaded', async () => {
 // AFTER — waits until browser is idle
 window.addEventListener('load', () => {
   // requestIdleCallback lets the browser finish rendering first
+  const fetchSolPrice = () => {
+    fetch("/api/sol-price-stream")
+      .then(r => r.json())
+      .then(data => {
+        if (!data.price) return;
+        const solPrice = Number(data.price);
+        const tier = TIERS[currentTier];
+        const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
+        const nftInSol = nftUsdPrice / solPrice;
+        document.getElementById("solPriceOASIS").innerText = `$${solPrice.toFixed(2)} USD`;
+        document.getElementById("nftSolPrice").innerText = `${nftInSol.toFixed(4)} SOL`;
+      })
+      .catch(err => console.error("sol-price fetch error:", err));
+  };
+
   const start = () => {
-    const es = new EventSource("/api/sol-price-stream");
-    es.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const solPrice = Number(data.price);
-      const tier = TIERS[currentTier];
-      const nftUsdPrice = Number(tier.fiatDisplay.replace(/[^0-9.]/g, ""));
-      const nftInSol = nftUsdPrice / solPrice;
-      document.getElementById("solPriceOASIS").innerText = `$${solPrice.toFixed(2)} USD`;
-      document.getElementById("nftSolPrice").innerText = `${nftInSol.toFixed(4)} SOL`;
-    };
+    fetchSolPrice();
+    setInterval(fetchSolPrice, 15000);
   };
 
   'requestIdleCallback' in window
