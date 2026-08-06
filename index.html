@@ -2395,6 +2395,17 @@ function initStripe() {
 
 // ── MODAL OPEN/CLOSE ──
 function openModal(tier) {
+  if (!MINT_OPEN) {
+    const modal = document.getElementById('comingSoonModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('notifyResult').textContent = '';
+    document.getElementById('notifyEmail').value = '';
+    document.getElementById('notifyBtn').disabled = false;
+    document.getElementById('notifyBtn').textContent = 'JOIN THE WAITLIST';
+    document.getElementById('notifyForm').onsubmit = function(e) { submitNotify(e, tier); };
+    return;
+  }
   currentTier = tier;
   _fiatSession = null;
   const t = TIERS[tier];
@@ -4545,20 +4556,7 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 </div>
 
 <script>
-// Gate: show Coming Soon popup when MINT_OPEN is false.
-const _originalOpenModal = openModal;
-openModal = function(tier) {
-  if (MINT_OPEN) return _originalOpenModal(tier);
-  const pendingTier = tier;
-  const modal = document.getElementById('comingSoonModal');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  document.getElementById('notifyResult').textContent = '';
-  document.getElementById('notifyEmail').value = '';
-  document.getElementById('notifyBtn').disabled = false;
-  document.getElementById('notifyBtn').textContent = 'JOIN THE WAITLIST';
-  document.getElementById('notifyForm').onsubmit = function(e) { submitNotify(e, pendingTier); };
-};
+// Gate moved into openModal() directly — see function above.
 
 function closeComingSoon() {
   document.getElementById('comingSoonModal').style.display = 'none';
