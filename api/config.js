@@ -202,6 +202,7 @@ export default async function handler(req, res) {
       MATIC: process.env.USDT_MATIC_LIVE,
     },
     oasis: {
+      //apiUrl: TEST_MODE ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE, // DO NOT expose internal API URL to clients
       imageUrl: process.env.OASIS_IMAGE_URL,
     },
     mintCounts,
