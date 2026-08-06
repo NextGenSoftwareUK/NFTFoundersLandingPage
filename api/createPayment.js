@@ -37,8 +37,6 @@ export default async function handler(req, res) {
   try {
 
     await ensureRedis();
-    console.log("Body:", req.body);
-
     const {
       //paymentMethodId,
       tier,
@@ -52,7 +50,6 @@ export default async function handler(req, res) {
     const stripe = testMode ? new Stripe(process.env.STRIPE_SECRET_KEY_TEST) : new Stripe(process.env.STRIPE_SECRET_KEY_LIVE);
 
     console.log("Stripe mode:", testMode ? "TEST" : "LIVE");
-    console.log("Secret key prefix:", process.env.STRIPE_SECRET_KEY_TEST?.slice(0,7));
 
 
     //console.log("stripe = ", stripe);
@@ -116,8 +113,6 @@ export default async function handler(req, res) {
         name: name || ''
       }
     });
-
-    console.log("paymentIntent", paymentIntent);
 
     // // Payment failed
     // if (paymentIntent.status !== 'succeeded') {
