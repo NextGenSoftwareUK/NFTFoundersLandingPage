@@ -3222,6 +3222,7 @@ async function handleFiatPayment() {
 
   if (!chkConfirm.checked) {
     errEl.textContent = 'You must agree to the Terms of Service.';
+    chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
@@ -3694,12 +3695,13 @@ async function handleOasisMint() {
 
   if (!chkConfirm.checked) {
     errEl.textContent = 'You must agree to the Terms of Service.';
-    errEl.style.display = "block";
+    errEl.style.display = 'block';
+    chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
-  if (!wallet) 
-  { 
+  if (!wallet)
+  {
     errEl.textContent = 'Please enter your wallet address.'; 
     errEl.style.display = "block";
     return; 
@@ -4322,6 +4324,14 @@ async function claimGiftFromModal() {
                || document.getElementById('stripeWalletAddr').value.trim();
   const errEl  = document.getElementById('oasisError');
   errEl.style.display = 'none'; errEl.textContent = '';
+
+  const chkConfirm = document.getElementById('chkConfirm');
+  if (!chkConfirm.checked) {
+    errEl.textContent = 'You must agree to the Terms of Service.';
+    errEl.style.display = 'block';
+    chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
 
   if (!email || !email.includes('@')) {
     errEl.textContent = 'Please enter your email address first.';
