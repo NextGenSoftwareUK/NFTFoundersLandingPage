@@ -344,7 +344,7 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` },
         body: JSON.stringify({
           from: process.env.EMAIL_FROM,
-          to: 'davidellams@hotmail.com;david.ellams@oasisomniverse.one',
+          to: process.env.OWNER_NOTIFICATION_EMAIL,
           subject: `🌌 New Founder Mint — ${tierLabel} (${recipientEmail || 'no email'})`,
           html: `
             <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:32px;max-width:520px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">

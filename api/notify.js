@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: process.env.EMAIL_FROM,
-        to: 'davidellams@hotmail.com',
+        to: process.env.OWNER_NOTIFICATION_EMAIL,
         subject: `🌌 NFT Waitlist Sign-up (${tierLabel}): ${email}`,
         html: `
           <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:40px;max-width:520px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
