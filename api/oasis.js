@@ -328,10 +328,16 @@ export default async function handler(req, res) {
     order.avatarProvisionWarning = avatarProvision.warning || null;
     console.log('[oasis] raw mint response:', JSON.stringify(mintRes.raw));
 
+    console.log('[oasis] step 9a: saving order to redis');
     await redis.set(`${P}order:${order.orderId}`, JSON.stringify(order));
+    console.log('[oasis] step 9b: order saved');
 
     const tier = payload.MetaData?.tier;
-    if (tier) await redis.incr(`${P}mint_count:${tier}`);
+    if (tier) {
+      console.log('[oasis] step 9c: incrementing mint count for tier:', tier);
+      await redis.incr(`${P}mint_count:${tier}`);
+      console.log('[oasis] step 9d: mint count incremented');
+    }
 
     // =========================
     // 10. NOTIFY OWNER
