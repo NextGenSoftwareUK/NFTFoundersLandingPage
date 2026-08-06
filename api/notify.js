@@ -29,6 +29,10 @@ export default async function handler(req, res) {
     await redisClient.sAdd(`${P}waitlist:emails`, email.toLowerCase().trim());
     console.log('[notify] added to waitlist:', email);
 
+    const notifyTo = (process.env.OWNER_NOTIFICATION_EMAIL || '').split(',').map(e => e.trim()).filter(Boolean);
+    console.log('[notify] sending to:', notifyTo, '| from:', process.env.EMAIL_FROM, '| RESEND_API_KEY set:', !!process.env.RESEND_API_KEY);
+    if (!notifyTo.length) throw new Error('OWNER_NOTIFICATION_EMAIL env var not set');
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -37,7 +41,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: process.env.EMAIL_FROM,
-        to: (process.env.OWNER_NOTIFICATION_EMAIL || '').split(',').map(e => e.trim()).filter(Boolean),
+        to: notifyTo,
         subject: `🌌 NFT Waitlist Sign-up (${tierLabel}): ${email}`,
         html: `
           <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:40px;max-width:520px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
@@ -52,10 +56,9 @@ export default async function handler(req, res) {
       })
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Resend error: ${err}`);
-    }
+    const resBody = await response.text();
+    if (!response.ok) throw new Error(`Resend error ${response.status}: ${resBody}`);
+    console.log('[notify] email sent ok');
 
     return res.status(200).json({ success: true });
   } catch (e) {
