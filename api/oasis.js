@@ -326,7 +326,7 @@ export default async function handler(req, res) {
     order.avatarActivationKey    = avatarProvision.activationKey || null;
     order.avatarActivationUrl    = avatarProvision.activationUrl || null;
     order.avatarProvisionWarning = avatarProvision.warning || null;
-    console.log('[oasis] raw mint response:', JSON.stringify(mintRes.raw));
+    console.log('[oasis] raw mint response (truncated):', JSON.stringify(mintRes.raw)?.slice(0, 500));
 
     console.log('[oasis] step 9a: saving order to redis');
     await redis.set(`${P}order:${order.orderId}`, JSON.stringify(order));
