@@ -372,7 +372,6 @@ export default async function handler(req, res) {
       activationUrl:          avatarProvision.activationUrl,
       activationKey:          avatarProvision.activationKey,
       avatarProvisionWarning: avatarProvision.warning,
-      _debug: { testMode, collectionPublicKey: payload.CollectionPublicKey }
     });
 
   } catch (e) {
@@ -385,12 +384,6 @@ export default async function handler(req, res) {
 
     return res.status(500).json({
       error: e.message || 'Unknown error',
-      _debug: {
-        testMode:          process.env.TEST_MODE,
-        collectionPublicKey: TEST_MODE ? process.env.COLLECTION_PUBLIC_KEY_TEST : process.env.COLLECTION_PUBLIC_KEY_MAINNET,
-        username:          TEST_MODE ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE,
-        avatarId:          TEST_MODE ? process.env.OASIS_AVATAR_ID_TEST       : process.env.OASIS_AVATAR_ID_LIVE,
-      }
     });
   }
 }
