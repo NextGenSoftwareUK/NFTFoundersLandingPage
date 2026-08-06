@@ -1819,6 +1819,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#00cc44;letter-spacing:.1em;margin-bottom:4px;">🎁 FREE GIFT DETECTED</div>
         <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#a8ffc0;margin-bottom:12px;">Your email has a gift override for this tier — no payment required.</div>
         <button id="giftBannerBtn" onclick="claimGiftFromModal()" style="background:linear-gradient(135deg,#005520,#00aa36);border:none;border-radius:8px;padding:11px 28px;color:#fff;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:opacity .2s;">🎁 CLAIM FREE GIFT</button>
+        <div id="giftBannerError" style="display:none;margin-top:10px;color:#ff4444;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;"></div>
       </div>
 
       <!-- ══ FIAT PANEL ══ -->
@@ -3217,11 +3218,17 @@ async function handleQRConfirm() {
 // ── FIAT ──
 async function handleFiatPayment() {
 
-  const errEl = document.getElementById('stripe-card-errors');
+  // When the card section is hidden (free gift flow), errors must show in the banner
+  const isGiftFree = giftOverridePrice === 0;
+  const errEl = isGiftFree
+    ? document.getElementById('giftBannerError')
+    : document.getElementById('stripe-card-errors');
+  if (isGiftFree) { errEl.style.display = 'none'; errEl.textContent = ''; }
   const chkConfirm = document.getElementById("chkConfirm");
 
   if (!chkConfirm.checked) {
     errEl.textContent = 'You must agree to the Terms of Service.';
+    errEl.style.display = 'block';
     chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
@@ -4322,7 +4329,7 @@ async function claimGiftFromModal() {
                || document.getElementById('cardEmail').value.trim();
   const wallet = document.getElementById('oasisWalletAddr').value.trim()
                || document.getElementById('stripeWalletAddr').value.trim();
-  const errEl  = document.getElementById('oasisError');
+  const errEl  = document.getElementById('giftBannerError');
   errEl.style.display = 'none'; errEl.textContent = '';
 
   const chkConfirm = document.getElementById('chkConfirm');
