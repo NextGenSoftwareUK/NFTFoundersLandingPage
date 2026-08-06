@@ -188,6 +188,7 @@ export default async function handler(req, res) {
 
   res.status(200).json({
     testMode: TEST_MODE,
+    mintOpen: process.env.MINT_OPEN === 'true',
     stripePk: TEST_MODE ? process.env.STRIPE_PK_TEST : process.env.STRIPE_PK_LIVE,
     evmReceiver: process.env.EVM_RECEIVER,
     btcAddr: process.env.BTC_ADDR,

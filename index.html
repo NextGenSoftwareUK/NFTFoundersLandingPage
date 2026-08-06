@@ -2229,6 +2229,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   let CFG = {};
   let OASIS_CFG = {};
   let TEST_MODE = false;
+  let MINT_OPEN = false;
   let evmAddress = null;
   let giftOverridePrice = null; // null = no override, 0 = free, >0 = custom USD price
   let _fiatSession = null; // { clientSecret, orderId } — reused across retries within same modal open
@@ -2239,6 +2240,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
     const data = await r.json();
     if (data.error) throw new Error(data.error);
     TEST_MODE = data.testMode;
+    MINT_OPEN = data.mintOpen === true;
     CFG = {
       stripePk:      data.stripePk,
       evmReceiver:   data.evmReceiver,
@@ -4543,20 +4545,20 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 </div>
 
 <script>
-// Gate: show Coming Soon popup when any MINT button is clicked.
-// const _originalOpenModal = openModal;
-// openModal = function(tier) {
-//   let _pendingNotifyTier = tier;
-//   const modal = document.getElementById('comingSoonModal');
-//   modal.style.display = 'flex';
-//   document.body.style.overflow = 'hidden';
-//   document.getElementById('notifyResult').textContent = '';
-//   document.getElementById('notifyEmail').value = '';
-//   document.getElementById('notifyBtn').disabled = false;
-//   document.getElementById('notifyBtn').textContent = 'JOIN THE WAITLIST';
-//   document.getElementById('notifyBtn').onclick = null;
-//   document.getElementById('notifyForm').onsubmit = function(e) { submitNotify(e, _pendingNotifyTier); };
-// };
+// Gate: show Coming Soon popup when MINT_OPEN is false.
+const _originalOpenModal = openModal;
+openModal = function(tier) {
+  if (MINT_OPEN) return _originalOpenModal(tier);
+  const pendingTier = tier;
+  const modal = document.getElementById('comingSoonModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('notifyResult').textContent = '';
+  document.getElementById('notifyEmail').value = '';
+  document.getElementById('notifyBtn').disabled = false;
+  document.getElementById('notifyBtn').textContent = 'JOIN THE WAITLIST';
+  document.getElementById('notifyForm').onsubmit = function(e) { submitNotify(e, pendingTier); };
+};
 
 function closeComingSoon() {
   document.getElementById('comingSoonModal').style.display = 'none';
