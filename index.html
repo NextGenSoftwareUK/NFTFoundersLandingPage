@@ -1943,8 +1943,6 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           </label>
 
           <div id="stripe-card-element"></div>
-
-          <div id="stripe-card-errors"></div>
         </div>
 
         <!-- Price -->
@@ -1973,6 +1971,9 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         >
           🔒 CONFIRM MINT
         </button>
+
+        <!-- Error — always visible regardless of card section visibility -->
+        <div id="stripe-card-errors"></div>
       </div>
 
       <!-- ══ CRYPTO PANEL ══ -->
@@ -3218,17 +3219,11 @@ async function handleQRConfirm() {
 // ── FIAT ──
 async function handleFiatPayment() {
 
-  // When the card section is hidden (free gift flow), errors must show in the banner
-  const isGiftFree = giftOverridePrice === 0;
-  const errEl = isGiftFree
-    ? document.getElementById('giftBannerError')
-    : document.getElementById('stripe-card-errors');
-  if (isGiftFree) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  const errEl = document.getElementById('stripe-card-errors');
   const chkConfirm = document.getElementById("chkConfirm");
 
   if (!chkConfirm.checked) {
     errEl.textContent = 'You must agree to the Terms of Service.';
-    errEl.style.display = 'block';
     chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
