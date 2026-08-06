@@ -4116,6 +4116,7 @@ async function mint(orderId, paymentSignature, wallet, email) {
 
     const data = await res.json();
     if (!res.ok) { console.error('[oasis] error response:', data); throw new Error(data.error || 'Mint failed'); }
+    //console.log('[oasis] success response _debug:', data._debug);
 
     const txHash = data.result?.result?.web3NFTs?.[0]?.mintTransactionHash
                 || data.result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash
