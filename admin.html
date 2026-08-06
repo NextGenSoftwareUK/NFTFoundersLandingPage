@@ -359,6 +359,7 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 let sessionPw = sessionStorage.getItem('oasis_admin_pw') || '';
 let currentNamespace = 'test';
 let currentOverrides = {};
+let currentWaitlistEmails = [];
 let parsedImportEmails = [];
 let currentOverrideEmail = null;
 
@@ -458,8 +459,8 @@ function renderOverrideChips(email) {
   const now = Date.now();
   const expired = ov.expiresAt && ov.expiresAt < now;
   const expiryTag = ov.expiresAt
-    ? (expired ? ` <span style="color:#ff4d6d;font-size:9px">[EXPIRED]</span>`
-                : ` <span style="color:var(--dim);font-size:9px">exp ${new Date(ov.expiresAt).toLocaleDateString()}</span>`)
+    ? (expired ? ` <span style="color:#ff4d6d;font-size:10px;font-family:'Share Tech Mono',monospace;font-weight:700">[EXPIRED]</span>`
+                : ` <span style="color:#a8bfd8;font-size:10px;font-family:'Share Tech Mono',monospace">exp ${new Date(ov.expiresAt).toLocaleDateString()}</span>`)
     : '';
   return tiers.map(({ key, label, cls }) => {
     const v = ov[key];
@@ -473,6 +474,7 @@ function renderOverrideChips(email) {
 
 function render({ mintCounts, limits, waitlist, orders }) {
   currentOverrides = waitlist.overrides || {};
+  currentWaitlistEmails = (waitlist.emails || []).map(e => e.toLowerCase());
   const total     = mintCounts.genesis + mintCounts.core + mintCounts.supporter;
   const totalCap  = limits.genesis + limits.core + limits.supporter;
   const paidOrds  = orders.filter(o => o.status === 'paid' || o.status === 'minted');
@@ -712,13 +714,17 @@ function onFileSelect(input) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    const emails = parseEmailsFromText(e.target.result);
+    const all = parseEmailsFromText(e.target.result);
+    const dupes = all.filter(e => currentWaitlistEmails.includes(e));
+    const emails = all.filter(e => !currentWaitlistEmails.includes(e));
     parsedImportEmails = emails;
     input.value = '';
     const preview = document.getElementById('importPreview');
     const result  = document.getElementById('importResult');
-    if (!emails.length) { result.style.color = '#ff4d6d'; result.textContent = 'No valid emails found in file.'; return; }
-    document.getElementById('importSummary').textContent = `Found ${emails.length} valid email${emails.length !== 1 ? 's' : ''}`;
+    if (!emails.length && !dupes.length) { result.style.color = '#ff4d6d'; result.textContent = 'No valid emails found in file.'; return; }
+    if (!emails.length) { result.style.color = '#ffb300'; result.textContent = `All ${dupes.length} email(s) already on the waitlist.`; return; }
+    const dupeNote = dupes.length ? ` (${dupes.length} duplicate${dupes.length !== 1 ? 's' : ''} skipped)` : '';
+    document.getElementById('importSummary').textContent = `Found ${emails.length} new email${emails.length !== 1 ? 's' : ''}${dupeNote}`;
     preview.style.display = 'block';
     result.textContent = '';
   };
@@ -730,6 +736,7 @@ async function addSingleEmail() {
   const result = document.getElementById('importResult');
   const email  = input.value.trim().toLowerCase();
   if (!email || !email.includes('@')) { result.style.color = '#ff4d6d'; result.textContent = 'Please enter a valid email.'; return; }
+  if (currentWaitlistEmails.includes(email)) { result.style.color = '#ffb300'; result.textContent = 'Already on the waitlist.'; return; }
   result.style.color = ''; result.textContent = 'Adding...';
   try {
     const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
