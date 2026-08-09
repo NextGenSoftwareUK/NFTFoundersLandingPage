@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     const prices = {
       genesis: 149900,
       core: 49900,
-      supporter: 50//14900,
+      supporter: 14900 //50,
     };
 
     // Check for a custom price override stored in Redis for this email
