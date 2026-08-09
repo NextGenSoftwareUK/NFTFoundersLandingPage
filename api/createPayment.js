@@ -2,12 +2,13 @@
 
 import Stripe from 'stripe';
 //const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST);
-const { createClient } = require("redis");
-const crypto = require("crypto");
+import { createClient } from 'redis';
+import crypto from 'crypto';
 
-const redis = createClient({
-  url: process.env.REDIS_URL,
-});
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
+
+const redis = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
 
 redis.on("error", (err) => {
   console.error("Redis error:", err);
@@ -37,12 +38,12 @@ export default async function handler(req, res) {
 
     await ensureRedis();
     console.log("Body:", req.body);
-
     const {
       //paymentMethodId,
       tier,
       name,
       email,
+      wallet,
       testMode
     } = req.body;
 
@@ -51,7 +52,6 @@ export default async function handler(req, res) {
 
     console.log("Stripe mode:", testMode ? "TEST" : "LIVE");
     console.log("Secret key prefix:", process.env.STRIPE_SECRET_KEY_TEST?.slice(0,7));
-
 
     //console.log("stripe = ", stripe);
 
@@ -65,18 +65,35 @@ export default async function handler(req, res) {
 
     // Pricing by tier
     const prices = {
-      genesis: 149900,   // $1,499
-      core: 49900,    // $499
-      supporter: 14900 //14900 // $149  //TODO: REMEMBER TO REMOVE AFTER!!!! //50
+      genesis: 149900,
+      core: 49900,
+      supporter: 14900,
     };
 
-    const amount = prices[tier];
-
+    // Check for a custom price override stored in Redis for this email
+    let amount = prices[tier];
     if (!amount) {
       return res.status(400).json({
         success: false,
         error: 'Invalid tier'
       });
+    }
+
+    try {
+      const raw = await redis.get(`${P}waitlist:meta:${(email || '').toLowerCase().trim()}`);
+      if (raw) {
+        const meta = JSON.parse(raw);
+        const notExpired = !meta.expiresAt || meta.expiresAt >= Date.now();
+        if (notExpired) {
+          const op = meta[`${tier}Price`];
+          if (op !== null && op !== undefined && op > 0) {
+            amount = Math.round(op * 100); // USD → cents
+          }
+          // op === 0 means free gift — should use /api/gift-order, not this endpoint
+        }
+      }
+    } catch (e) {
+      console.warn('[override-lookup]', e.message);
     }
 
     // Create and confirm payment
@@ -114,9 +131,9 @@ export default async function handler(req, res) {
     const order = {
       type: "card",
       orderId,
-      wallet: null, //maybe store last 4 digits of their card here?
+      wallet: wallet || null,
       tier,
-      priceUSD : null,
+      priceUSD : amount / 100,
       priceSOL: null,
       solPriceUSD: null,
       status: "pending",
@@ -124,7 +141,7 @@ export default async function handler(req, res) {
       createdAt: Date.now()
     };
 
-    await redis.set(`order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
+    await redis.set(`${P}order:${orderId}`, JSON.stringify(order), { EX: 60 * 15 }); //expire after 15 mins.
 
 
 

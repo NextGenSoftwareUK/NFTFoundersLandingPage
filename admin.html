@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OASIS Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cyan:#00e5ff;
+  --bg:#030714;
+  --bg-card:#0a1535;
+  --bg-card2:#071028;
+  --text:#d0e4ff;
+  --dim:#6a80a8;
+  --genesis:#f0a500;
+  --core:#a0c4ff;
+  --supporter:#00cc44;
+  --border:rgba(0,229,255,.12);
+  --radius:12px;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px}
+
+/* ── Stars ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,80,180,.18) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(0,229,255,.06) 0%,transparent 60%);
+}
+
+/* ── Login ── */
+#login-screen{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;
+  background:var(--bg);
+}
+.login-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:20px;
+  padding:48px 44px;width:100%;max-width:400px;text-align:center;
+  box-shadow:0 0 80px rgba(0,229,255,.07);
+}
+.login-title{
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;letter-spacing:.15em;
+  color:var(--cyan);margin-bottom:4px;
+}
+.login-sub{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;
+  color:var(--dim);margin-bottom:36px;
+}
+.login-card input[type=password]{
+  width:100%;padding:13px 16px;background:#060d24;border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:14px;
+  outline:none;transition:border-color .2s;margin-bottom:14px;
+}
+.login-card input[type=password]:focus{border-color:rgba(0,229,255,.5);}
+.btn-login{
+  width:100%;padding:13px;background:linear-gradient(135deg,#0044aa,#00a8cc);
+  border:none;border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;
+  font-size:12px;letter-spacing:.15em;font-weight:700;cursor:pointer;transition:opacity .2s;
+}
+.btn-login:hover{opacity:.85}
+.login-error{color:#ff4d6d;font-size:13px;margin-top:12px;min-height:20px;}
+
+/* ── Dashboard ── */
+#dashboard{display:none}
+.topbar{
+  position:sticky;top:0;z-index:50;background:rgba(3,7,20,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:0 28px;height:56px;
+  display:flex;align-items:center;gap:16px;
+}
+.topbar-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--cyan);}
+.topbar-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.12em;}
+.topbar-spacer{flex:1}
+.btn-sm{
+  padding:7px 16px;border-radius:7px;font-family:'Orbitron',sans-serif;font-size:10px;
+  font-weight:600;letter-spacing:.1em;cursor:pointer;border:none;transition:opacity .2s;
+}
+.btn-sm:hover{opacity:.8}
+.btn-refresh{background:rgba(0,229,255,.12);color:var(--cyan);border:1px solid rgba(0,229,255,.25);}
+.btn-logout{background:rgba(255,77,109,.1);color:#ff4d6d;border:1px solid rgba(255,77,109,.25);}
+.env-badge{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:5px 12px;border-radius:20px;border:1px solid;}
+.env-badge.live{background:rgba(0,200,80,.12);color:#00e676;border-color:rgba(0,200,80,.4);}
+.env-badge.test{background:rgba(255,160,0,.14);color:#ffb300;border-color:rgba(255,160,0,.5);}
+.ns-select{
+  display:none;background:#060d24;border:1px solid rgba(0,229,255,.25);color:var(--cyan);
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.12em;
+  padding:5px 10px;border-radius:7px;cursor:pointer;outline:none;
+}
+.ns-select:hover{border-color:rgba(0,229,255,.5);}
+
+.main{padding:28px;max-width:1400px;margin:0 auto;position:relative;z-index:1;}
+
+/* ── Section ── */
+.section{margin-bottom:36px;}
+.section-title{
+  font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.22em;color:var(--dim);
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── Stat cards ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 22px;
+}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--dim);margin-bottom:6px;}
+.stat-value{font-family:'Orbitron',monospace;font-size:28px;font-weight:700;line-height:1;}
+.stat-sub{font-size:12px;color:var(--dim);margin-top:4px;}
+.stat-card.total .stat-value{color:var(--cyan);}
+.stat-card.genesis-card .stat-value{color:var(--genesis);}
+.stat-card.core-card .stat-value{color:var(--core);}
+.stat-card.supporter-card .stat-value{color:var(--supporter);}
+
+/* ── Progress ── */
+.progress-section{display:flex;flex-direction:column;gap:14px;}
+.progress-row{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;}
+.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.progress-tier{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.15em;}
+.progress-nums{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);}
+.progress-track{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.genesis-fill{background:linear-gradient(90deg,#b37800,#f0a500);}
+.core-fill{background:linear-gradient(90deg,#1a4080,#a0c4ff);}
+.supporter-fill{background:linear-gradient(90deg,#006622,#00cc44);}
+
+/* ── Orders table ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;
+  color:var(--dim);padding:10px 14px;text-align:left;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+tbody tr:hover{background:rgba(0,229,255,.03);}
+tbody td{padding:11px 14px;vertical-align:middle;}
+.empty-row td{text-align:center;color:var(--dim);padding:32px;font-family:'Share Tech Mono',monospace;font-size:12px;}
+.order-row{cursor:pointer;user-select:none;}
+.chevron{display:inline-block;color:var(--dim);font-size:11px;transition:transform .2s,color .2s;width:14px;}
+.chevron.open{transform:rotate(90deg);color:var(--cyan);}
+.detail-row{display:none;}
+.detail-row.open{display:table-row;}
+.detail-row > td{padding:0 !important;border-bottom:1px solid rgba(0,229,255,.12) !important;}
+.detail-panel{background:rgba(0,8,28,.7);padding:18px 24px 20px;}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px 32px;}
+.detail-field{display:flex;flex-direction:column;gap:4px;}
+.detail-key{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--dim);}
+.detail-val{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text);word-break:break-all;line-height:1.5;}
+.detail-val a{color:var(--cyan);text-decoration:none;}
+.detail-val a:hover{text-decoration:underline;}
+.detail-warn{color:#f0a500;font-size:11px;font-family:'Share Tech Mono',monospace;margin-top:10px;padding:8px 12px;background:rgba(240,165,0,.08);border-radius:6px;border:1px solid rgba(240,165,0,.2);}
+
+/* ── Reset modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#0a0f28;border:1px solid rgba(255,60,80,.4);border-radius:16px;padding:36px 40px;max-width:420px;width:100%;text-align:center;box-shadow:0 0 60px rgba(255,40,60,.15);}
+.modal-icon{font-size:40px;margin-bottom:12px;}
+.modal-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:#ff4d6d;letter-spacing:.1em;margin-bottom:10px;}
+.modal-body{color:var(--dim);font-size:14px;line-height:1.6;margin-bottom:28px;}
+.modal-body strong{color:var(--text);}
+.modal-btns{display:flex;gap:12px;justify-content:center;}
+.btn-cancel{padding:11px 28px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--dim);font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.1em;cursor:pointer;transition:opacity .2s;}
+.btn-cancel:hover{opacity:.75}
+.btn-danger{padding:11px 28px;border-radius:8px;background:linear-gradient(135deg,#8b0000,#cc0022);border:none;color:#fff;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 20px rgba(200,0,30,.35);}
+.btn-danger:hover{opacity:.85}
+.btn-reset{padding:10px 22px;border-radius:8px;background:rgba(200,0,30,.12);border:1px solid rgba(200,0,30,.4);color:#ff4d6d;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:opacity .2s;margin-top:16px;}
+.btn-reset:hover{opacity:.8}
+
+/* ── Badges ── */
+.badge{
+  display:inline-block;padding:3px 9px;border-radius:20px;font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:.1em;font-weight:700;white-space:nowrap;
+}
+.badge-genesis{background:rgba(240,165,0,.15);color:var(--genesis);border:1px solid rgba(240,165,0,.3);}
+.badge-core{background:rgba(160,196,255,.1);color:var(--core);border:1px solid rgba(160,196,255,.25);}
+.badge-supporter{background:rgba(0,204,68,.1);color:var(--supporter);border:1px solid rgba(0,204,68,.25);}
+.badge-paid{background:rgba(0,204,68,.12);color:#00cc44;border:1px solid rgba(0,204,68,.3);}
+.badge-pending{background:rgba(240,165,0,.12);color:#f0a500;border:1px solid rgba(240,165,0,.3);}
+.badge-sol{background:rgba(153,69,255,.15);color:#c084fc;border:1px solid rgba(153,69,255,.3);}
+.badge-card{background:rgba(0,140,255,.12);color:#60aaff;border:1px solid rgba(0,140,255,.3);}
+
+.mono{font-family:'Share Tech Mono',monospace;font-size:12px;}
+.addr{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);}
+
+/* ── Waitlist ── */
+.waitlist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.waitlist-count{
+  font-family:'Orbitron',sans-serif;font-size:32px;font-weight:700;color:var(--cyan);
+  display:inline-block;margin-right:10px;
+}
+.waitlist-box{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;
+}
+.email-list{
+  max-height:280px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(0,229,255,.2) transparent;
+}
+.email-item{
+  font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 10px;
+  border-radius:6px;color:var(--text);display:flex;align-items:center;gap:8px;
+}
+.email-item:nth-child(odd){background:rgba(255,255,255,.02);}
+.email-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);opacity:.4;flex-shrink:0;}
+.btn-copy{
+  background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.25);color:var(--cyan);
+  padding:7px 16px;border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:11px;
+  cursor:pointer;letter-spacing:.08em;transition:opacity .2s;
+}
+.btn-copy:hover{opacity:.75}
+
+/* ── Override chips ── */
+.ov-chip{display:inline-block;padding:3px 9px;border-radius:10px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.06em;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+.ov-chip.ov-genesis{background:rgba(240,165,0,.15);color:#f0a500;border:1px solid rgba(240,165,0,.35);}
+.ov-chip.ov-core{background:rgba(160,196,255,.12);color:#a0c4ff;border:1px solid rgba(160,196,255,.3);}
+.ov-chip.ov-supporter{background:rgba(0,204,68,.12);color:#00cc44;border:1px solid rgba(0,204,68,.3);}
+
+/* ── Import box ── */
+.import-box{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.1);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+.import-input{flex:1;min-width:0;background:#060d24;border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;}
+.import-input:focus{border-color:rgba(0,229,255,.4);}
+.btn-add{background:rgba(0,200,80,.13);color:#00cc44;border:1px solid rgba(0,200,80,.3);padding:7px 14px;border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;}
+.btn-add:hover{opacity:.8}
+.btn-import-file{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.25);padding:7px 14px;border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;}
+.btn-import-file:hover{opacity:.8}
+.btn-import-confirm{background:rgba(0,200,80,.15);color:#00cc44;border:1px solid rgba(0,200,80,.3);padding:7px 16px;border-radius:7px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;cursor:pointer;}
+.btn-import-confirm:hover{opacity:.8}
+
+/* ── Email list with overrides ── */
+.email-item{font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 10px;border-radius:6px;color:var(--text);display:flex;align-items:center;gap:6px;}
+.email-item:nth-child(odd){background:rgba(255,255,255,.02);}
+.email-addr{flex:1;word-break:break-all;}
+.btn-override-edit{padding:3px 8px;border-radius:5px;background:rgba(0,229,255,.07);color:var(--cyan);border:1px solid rgba(0,229,255,.18);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;opacity:0;transition:opacity .15s;flex-shrink:0;letter-spacing:.06em;}
+.btn-remove-email{padding:3px 8px;border-radius:5px;background:rgba(255,50,50,.08);color:#ff6b6b;border:1px solid rgba(255,50,50,.25);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;opacity:0;transition:opacity .15s;flex-shrink:0;letter-spacing:.06em;}
+.email-item:hover .btn-override-edit,.email-item:hover .btn-remove-email{opacity:1;}
+
+/* ── Override modal form ── */
+.ov-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.ov-row:last-child{border-bottom:none;}
+.ov-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em;width:82px;flex-shrink:0;text-align:left;}
+.ov-input{width:100px;background:#060d24;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;}
+.ov-input:focus{border-color:rgba(0,229,255,.4);}
+.btn-free-price{padding:5px 9px;border-radius:5px;background:rgba(0,200,80,.12);color:#00cc44;border:1px solid rgba(0,200,80,.25);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;}
+.btn-free-price:hover{opacity:.8}
+.btn-default-price{padding:5px 9px;border-radius:5px;background:rgba(255,255,255,.04);color:var(--dim);border:1px solid rgba(255,255,255,.1);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;}
+.btn-default-price:hover{opacity:.8}
+.btn-save-ov{padding:11px 28px;border-radius:8px;background:linear-gradient(135deg,#006080,#00b4d8);border:none;color:#fff;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;}
+.btn-save-ov:hover{opacity:.85}
+.btn-remove-ov{width:100%;margin-top:14px;padding:9px;border-radius:7px;background:rgba(255,77,109,.08);color:#ff4d6d;border:1px solid rgba(255,77,109,.2);font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:.1em;cursor:pointer;}
+.btn-remove-ov:hover{opacity:.75}
+
+/* ── Spinner ── */
+.spinner{
+  display:inline-block;width:16px;height:16px;border:2px solid rgba(0,229,255,.2);
+  border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-bar{text-align:center;padding:40px;color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.1em;}
+</style>
+</head>
+<body>
+
+<!-- Reset confirm modal -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeReset()">CANCEL</button>
+      <button class="btn-danger" id="modal-confirm-btn" onclick="confirmReset()">CONFIRM</button>
+    </div>
+  </div>
+</div>
+
+<!-- Override modal -->
+<div class="modal-overlay" id="override-modal">
+  <div class="modal-box" style="border-color:rgba(0,229,255,.3);box-shadow:0 0 60px rgba(0,229,255,.1);max-width:460px;">
+    <div class="modal-icon">⚡</div>
+    <div class="modal-title" style="color:var(--cyan)">PRICE OVERRIDE</div>
+    <div id="override-email-label" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);margin-bottom:20px;word-break:break-all;"></div>
+    <div style="text-align:left;">
+      <div class="ov-row">
+        <span class="ov-label" style="color:var(--genesis)">GENESIS</span>
+        <input id="ov-genesis" class="ov-input" type="number" min="0" step="1" placeholder="default ($1,499)">
+        <button class="btn-free-price" onclick="setFreePrice('genesis')">FREE</button>
+        <button class="btn-default-price" onclick="clearPrice('genesis')">DEFAULT</button>
+      </div>
+      <div class="ov-row">
+        <span class="ov-label" style="color:var(--core)">CORE</span>
+        <input id="ov-core" class="ov-input" type="number" min="0" step="1" placeholder="default ($499)">
+        <button class="btn-free-price" onclick="setFreePrice('core')">FREE</button>
+        <button class="btn-default-price" onclick="clearPrice('core')">DEFAULT</button>
+      </div>
+      <div class="ov-row">
+        <span class="ov-label" style="color:var(--supporter)">SUPPORTER</span>
+        <input id="ov-supporter" class="ov-input" type="number" min="0" step="1" placeholder="default ($149)">
+        <button class="btn-free-price" onclick="setFreePrice('supporter')">FREE</button>
+        <button class="btn-default-price" onclick="clearPrice('supporter')">DEFAULT</button>
+      </div>
+    </div>
+    <div style="margin-top:16px;text-align:left;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:.08em;">EXPIRY (optional)</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <input id="ov-expiry" type="date" style="background:#060d24;border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;flex:1;min-width:130px;">
+        <button class="btn-free-price" onclick="setExpiry(7)">1W</button>
+        <button class="btn-free-price" onclick="setExpiry(14)">2W</button>
+        <button class="btn-free-price" onclick="setExpiry(30)">1M</button>
+        <button class="btn-free-price" onclick="setExpiry(90)">3M</button>
+        <button class="btn-default-price" onclick="document.getElementById('ov-expiry').value=''">NONE</button>
+      </div>
+    </div>
+    <div id="override-result" style="font-family:'Share Tech Mono',monospace;font-size:11px;min-height:16px;margin-top:12px;color:#ff4d6d;"></div>
+    <div class="modal-btns" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeOverrideModal()">CANCEL</button>
+      <button class="btn-save-ov" id="btn-save-ov" onclick="saveOverride()">SAVE</button>
+    </div>
+    <button class="btn-remove-ov" id="btn-remove-ov" onclick="removeAllOverrides()">REMOVE ALL OVERRIDES FOR THIS EMAIL</button>
+  </div>
+</div>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-title">OASIS</div>
+    <div class="login-sub">ADMIN PORTAL</div>
+    <input type="password" id="pw-input" placeholder="Enter admin password" autocomplete="current-password">
+    <button class="btn-login" id="login-btn" onclick="doLogin()">ACCESS</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">OASIS ADMIN</div>
+      <div class="topbar-sub">FOUNDER NFT BACK OFFICE</div>
+    </div>
+    <div class="topbar-spacer"></div>
+    <span id="env-badge" class="env-badge" style="display:none"></span>
+    <select id="ns-select" class="ns-select" onchange="onNamespaceChange(this.value)">
+      <option value="test">TEST</option>
+      <option value="archived">ARCHIVED</option>
+    </select>
+    <span id="refresh-time" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);"></span>
+    <button class="btn-sm btn-refresh" onclick="loadData()">&#8635; REFRESH</button>
+    <button class="btn-sm btn-logout" onclick="logout()">LOGOUT</button>
+  </div>
+
+  <div class="main" id="main-content">
+    <div class="loading-bar"><span class="spinner"></span>&nbsp; Loading...</div>
+  </div>
+</div>
+
+<script>
+let sessionPw = sessionStorage.getItem('oasis_admin_pw') || '';
+let currentNamespace = 'test';
+let currentOverrides = {};
+let currentWaitlistEmails = [];
+let parsedImportEmails = [];
+let currentOverrideEmail = null;
+
+function fmt(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function trunc(str, n) {
+  if (!str) return '—';
+  if (str.length <= n) return str;
+  return str.slice(0, 6) + '…' + str.slice(-4);
+}
+function pct(val, max) { return Math.min(100, Math.round((val / max) * 100)); }
+
+async function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  errEl.textContent = '';
+  if (!pw) { errEl.textContent = 'Please enter the password.'; return; }
+
+  btn.textContent = 'CHECKING...';
+  btn.disabled = true;
+
+  sessionStorage.setItem('oasis_admin_pw', pw);
+  sessionPw = pw;
+  const ok = await loadData();
+  if (ok) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+  } else {
+    sessionStorage.removeItem('oasis_admin_pw');
+    sessionPw = '';
+    btn.textContent = 'ACCESS';
+    btn.disabled = false;
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('oasis_admin_pw');
+  location.reload();
+}
+
+async function loadData() {
+  const main = document.getElementById('main-content');
+  if (document.getElementById('dashboard').style.display === 'block') {
+    main.innerHTML = '<div class="loading-bar"><span class="spinner"></span>&nbsp; Refreshing...</div>';
+  }
+
+  try {
+    const res = await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: sessionPw, namespace: currentNamespace })
+    });
+
+    if (res.status === 401) {
+      document.getElementById('login-error').textContent = 'Wrong password.';
+      return false;
+    }
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      document.getElementById('login-error').textContent = d.error || 'Server error';
+      return false;
+    }
+
+    const data = await res.json();
+    render(data);
+    document.getElementById('refresh-time').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    const badge = document.getElementById('env-badge');
+    if (badge) {
+      badge.textContent = data.testMode ? '⬡ TEST' : '● LIVE';
+      badge.className = 'env-badge ' + (data.testMode ? 'test' : 'live');
+      badge.style.display = '';
+    }
+    const nsSel = document.getElementById('ns-select');
+    if (nsSel) {
+      nsSel.style.display = data.testMode ? 'inline-block' : 'none';
+      nsSel.value = currentNamespace;
+    }
+    return true;
+
+  } catch (e) {
+    document.getElementById('login-error').textContent = 'Network error: ' + e.message;
+    return false;
+  }
+}
+
+function renderOverrideChips(email) {
+  const ov = currentOverrides[email];
+  if (!ov) return '';
+  const tiers = [
+    { key: 'genesisPrice',   label: 'GENESIS',  cls: 'genesis' },
+    { key: 'corePrice',      label: 'CORE',      cls: 'core' },
+    { key: 'supporterPrice', label: 'SUPPORTER', cls: 'supporter' },
+  ];
+  const now = Date.now();
+  const expired = ov.expiresAt && ov.expiresAt < now;
+  const expiryTag = ov.expiresAt
+    ? (expired ? ` <span style="color:#ff4d6d;font-size:10px;font-family:'Share Tech Mono',monospace;font-weight:700">[EXPIRED]</span>`
+                : ` <span style="color:#a8bfd8;font-size:10px;font-family:'Share Tech Mono',monospace">exp ${new Date(ov.expiresAt).toLocaleDateString()}</span>`)
+    : '';
+  return tiers.map(({ key, label, cls }) => {
+    const v = ov[key];
+    if (v === null || v === undefined) return '';
+    const chipStyle = expired ? 'opacity:.45;text-decoration:line-through;' : '';
+    return v === 0
+      ? `<span class="ov-chip ov-${cls}" style="${chipStyle}">🎁 ${label}: FREE</span>`
+      : `<span class="ov-chip ov-${cls}" style="${chipStyle}">⚡ ${label}: $${v}</span>`;
+  }).join('') + expiryTag;
+}
+
+function render({ mintCounts, limits, waitlist, orders }) {
+  currentOverrides = waitlist.overrides || {};
+  currentWaitlistEmails = (waitlist.emails || []).map(e => e.toLowerCase());
+  const total     = mintCounts.genesis + mintCounts.core + mintCounts.supporter;
+  const totalCap  = limits.genesis + limits.core + limits.supporter;
+  const paidOrds  = orders.filter(o => o.status === 'paid' || o.status === 'minted');
+
+  const html = `
+  <!-- Mint Stats -->
+  <div class="section">
+    <div class="section-title">MINT PROGRESS</div>
+    <div class="stats-grid" style="margin-bottom:18px">
+      <div class="stat-card total">
+        <div class="stat-label">TOTAL MINTED</div>
+        <div class="stat-value">${total}</div>
+        <div class="stat-sub">of ${totalCap} available</div>
+      </div>
+      <div class="stat-card genesis-card">
+        <div class="stat-label">GENESIS</div>
+        <div class="stat-value">${mintCounts.genesis}</div>
+        <div class="stat-sub">of ${limits.genesis} · $1,499 each</div>
+      </div>
+      <div class="stat-card core-card">
+        <div class="stat-label">CORE</div>
+        <div class="stat-value">${mintCounts.core}</div>
+        <div class="stat-sub">of ${limits.core} · $499 each</div>
+      </div>
+      <div class="stat-card supporter-card">
+        <div class="stat-label">SUPPORTER</div>
+        <div class="stat-value">${mintCounts.supporter}</div>
+        <div class="stat-sub">of ${limits.supporter} · $149 each</div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      ${[
+        { key:'genesis', label:'GENESIS', cls:'genesis', fillCls:'genesis-fill' },
+        { key:'core',    label:'CORE',    cls:'core',    fillCls:'core-fill' },
+        { key:'supporter', label:'SUPPORTER', cls:'supporter', fillCls:'supporter-fill' },
+      ].map(t => `
+        <div class="progress-row">
+          <div class="progress-header">
+            <span class="progress-tier" style="color:var(--${t.cls})">${t.label}</span>
+            <span class="progress-nums">${mintCounts[t.key]} / ${limits[t.key]} &nbsp;(${pct(mintCounts[t.key], limits[t.key])}%)</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill ${t.fillCls}" style="width:${pct(mintCounts[t.key], limits[t.key])}%"></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px;">
+      <button class="btn-reset" onclick="openReset('counts')">⚠ RESET COUNTS</button>
+      <button class="btn-reset" style="background:rgba(200,0,30,.22);border-color:rgba(200,0,30,.7);color:#ff2244;" onclick="openReset('all')">☢ NUKE EVERYTHING</button>
+    </div>
+  </div>
+
+  <!-- Orders -->
+  <div class="section">
+    <div class="section-title">ORDERS &nbsp;<span style="color:var(--cyan);font-family:'Share Tech Mono',monospace">${orders.length} total · ${paidOrds.length} paid</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>DATE</th>
+            <th>TIER</th>
+            <th>TYPE</th>
+            <th>STATUS</th>
+            <th>AMOUNT (USD)</th>
+            <th>EMAIL</th>
+            <th>WALLET</th>
+            <th>REF</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orders.length === 0
+            ? '<tr class="empty-row"><td colspan="9">No orders found in Redis</td></tr>'
+            : orders.map(o => {
+              const id = o.orderId || Math.random().toString(36).slice(2);
+              const solscan = tx => tx ? `<a href="https://solscan.io/tx/${tx}" target="_blank">${tx}</a>` : '—';
+              const fields = [
+                ['ORDER ID',         o.orderId || '—'],
+                ['MINTED AT',        fmt(o.mintedAt)],
+                ['PAID AT',          fmt(o.paidAt)],
+                ['MINT TX',          solscan(o.mintTx)],
+                ['SEND TX',          solscan(o.sendTx)],
+                ['SOL PRICE AT ORDER', o.solPriceUSD ? `$${o.solPriceUSD.toLocaleString()}` : '—'],
+                ['AVATAR ID',        o.avatarId || '—'],
+                ['AVATAR CREATED',   o.avatarCreated != null ? String(o.avatarCreated) : '—'],
+                ['ACTIVATION URL',   o.avatarActivationUrl ? `<a href="${o.avatarActivationUrl}" target="_blank">${o.avatarActivationUrl}</a>` : '—'],
+                ['ACTIVATION KEY',   o.avatarActivationKey || '—'],
+                ['PAYMENT SIG',      o.paymentSignature || '—'],
+              ];
+              return `
+              <tr class="order-row" onclick="toggleDetail('${id}')">
+                <td><span class="chevron" id="chevron-${id}">▶</span></td>
+                <td class="mono" style="font-size:11px;color:var(--dim);white-space:nowrap">${fmt(o.createdAt)}</td>
+                <td><span class="badge badge-${o.tier}">${(o.tier || '?').toUpperCase()}</span></td>
+                <td><span class="badge badge-${o.type === 'sol' ? 'sol' : 'card'}">${(o.type || '?').toUpperCase()}</span></td>
+                <td><span class="badge badge-${o.status}">${(o.status || '?').toUpperCase()}</span></td>
+                <td class="mono">$${o.priceUSD != null ? Number(o.priceUSD).toLocaleString() : '—'}${o.priceSOL ? `<br><span style="color:var(--dim);font-size:10px">${o.priceSOL} SOL</span>` : ''}</td>
+                <td class="addr">${o.email || '—'}</td>
+                <td class="addr">${o.wallet || '—'}</td>
+                <td class="addr">${o.signature || o.paymentIntentId || '—'}</td>
+              </tr>
+              <tr class="detail-row" id="detail-${id}">
+                <td colspan="9">
+                  <div class="detail-panel">
+                    <div class="detail-grid">
+                      ${fields.map(([k,v]) => `<div class="detail-field"><div class="detail-key">${k}</div><div class="detail-val">${v}</div></div>`).join('')}
+                    </div>
+                    ${o.avatarProvisionWarning ? `<div class="detail-warn">⚠ ${o.avatarProvisionWarning}</div>` : ''}
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Waitlist -->
+  <div class="section">
+    <div class="section-title">WAITLIST</div>
+    <div class="waitlist-box">
+      <div class="waitlist-header">
+        <div>
+          <span class="waitlist-count">${waitlist.count}</span>
+          <span style="color:var(--dim);font-size:13px">registered emails</span>
+        </div>
+        <button class="btn-copy" onclick="copyEmails(${JSON.stringify(waitlist.emails).replace(/"/g,'&quot;')})">COPY ALL</button>
+      </div>
+
+      <!-- Import tools -->
+      <div class="import-box">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <label class="btn-import-file" style="cursor:pointer;">
+            📁 IMPORT FILE
+            <input type="file" id="importFile" accept=".csv,.txt" style="display:none" onchange="onFileSelect(this)">
+          </label>
+          <input id="addEmailInput" class="import-input" type="email" placeholder="email@example.com"
+            onkeydown="if(event.key==='Enter')addSingleEmail()">
+          <button class="btn-add" onclick="addSingleEmail()">+ ADD</button>
+        </div>
+        <div id="importPreview" style="display:none;margin-top:10px;display:none;">
+          <div id="importSummary" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--cyan);margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-import-confirm" onclick="confirmImport()">IMPORT ALL</button>
+            <button class="btn-sm btn-logout" onclick="cancelImport()">CANCEL</button>
+          </div>
+        </div>
+        <div id="importResult" style="font-family:'Share Tech Mono',monospace;font-size:11px;min-height:16px;margin-top:8px;"></div>
+      </div>
+
+      <!-- Email list -->
+      <div class="email-list">
+        ${waitlist.emails.length === 0
+          ? '<div style="text-align:center;color:var(--dim);font-family:Share Tech Mono,monospace;font-size:12px;padding:20px">No emails in waitlist</div>'
+          : waitlist.emails.map(e => `
+              <div class="email-item">
+                <span class="email-dot"></span>
+                <span class="email-addr">${e}</span>
+                ${renderOverrideChips(e)}
+                <button class="btn-override-edit" onclick="openOverrideModal('${e.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">OVERRIDE</button>
+                <button class="btn-remove-email" onclick="removeWaitlistEmail('${e.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">✕ REMOVE</button>
+              </div>`).join('')
+        }
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.getElementById('main-content').innerHTML = html;
+}
+
+let resetAction = null;
+
+function openReset(type) {
+  resetAction = type;
+  const isNuke = type === 'all';
+  document.getElementById('modal-icon').textContent   = isNuke ? '☢️' : '⚠️';
+  document.getElementById('modal-title').textContent  = isNuke ? 'NUKE EVERYTHING?' : 'RESET MINT COUNTS?';
+  document.getElementById('modal-body').innerHTML     = isNuke
+    ? 'This will reset all mint counts to <strong>0</strong> and <strong>permanently delete every order</strong> in the database.<br><br>Use this to clear test data before launch.'
+    : 'This will set <strong>Genesis, Core and Supporter</strong> counts back to <strong>0</strong>.<br><br>Existing orders are <strong>kept</strong>.';
+  document.getElementById('modal-confirm-btn').textContent = isNuke ? 'YES, NUKE IT' : 'YES, RESET';
+  document.getElementById('reset-modal').classList.add('open');
+}
+function closeReset() { document.getElementById('reset-modal').classList.remove('open'); }
+
+async function confirmReset() {
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.textContent = 'WORKING...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: sessionPw, action: resetAction === 'all' ? 'reset-all' : 'reset-counts' })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    closeReset();
+    await loadData();
+  } catch (e) {
+    btn.textContent = 'ERROR: ' + e.message;
+    setTimeout(() => { btn.textContent = resetAction === 'all' ? 'YES, NUKE IT' : 'YES, RESET'; btn.disabled = false; }, 3000);
+  }
+}
+
+function toggleDetail(id) {
+  const row = document.getElementById('detail-' + id);
+  const chevron = document.getElementById('chevron-' + id);
+  const open = row.classList.toggle('open');
+  if (chevron) chevron.classList.toggle('open', open);
+}
+
+function onNamespaceChange(ns) {
+  currentNamespace = ns;
+  loadData();
+}
+
+function copyEmails(emails) {
+  navigator.clipboard.writeText(emails.join('\n')).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    if (btn) { btn.textContent = 'COPIED!'; setTimeout(() => btn.textContent = 'COPY ALL', 2000); }
+  });
+}
+
+// ── IMPORT FUNCTIONS ──
+function parseEmailsFromText(text) {
+  const matches = text.match(/[^\s,;"'<>\r\n]+@[^\s,;"'<>\r\n]+\.[^\s,;"'<>\r\n]+/g) || [];
+  return [...new Set(matches.map(e => e.toLowerCase().trim()).filter(e => e.includes('@') && e.length < 255))];
+}
+
+function onFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const all = parseEmailsFromText(e.target.result);
+    const dupes = all.filter(e => currentWaitlistEmails.includes(e));
+    const emails = all.filter(e => !currentWaitlistEmails.includes(e));
+    parsedImportEmails = emails;
+    input.value = '';
+    const preview = document.getElementById('importPreview');
+    const result  = document.getElementById('importResult');
+    if (!emails.length && !dupes.length) { result.style.color = '#ff4d6d'; result.textContent = 'No valid emails found in file.'; return; }
+    if (!emails.length) { result.style.color = '#ffb300'; result.textContent = `All ${dupes.length} email(s) already on the waitlist.`; return; }
+    const dupeNote = dupes.length ? ` (${dupes.length} duplicate${dupes.length !== 1 ? 's' : ''} skipped)` : '';
+    document.getElementById('importSummary').textContent = `Found ${emails.length} new email${emails.length !== 1 ? 's' : ''}${dupeNote}`;
+    preview.style.display = 'block';
+    result.textContent = '';
+  };
+  reader.readAsText(file);
+}
+
+async function addSingleEmail() {
+  const input  = document.getElementById('addEmailInput');
+  const result = document.getElementById('importResult');
+  const email  = input.value.trim().toLowerCase();
+  if (!email || !email.includes('@')) { result.style.color = '#ff4d6d'; result.textContent = 'Please enter a valid email.'; return; }
+  if (currentWaitlistEmails.includes(email)) { result.style.color = '#ffb300'; result.textContent = 'Already on the waitlist.'; return; }
+  result.style.color = ''; result.textContent = 'Adding...';
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'add-emails', emails: [email] }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    input.value = '';
+    result.style.color = '#00cc44';
+    result.textContent = `Added! Waitlist total: ${data.total}`;
+    setTimeout(() => { result.textContent = ''; }, 3000);
+    await loadData();
+  } catch(e) { result.style.color = '#ff4d6d'; result.textContent = 'Error: ' + e.message; }
+}
+
+async function confirmImport() {
+  if (!parsedImportEmails.length) return;
+  const result = document.getElementById('importResult');
+  result.style.color = 'var(--dim)'; result.textContent = 'Importing...';
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'add-emails', emails: parsedImportEmails }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Import failed');
+    parsedImportEmails = [];
+    document.getElementById('importPreview').style.display = 'none';
+    result.style.color = '#00cc44';
+    result.textContent = `Imported ${data.added} email${data.added !== 1 ? 's' : ''} · Waitlist total: ${data.total}`;
+    setTimeout(() => { result.textContent = ''; }, 4000);
+    await loadData();
+  } catch(e) { result.style.color = '#ff4d6d'; result.textContent = 'Error: ' + e.message; }
+}
+
+function cancelImport() {
+  parsedImportEmails = [];
+  const preview = document.getElementById('importPreview');
+  if (preview) preview.style.display = 'none';
+  const result = document.getElementById('importResult');
+  if (result) result.textContent = '';
+}
+
+// ── OVERRIDE MODAL FUNCTIONS ──
+function openOverrideModal(email) {
+  currentOverrideEmail = email;
+  document.getElementById('override-email-label').textContent = email;
+  const ov = currentOverrides[email] || {};
+  const toVal = v => (v !== null && v !== undefined) ? v : '';
+  document.getElementById('ov-genesis').value   = toVal(ov.genesisPrice);
+  document.getElementById('ov-core').value      = toVal(ov.corePrice);
+  document.getElementById('ov-supporter').value = toVal(ov.supporterPrice);
+  // Load expiry
+  const expiryInput = document.getElementById('ov-expiry');
+  if (ov.expiresAt) {
+    const d = new Date(ov.expiresAt);
+    expiryInput.value = d.toISOString().slice(0, 10);
+  } else {
+    expiryInput.value = '';
+  }
+  const hasAny = ['genesisPrice','corePrice','supporterPrice'].some(k => ov[k] !== null && ov[k] !== undefined);
+  document.getElementById('btn-remove-ov').style.display = hasAny ? 'block' : 'none';
+  document.getElementById('override-result').textContent = '';
+  document.getElementById('btn-save-ov').textContent = 'SAVE';
+  document.getElementById('btn-save-ov').disabled = false;
+  document.getElementById('override-modal').classList.add('open');
+}
+
+function closeOverrideModal() {
+  document.getElementById('override-modal').classList.remove('open');
+  currentOverrideEmail = null;
+}
+
+function setFreePrice(tier) { document.getElementById(`ov-${tier}`).value = '0'; }
+function clearPrice(tier)   { document.getElementById(`ov-${tier}`).value = ''; }
+function setExpiry(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  document.getElementById('ov-expiry').value = d.toISOString().slice(0, 10);
+}
+
+async function saveOverride() {
+  if (!currentOverrideEmail) return;
+  const btn = document.getElementById('btn-save-ov');
+  btn.textContent = 'SAVING...'; btn.disabled = true;
+  const toNum = v => v === '' ? null : Number(v);
+  const expiryVal = document.getElementById('ov-expiry').value;
+  const expiresAt = expiryVal ? new Date(expiryVal).setHours(23, 59, 59, 999) : null;
+  const body = {
+    password: sessionPw, action: 'set-override', email: currentOverrideEmail,
+    genesisPrice:   toNum(document.getElementById('ov-genesis').value),
+    corePrice:      toNum(document.getElementById('ov-core').value),
+    supporterPrice: toNum(document.getElementById('ov-supporter').value),
+    expiresAt,
+  };
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Save failed');
+    closeOverrideModal();
+    await loadData();
+  } catch(e) {
+    document.getElementById('override-result').textContent = 'Error: ' + e.message;
+    btn.textContent = 'SAVE'; btn.disabled = false;
+  }
+}
+
+async function removeWaitlistEmail(email) {
+  if (!confirm(`Remove ${email} from the waitlist?`)) return;
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'remove-waitlist-email', email }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Remove failed');
+    await loadData();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function removeAllOverrides() {
+  if (!currentOverrideEmail) return;
+  if (!confirm(`Remove all price overrides for ${currentOverrideEmail}?`)) return;
+  try {
+    const res  = await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: sessionPw, action: 'remove-override', email: currentOverrideEmail }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Remove failed');
+    closeOverrideModal();
+    await loadData();
+  } catch(e) { document.getElementById('override-result').textContent = 'Error: ' + e.message; }
+}
+
+// Auto-login if password already in session
+window.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('pw-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  if (sessionPw) {
+    const ok = await loadData();
+    if (ok) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    } else {
+      sessionStorage.removeItem('oasis_admin_pw');
+      sessionPw = '';
+    }
+  }
+});
+</script>
+</body>
+</html>
