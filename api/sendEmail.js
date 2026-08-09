@@ -50,7 +50,97 @@ async function resendWithRetry(payload, maxAttempts = 3) {
     console.warn(`[sendEmail] Resend attempt ${attempt} failed (${res.status}): ${body}`);
     if (attempt < maxAttempts) await new Promise(r => setTimeout(r, 2000 * attempt));
   }
+  // All retries exhausted — push to queue for later retry
+  await queueFailedEmail(payload).catch(e => console.error('[sendEmail] failed to queue email:', e.message));
   throw new Error(lastErr);
+}
+
+async function queueFailedEmail(payload) {
+  await ensureRedis();
+  const entry = { payload, queuedAt: Date.now(), attempts: 0 };
+  await redisClient.lPush(`${P}email-queue`, JSON.stringify(entry));
+  console.warn('[sendEmail] email queued for later retry:', payload.to, payload.subject);
+}
+
+async function handleProcessEmailQueue(req, res) {
+  const secret = process.env.EMAIL_QUEUE_SECRET;
+  if (secret && req.body?.secret !== secret)
+    return res.status(401).json({ error: 'Unauthorized' });
+
+  await ensureRedis();
+  const results = { sent: 0, failed: 0, remaining: 0 };
+
+  // Process up to 20 queued emails per call
+  for (let i = 0; i < 20; i++) {
+    const raw = await redisClient.rPop(`${P}email-queue`);
+    if (!raw) break;
+
+    let entry;
+    try { entry = JSON.parse(raw); } catch { results.failed++; continue; }
+
+    try {
+      const res2 = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.RESEND_API_KEY}` },
+        body: JSON.stringify(entry.payload)
+      });
+      if (res2.ok) {
+        results.sent++;
+        console.log('[sendEmail] queued email sent ok:', entry.payload.to, entry.payload.subject);
+      } else {
+        const body = await res2.text();
+        entry.attempts = (entry.attempts || 0) + 1;
+        if (entry.attempts < 10) {
+          await redisClient.lPush(`${P}email-queue`, JSON.stringify(entry));
+          console.warn(`[sendEmail] queued email still failing (attempt ${entry.attempts}), re-queued:`, body);
+        } else {
+          console.error('[sendEmail] queued email exceeded max attempts, dropping:', entry.payload.to, body);
+        }
+        results.failed++;
+      }
+    } catch (e) {
+      entry.attempts = (entry.attempts || 0) + 1;
+      if (entry.attempts < 10) await redisClient.lPush(`${P}email-queue`, JSON.stringify(entry));
+      results.failed++;
+    }
+  }
+
+  results.remaining = await redisClient.lLen(`${P}email-queue`);
+  return res.status(200).json({ success: true, ...results });
+}
+
+const TIER_LABELS = { genesis: '⚡ Genesis', core: '🔵 Core', supporter: '🟢 Supporter' };
+const NFT_IMAGES  = { genesis: 'https://founders.oasisomniverse.one/img/nft-genesis-wallet.png', core: 'https://founders.oasisomniverse.one/img/nft-core-wallet.png', supporter: 'https://founders.oasisomniverse.one/img/nft-supporter-wallet.png' };
+
+async function handleResendConfirmation(req, res) {
+  const { orderId, secret } = req.body || {};
+  const envSecret = process.env.EMAIL_QUEUE_SECRET;
+  if (envSecret && secret !== envSecret) return res.status(401).json({ error: 'Unauthorized' });
+  if (!orderId) return res.status(400).json({ error: 'Missing orderId' });
+
+  await ensureRedis();
+  const raw = await redisClient.get(`${P}order:${orderId}`);
+  if (!raw) return res.status(404).json({ error: 'Order not found' });
+
+  const order = JSON.parse(raw);
+  if (order.status !== 'minted') return res.status(400).json({ error: `Order status is '${order.status}', not minted` });
+
+  const email     = order.email;
+  const tier      = order.tier || 'supporter';
+  const tierTitle = TIER_LABELS[tier] || tier;
+  const txHash    = order.mintTx || null;
+  const activationUrl  = order.avatarActivationUrl || null;
+  const activationLabel = order.avatarCreated ? 'Activate Your Avatar' : null;
+  const earlyBird = !!(await redisClient.sIsMember(`${P}waitlist:emails`, (email || '').toLowerCase().trim()));
+  const nftImage  = NFT_IMAGES[tier] || NFT_IMAGES.supporter;
+  const chain     = 'Solana SPL';
+  const testMode  = false;
+
+  if (!email) return res.status(400).json({ error: 'Order has no email address' });
+
+  // Reuse handleSendEmail by injecting into req.body
+  req.body = { email, tierTitle, tierBadge: tier, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird };
+  return await handleSendEmail(req, res);
 }
 
 const ALLOWED_ORIGINS = new Set([
@@ -338,11 +428,21 @@ async function handleSendEmail(req, res) {
 export default async function handler(req, res) {
   Object.entries(getCorsHeaders(req)).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === "OPTIONS") return res.status(204).end();
+
+  // Vercel cron fires GET — use it to drain the email queue
+  if (req.method === "GET") {
+    const secret = process.env.EMAIL_QUEUE_SECRET;
+    if (secret && req.query?.secret !== secret) return res.status(401).json({ error: 'Unauthorized' });
+    return await handleProcessEmailQueue(req, res);
+  }
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     if (req.body?.action === 'activate') return await handleActivate(req, res);
     if (req.body?.action === 'resend-activation') return await handleResendActivation(req, res);
+    if (req.body?.action === 'resend-confirmation') return await handleResendConfirmation(req, res);
+    if (req.body?.action === 'process-email-queue') return await handleProcessEmailQueue(req, res);
     return await handleSendEmail(req, res);
   } catch (e) {
     console.error('[sendEmail] error:', e.message);
