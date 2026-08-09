@@ -86,6 +86,14 @@ export default async function handler(req, res) {
       return res.json({ success: true });
     }
 
+    if (action === 'delete-order') {
+      const { orderId } = req.body;
+      if (!orderId) return res.status(400).json({ error: 'orderId required' });
+      const deleted = await redis.del(`${P}order:${orderId}`);
+      if (!deleted) return res.status(404).json({ error: 'Order not found' });
+      return res.json({ success: true });
+    }
+
     if (action === 'reset-all') {
       await Promise.all([
         redis.set(`${P}mint_count:genesis`, '0'),

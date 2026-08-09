@@ -585,6 +585,9 @@ function render({ mintCounts, limits, waitlist, orders }) {
                       ${fields.map(([k,v]) => `<div class="detail-field"><div class="detail-key">${k}</div><div class="detail-val">${v}</div></div>`).join('')}
                     </div>
                     ${o.avatarProvisionWarning ? `<div class="detail-warn">⚠ ${o.avatarProvisionWarning}</div>` : ''}
+                    <div style="margin-top:14px;text-align:right;">
+                      <button onclick="deleteOrder('${o.orderId}')" style="padding:7px 18px;border-radius:7px;background:rgba(255,50,50,.1);border:1px solid rgba(255,50,50,.3);color:#ff6b6b;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;cursor:pointer;">✕ DELETE ORDER</button>
+                    </div>
                   </div>
                 </td>
               </tr>`;
@@ -863,6 +866,17 @@ async function removeAllOverrides() {
     closeOverrideModal();
     await loadData();
   } catch(e) { document.getElementById('override-result').textContent = 'Error: ' + e.message; }
+}
+
+async function deleteOrder(orderId) {
+  if (!confirm(`Delete order ${orderId}?\n\nThis removes it from Redis only — the on-chain NFT is unaffected.`)) return;
+  try {
+    const res = await fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: sessionPw, action: 'delete-order', orderId }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Delete failed');
+    await loadData();
+  } catch(e) { alert('Error: ' + e.message); }
 }
 
 // Auto-login if password already in session
