@@ -1,18 +1,25 @@
 import { createClient } from "redis";
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
+
 let redisClient = null;
 let redisReady = null;
 async function ensureRedis() {
   if (!redisClient) {
-    redisClient = createClient({ url: process.env.REDIS_URL });
+    redisClient = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
     redisClient.on("error", (err) => console.error("Redis error:", err));
   }
   if (!redisReady) redisReady = redisClient.connect();
   return redisReady;
 }
 
-const OASIS_API_URL = "https://api.web4.oasisomniverse.one";
-const ACTIVATION_PORTAL_URL = "https://oportal.oasisomniverse.one/activate.html";
+const OASIS_API_URL = TEST_MODE
+  ? "https://dev.api.web4.oasisomniverse.one"
+  : "https://api.web4.oasisomniverse.one";
+const ACTIVATION_PORTAL_URL = TEST_MODE
+  ? "https://dev.oportal.oasisomniverse.one/activate.html"
+  : "https://oportal.oasisomniverse.one/activate.html";
 const ACTIVATION_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 function randomPassword(length = 20) {
@@ -29,11 +36,19 @@ function randomUUID() {
   });
 }
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://oportal.oasisomniverse.one",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type"
-};
+const ALLOWED_ORIGINS = new Set([
+  "https://oportal.oasisomniverse.one",
+  "https://dev.oportal.oasisomniverse.one"
+]);
+
+function getCorsHeaders(req) {
+  const origin = req.headers.origin || '';
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://oportal.oasisomniverse.one",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
+}
 
 async function handleActivate(req, res) {
   const { email, key, newPassword } = req.body || {};
@@ -48,7 +63,7 @@ async function handleActivate(req, res) {
 
   await ensureRedis();
 
-  const raw = await redisClient.get(`avatar-activation:${key}`);
+  const raw = await redisClient.get(`${P}avatar-activation:${key}`);
   console.log('[activate] redis record found:', !!raw);
   if (!raw) {
     return res.status(404).json({ error: "Activation link has expired or already been used. Please contact support." });
@@ -152,7 +167,7 @@ async function handleActivate(req, res) {
     : null;
   console.log('[activate] portalAvatar username:', portalAvatar?.username, 'jwtToken set:', !!portalAvatar?.jwtToken);
 
-  await redisClient.del(`avatar-activation:${key}`);
+  await redisClient.del(`${P}avatar-activation:${key}`);
   console.log('[activate] success — redis key deleted');
 
   return res.status(200).json({ success: true, avatar: portalAvatar });
@@ -199,7 +214,7 @@ async function handleResendActivation(req, res) {
   // Store fresh activation record
   const activationKey = randomUUID();
   const record = { email, username, avatarId, tempPassword, verificationToken: avatar.verificationToken || "", testMode: false, createdAt: Date.now() };
-  await redisClient.set(`avatar-activation:${activationKey}`, JSON.stringify(record), { EX: ACTIVATION_TTL_SECONDS });
+  await redisClient.set(`${P}avatar-activation:${activationKey}`, JSON.stringify(record), { EX: ACTIVATION_TTL_SECONDS });
 
   // Build activation URL and resend email
   const activationUrl = `${ACTIVATION_PORTAL_URL}?email=${encodeURIComponent(email)}&key=${activationKey}`;
@@ -236,7 +251,7 @@ async function handleResendActivation(req, res) {
 async function handleSendEmail(req, res) {
   const {
     email, tierTitle, tierBadge, chain, txHash,
-    nftImage, testMode, activationUrl, activationLabel
+    nftImage, testMode, activationUrl, activationLabel, earlyBird
   } = req.body;
 
   if (!email || !tierTitle) return res.status(400).json({ error: 'Missing fields' });
@@ -298,6 +313,7 @@ async function handleSendEmail(req, res) {
           <div style="background:#0a0f2a;border-radius:12px;padding:24px;margin-bottom:24px">
             <p style="margin:0 0 8px;font-size:18px"><strong>${tierTitle}</strong></p>
             <p style="margin:8px 0;color:#888">Chain: ${chain}</p>
+            ${earlyBird ? `<p style="margin:8px 0;color:#00cc44;font-weight:700">🐦 Early Bird: Yes — earlyBird flag set on your NFT holon</p>` : ''}
             ${txLine}
             ${explorerUrl ? `<a href="${explorerUrl}" style="display:inline-block;margin-top:12px;padding:8px 16px;background:#00e5ff11;border:1px solid #00e5ff44;border-radius:8px;color:#00e5ff;text-decoration:none;font-size:13px">View on Explorer →</a>` : ''}
           </div>
@@ -320,7 +336,7 @@ async function handleSendEmail(req, res) {
 }
 
 export default async function handler(req, res) {
-  Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+  Object.entries(getCorsHeaders(req)).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 

@@ -30,12 +30,15 @@ The current collection public key is stored in Vercel env vars:
 
 ### 2. Create the Collection NFT
 
-Use Postman (or any REST client) to call `POST https://api.web4.oasisomniverse.one/api/nft/mint-nft` with a Bearer token from a prior `/api/avatar/authenticate` call.
+Use Postman (or any REST client) to call `POST https://api.web4.oasisomniverse.one/api/nft/mint-on-chain-collection-nft` with a Bearer token from a prior `/api/avatar/authenticate` call.
+
+> **Note:** Use `mint-on-chain-collection-nft`, not `mint-nft`. The dedicated endpoint mints the Web4 NFT, creates the on-chain collection authority NFT, and then calls `SetCollectionSize` in one step so the collection appears correctly in Phantom's Collections tab (see [InitialSize](#initialsize--sized-collections) below).
 
 Request body:
 ```json
 {
-    "SendToAddressAfterMinting": "<new minting wallet address>",
+    "InitialSize": 170,
+    "SendToAddressAfterMinting": "kEGrGguhZYn2VFAW6GzNLQMce4rSHZd2G3AYsQCBydX",
     "SendToAvatarAfterMintingId": "",
     "SendToAvatarAfterMintingUsername": "",
     "SendToAvatarAfterMintingEmail": "",
@@ -59,6 +62,30 @@ Request body:
 ```
 
 **Important:** `SendToAddressAfterMinting` must be the new OASIS minting wallet address — this makes that wallet both the owner and update authority of the collection NFT.
+
+#### InitialSize & Sized Collections
+
+`InitialSize` maps to Metaplex's `set_and_verify_collection_size` instruction. It stores the declared total supply on-chain inside the collection's master NFT metadata account.
+
+**Why it matters:**
+- Phantom wallet and other wallets that use the Helius DAS API read this field to display e.g. "170 items" on the Collections tab
+- Without it the collection exists on-chain but has no declared size — wallets may show "?" or not surface the collection at all
+- Once set, the collection is considered a **sized collection** by the Metaplex standard
+
+**For Founders NFTs:** set `InitialSize` to `170` — the total number of Founder Access NFTs to ever be minted.
+
+**Can it be changed later?** Yes — `SetCollectionSize` can be called again at any time via `POST /api/nft/set-collection-size`. However:
+- Increasing it signals an expanded supply, which undermines the scarcity promise to buyers who paid expecting a 170 max supply
+- Decreasing it below the number already minted causes an on-chain inconsistency
+- Treat `170` as fixed for Founders NFTs unless there is a deliberate, communicated supply change
+
+**Additional fields:**
+
+| Field | Behaviour |
+|---|---|
+| `WaitTillCollectionSizeSet` | If `true` (default), the API waits and retries until `SetCollectionSize` confirms on-chain before returning |
+| `WaitForCollectionSizeToBeSetInSeconds` | Max time to wait (default 60 s) |
+| `AttemptToSetCollectionSizeEveryXSeconds` | Retry interval (default 1 s) |
 
 ### 3. Note the Collection Public Key
 

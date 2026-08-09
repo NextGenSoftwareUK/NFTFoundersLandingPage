@@ -1,7 +1,16 @@
 {
+  "scripts": {
+    "reset:live": "node scripts/reset-redis.mjs --all --yes",
+    "reset:test": "node scripts/reset-redis.mjs --all --yes --test",
+    "reset:counts": "node scripts/reset-redis.mjs --counts --yes",
+    "reset:orders": "node scripts/reset-redis.mjs --orders --locks --yes",
+    "reset:dry": "node scripts/reset-redis.mjs --dry-run",
+    "reset:dry:test": "node scripts/reset-redis.mjs --dry-run --test"
+  },
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
     "@metaplex-foundation/umi-bundle-defaults": "^1.5.1",
+    "@oasisomniverse/web4-api": "github:NextGenSoftwareUK/OASIS-API-Javascipt-Package-WEB4",
     "@solana/web3.js": "^1.91.8",
     "@upstash/redis": "^1.38.0",
     "@vercel/kv": "^3.0.0",
@@ -9,5 +18,8 @@
     "rpc-websockets": "^7.7.0",
     "stripe": "^22.1.1",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2"
   }
 }

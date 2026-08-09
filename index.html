@@ -390,7 +390,17 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 .form-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
 #stripe-card-element{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:13px 14px;transition:border-color .2s}
 #stripe-card-errors{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;font-family:'Share Tech Mono',monospace}
-.test-banner{background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#ffd166;font-family:'Share Tech Mono',monospace;text-align:center;line-height:1.6}
+.test-banner{display:none;background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#ffd166;font-family:'Share Tech Mono',monospace;text-align:center;line-height:1.6}
+
+/* ── ENV BADGE (always visible) ── */
+#envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
+#envBadge.live{background:rgba(0,200,80,.13);color:#00e676;border-color:rgba(0,200,80,.4);}
+#envBadge.test{background:rgba(255,160,0,.16);color:#ffb300;border-color:rgba(255,160,0,.5);}
+
+/* ── ENV BADGE (always visible) ── */
+#envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
+#envBadge.live{background:rgba(0,200,80,.13);color:#00e676;border-color:rgba(0,200,80,.4);}
+#envBadge.test{background:rgba(255,160,0,.16);color:#ffb300;border-color:rgba(255,160,0,.5);}
 
 /* ── ENV BADGE (always visible) ── */
 #envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
@@ -1812,6 +1822,14 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         <button class="pay-tab"        id="tabOasis"  onclick="switchTab('oasis')">🌀 OASIS</button>
       </div>
 
+      <!-- Gift override banner — shown across all tabs when a $0 override is detected -->
+      <div id="giftBanner" style="display:none;background:linear-gradient(90deg,rgba(0,130,50,.18),rgba(0,200,80,.18),rgba(0,130,50,.18));border:1px solid rgba(0,200,80,.4);border-radius:10px;padding:13px 18px;margin-bottom:14px;text-align:center;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#00cc44;letter-spacing:.1em;margin-bottom:4px;">🎁 FREE GIFT DETECTED</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#a8ffc0;margin-bottom:12px;">Your email has a gift override for this tier — no payment required.</div>
+        <button id="giftBannerBtn" onclick="claimGiftFromModal()" style="background:linear-gradient(135deg,#005520,#00aa36);border:none;border-radius:8px;padding:11px 28px;color:#fff;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:opacity .2s;">🎁 CLAIM FREE GIFT</button>
+        <div id="giftBannerError" style="display:none;margin-top:10px;color:#ff4444;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;"></div>
+      </div>
+
       <!-- ══ FIAT PANEL ══ -->
       <div class="pay-panel active" id="panelCard">
 
@@ -1927,14 +1945,12 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         </div>
 
         <!-- Stripe card -->
-        <div class="form-group">
+        <div class="form-group" id="stripe-card-section">
           <label class="form-label">
             CARD DETAILS
           </label>
 
           <div id="stripe-card-element"></div>
-
-          <div id="stripe-card-errors"></div>
         </div>
 
         <!-- Price -->
@@ -1952,6 +1968,9 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           </span>
         </div>
 
+        <!-- Gift override note -->
+        <div id="giftNote" style="display:none;padding:10px 14px;border-radius:8px;background:rgba(0,200,80,.1);border:1px solid rgba(0,200,80,.25);font-family:'Share Tech Mono',monospace;font-size:12px;color:#00cc44;text-align:center;margin-bottom:8px;"></div>
+
         <!-- Confirm -->
         <button
           class="confirm-btn"
@@ -1960,6 +1979,9 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         >
           🔒 CONFIRM MINT
         </button>
+
+        <!-- Error — always visible regardless of card section visibility -->
+        <div id="stripe-card-errors" style="text-align:center;"></div>
       </div>
 
       <!-- ══ CRYPTO PANEL ══ -->
@@ -2215,11 +2237,18 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
   let CFG = {};
   let OASIS_CFG = {};
   let TEST_MODE = false;
+  let MINT_OPEN = false;
   let evmAddress = null;
+  let giftOverridePrice = null; // null = no override, 0 = free, >0 = custom USD price
+  let _fiatSession = null; // { clientSecret, orderId } — reused across retries within same modal open
 
   async function loadConfig() {
-    const data = await fetch('/api/config').then(r => r.json());
+    const r = await fetch('/api/config');
+    if (!r.ok) throw new Error(`config ${r.status}`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
     TEST_MODE = data.testMode;
+    MINT_OPEN = data.mintOpen === true;
     CFG = {
       stripePk:      data.stripePk,
       evmReceiver:   data.evmReceiver,
@@ -2374,7 +2403,19 @@ function initStripe() {
 
 // ── MODAL OPEN/CLOSE ──
 function openModal(tier) {
+  if (!MINT_OPEN) {
+    const modal = document.getElementById('comingSoonModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('notifyResult').textContent = '';
+    document.getElementById('notifyEmail').value = '';
+    document.getElementById('notifyBtn').disabled = false;
+    document.getElementById('notifyBtn').textContent = 'JOIN THE WAITLIST';
+    document.getElementById('notifyForm').onsubmit = function(e) { submitNotify(e, tier); };
+    return;
+  }
   currentTier = tier;
+  _fiatSession = null;
   const t = TIERS[tier];
   document.getElementById('modalBadge').textContent  = t.badge;
   document.getElementById('modalBadge').style.cssText = t.badgeStyle;
@@ -2414,6 +2455,12 @@ function openModal(tier) {
   document.getElementById('mintModal').classList.add('open');
   document.body.style.overflow = 'hidden';
   if (!stripeReady) setTimeout(initStripe, 100);
+
+  // Re-check override for already-entered email (tier may have changed)
+  giftOverridePrice = null;
+  updateGiftUI(null);
+  const existingEmail = document.getElementById('cardEmail').value.trim();
+  if (existingEmail) checkEmailOverride(existingEmail);
 }
 
 function closeModal() {
@@ -3198,6 +3245,7 @@ async function handleFiatPayment() {
 
   if (!chkConfirm.checked) {
     errEl.textContent = 'You must agree to the Terms of Service.';
+    chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
@@ -3231,6 +3279,30 @@ async function handleFiatPayment() {
   if (!wallet) {
     errEl.textContent =
       'Please enter wallet address.';
+    return;
+  }
+
+  // ── GIFT FLOW: free or admin-overridden price ──
+  if (giftOverridePrice === 0) {
+    const btn = document.getElementById('fiatConfirm');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>CLAIMING GIFT...';
+    try {
+      const giftRes = await fetch('/api/gift-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, tier: currentTier, wallet, name, testMode: TEST_MODE })
+      });
+      const giftData = await giftRes.json();
+      if (!giftData.success) { errEl.textContent = giftData.error || 'Gift order failed.'; return; }
+      currentOasisChain = 'SolanaOASIS';
+      await mint(giftData.orderId, 'GIFT', wallet, email);
+    } catch(e) {
+      console.error(e);
+      errEl.textContent = 'Unexpected error. Please try again.';
+    } finally {
+      resetFiatBtn();
+    }
     return;
   }
 
@@ -3272,28 +3344,34 @@ async function handleFiatPayment() {
     console.log("email:", email);
     console.log("wallet:", wallet);
 
-    // 1. Create PaymentIntent first
-    const res = await fetch('/api/createPayment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tier: currentTier,
-        name,
-        email,
-        wallet,
-        testMode: TEST_MODE,
-      })
-    });
+    // 1. Create PaymentIntent (reuse if already created this modal session)
+    if (!_fiatSession) {
+      const res = await fetch('/api/createPayment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tier: currentTier,
+          name,
+          email,
+          wallet,
+          testMode: TEST_MODE,
+        })
+      });
 
-    const data = await res.json();
-    console.log("data=", data);
-    
-    if (!data.success) {
-      errEl.textContent = data.error || 'Payment failed.';
-      return;
+      const data = await res.json();
+      console.log("data=", data);
+
+      if (!data.success) {
+        errEl.textContent = data.error || 'Payment failed.';
+        return;
+      }
+
+      _fiatSession = { clientSecret: data.clientSecret, orderId: data.orderId };
+    } else {
+      console.log('[fiat] reusing existing PaymentIntent for this modal session');
     }
 
-    const clientSecret = data.clientSecret; // 👈 IMPORTANT
+    const { clientSecret, orderId: fiatOrderId } = _fiatSession;
 
     // 2. Confirm payment (THIS is the ONLY Stripe call you need)
     // const { error, paymentIntent } = await stripe.confirmPayment({
@@ -3329,12 +3407,13 @@ async function handleFiatPayment() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       paymentIntentId: paymentIntent.id,
-      orderId: data.orderId,
+      orderId: fiatOrderId,
       testMode: TEST_MODE
     })
   });
 
-   await mint(data.orderId, data.paymentIntentId, wallet, email);
+  _fiatSession = null; // clear so a re-open of the modal starts fresh
+  await mint(fiatOrderId, paymentIntent.id, wallet, email);
 
     // if (paymentIntent.status === "succeeded") {
 
@@ -3454,7 +3533,8 @@ async function showSuccess(method, txHash, extra) {
       nftImage: NFT_IMAGE_URLS[currentTier],
       testMode : TEST_MODE,
       activationUrl: extra?.activationUrl || null,
-      activationLabel: extra?.activationLabel || null
+      activationLabel: extra?.activationLabel || null,
+      earlyBird: extra?.earlyBird || false
     });
   }
 }
@@ -3638,12 +3718,13 @@ async function handleOasisMint() {
 
   if (!chkConfirm.checked) {
     errEl.textContent = 'You must agree to the Terms of Service.';
-    errEl.style.display = "block";
+    errEl.style.display = 'block';
+    chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
-  if (!wallet) 
-  { 
+  if (!wallet)
+  {
     errEl.textContent = 'Please enter your wallet address.'; 
     errEl.style.display = "block";
     return; 
@@ -3656,6 +3737,33 @@ async function handleOasisMint() {
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>CONNECTING TO OASIS...';
+
+  // ── GIFT FLOW: free override bypasses SOL payment ──
+  if (giftOverridePrice === 0) {
+    try {
+      const giftRes = await fetch('/api/gift-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, tier: currentTier, wallet, testMode: TEST_MODE })
+      });
+      const giftData = await giftRes.json();
+      if (!giftData.success) {
+        errEl.textContent = giftData.error || 'Gift order failed.';
+        errEl.style.display = 'block';
+        return;
+      }
+      currentOasisChain = 'SolanaOASIS';
+      await mint(giftData.orderId, 'GIFT', wallet, email);
+    } catch(e) {
+      console.error(e);
+      errEl.textContent = 'Unexpected error. Please try again.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🎁 CLAIM FREE GIFT';
+    }
+    return;
+  }
 
   try {
 
@@ -3689,7 +3797,8 @@ async function handleOasisMint() {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
           wallet,
-          tier: currentTier
+          tier: currentTier,
+          email
         })
       }).then(r => r.json());
 
@@ -4028,7 +4137,7 @@ async function mint(orderId, paymentSignature, wallet, email) {
 
     const data = await res.json();
     if (!res.ok) { console.error('[oasis] error response:', data); throw new Error(data.error || 'Mint failed'); }
-    console.log('[oasis] success response _debug:', data._debug);
+    //console.log('[oasis] success response _debug:', data._debug);
 
     const txHash = data.result?.result?.web3NFTs?.[0]?.mintTransactionHash
                 || data.result?.result?.web3NFTs?.[0]?.sendNFTTransactionHash
@@ -4049,7 +4158,8 @@ async function mint(orderId, paymentSignature, wallet, email) {
       chain: chain.label,
       txLine: `🌀 Minted via OASIS · ${chain.label}${txLine}<br>📧 Confirmation: ${email}`,
       activationUrl: data.activationUrl || null,
-      activationLabel: data.activationLabel || null
+      activationLabel: data.activationLabel || null,
+      earlyBird: data.earlyBird || false
     });
 
   } catch(e) {
@@ -4123,12 +4233,12 @@ async function mint(orderId, paymentSignature, wallet, email) {
 // }
 
 
-async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel }) {
+async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird }) {
   try {
     await fetch('/api/sendEmail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel })
+      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird })
     });
   } catch(e) {
     console.warn('Email send failed:', e.message);
@@ -4145,30 +4255,138 @@ async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHas
   resize();init();draw();window.addEventListener('resize',()=>{resize();init()});
 })();
 
-// ── TEST MODE INIT ──
-(function initTestMode() {
-  // Always show env badge
+// ── TEST MODE INIT — called after loadConfig() sets TEST_MODE ──
+function initTestMode() {
   const badge = document.getElementById('envBadge');
   if (badge) {
-    badge.textContent = TEST_MODE ? '⬡ TEST' : '● LIVE';
-    badge.className   = TEST_MODE ? 'test' : 'live';
+    badge.textContent   = TEST_MODE ? '⬡ TEST' : '● LIVE';
+    badge.className     = TEST_MODE ? 'test' : 'live';
     badge.style.opacity = '1';
   }
 
+  const sb = document.getElementById('stripeTestBanner');
   if (!TEST_MODE) {
-    const sb = document.getElementById('stripeTestBanner');
     if (sb) sb.style.display = 'none';
     return;
   }
-  // Show global banner + body class
   document.getElementById('testModeBanner').style.display = 'block';
   document.body.classList.add('test-mode-on');
-  // Append TEST pill to page title
   document.title = '[TESTNET] ' + document.title;
-  // Show the stripe test banner
-  const sb = document.getElementById('stripeTestBanner');
   if (sb) sb.style.display = 'block';
-})();
+}
+
+// ── GIFT OVERRIDE UI ──
+async function checkEmailOverride(email) {
+  giftOverridePrice = null;
+  if (!email || !email.includes('@')) { updateGiftUI(null); return; }
+  try {
+    const res = await fetch(`/api/config?email=${encodeURIComponent(email)}`);
+    if (!res.ok) { updateGiftUI(null); return; }
+    const data = await res.json();
+    if (data.overrides) {
+      const op = data.overrides[`${currentTier}Price`];
+      giftOverridePrice = (op !== null && op !== undefined) ? op : null;
+    }
+  } catch { /* non-fatal — fall through to normal flow */ }
+  updateGiftUI(giftOverridePrice);
+}
+
+function updateGiftUI(overridePrice) {
+  const priceEl      = document.getElementById('fiatPrice');
+  const oasisPriceEl = document.getElementById('oasisPrice');
+  const noteEl       = document.getElementById('giftNote');
+  const cardEl       = document.getElementById('stripe-card-section');
+  const bannerEl     = document.getElementById('giftBanner');
+  const fiatBtnEl    = document.getElementById('fiatConfirm');
+  const oasisBtnEl   = document.getElementById('oasisConfirm');
+  const t            = TIERS[currentTier];
+
+  if (overridePrice === null || overridePrice === undefined) {
+    if (bannerEl)     bannerEl.style.display = 'none';
+    if (noteEl)       noteEl.style.display = 'none';
+    if (cardEl)       cardEl.style.display = '';
+    if (priceEl && t) { priceEl.textContent = t.fiatDisplay; priceEl.style.color = t.fiatColor || 'var(--gold)'; }
+    if (fiatBtnEl)    fiatBtnEl.textContent = '🔒 CONFIRM MINT';
+    if (oasisBtnEl && !oasisBtnEl.disabled) oasisBtnEl.textContent = '🌀 MINT WITH OASIS';
+    return;
+  }
+  const solPriceEl   = document.getElementById('nftSolPrice');
+  const solRateEl    = document.getElementById('solPriceOASIS');
+
+  if (overridePrice === 0) {
+    if (bannerEl)     bannerEl.style.display = 'block';
+    if (priceEl)      { priceEl.textContent = 'FREE GIFT'; priceEl.style.color = '#00cc44'; }
+    if (oasisPriceEl) { oasisPriceEl.textContent = 'FREE GIFT'; oasisPriceEl.style.color = '#00cc44'; }
+    if (solPriceEl)   { solPriceEl.textContent = 'FREE GIFT'; solPriceEl.style.color = '#00cc44'; }
+    if (noteEl)       { noteEl.style.display = 'block'; noteEl.textContent = '🎁 Gift override — no payment required'; }
+    if (cardEl)       cardEl.style.display = 'none';
+    if (fiatBtnEl)    fiatBtnEl.textContent = '🎁 CLAIM FREE GIFT';
+    if (oasisBtnEl)   oasisBtnEl.textContent = '🎁 CLAIM FREE GIFT';
+  } else {
+    // Re-compute SOL equivalent using the live rate shown on screen
+    const rateText = solRateEl ? solRateEl.textContent.replace(/[^0-9.]/g, '') : '';
+    const solRate = parseFloat(rateText);
+    if (solPriceEl && solRate > 0) {
+      solPriceEl.textContent = `${(overridePrice / solRate).toFixed(4)} SOL`;
+      solPriceEl.style.color = '#ffb300';
+    }
+    if (bannerEl)     bannerEl.style.display = 'none';
+    if (priceEl)      { priceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; priceEl.style.color = '#ffb300'; }
+    if (oasisPriceEl) { oasisPriceEl.textContent = `$${Number(overridePrice).toLocaleString()} USD`; oasisPriceEl.style.color = '#ffb300'; }
+    if (noteEl)       { noteEl.style.display = 'block'; noteEl.textContent = '⚡ Special price applied for your email'; noteEl.style.color = '#ffb300'; }
+    if (cardEl)       cardEl.style.display = '';
+    if (fiatBtnEl)    fiatBtnEl.textContent = '🔒 CONFIRM MINT';
+    if (oasisBtnEl && !oasisBtnEl.disabled) oasisBtnEl.textContent = '🌀 MINT WITH OASIS';
+  }
+}
+
+async function claimGiftFromModal() {
+  const email  = document.getElementById('oasisEmail').value.trim()
+               || document.getElementById('cardEmail').value.trim();
+  const wallet = document.getElementById('oasisWalletAddr').value.trim()
+               || document.getElementById('stripeWalletAddr').value.trim();
+  const errEl  = document.getElementById('giftBannerError');
+  errEl.style.display = 'none'; errEl.textContent = '';
+
+  const chkConfirm = document.getElementById('chkConfirm');
+  if (!chkConfirm.checked) {
+    errEl.textContent = 'You must agree to the Terms of Service.';
+    errEl.style.display = 'block';
+    chkConfirm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  if (!email || !email.includes('@')) {
+    errEl.textContent = 'Please enter your email address first.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const btn = document.getElementById('giftBannerBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>CLAIMING...';
+  try {
+    const giftRes = await fetch('/api/gift-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, tier: currentTier, wallet, testMode: TEST_MODE })
+    });
+    const giftData = await giftRes.json();
+    if (!giftData.success) {
+      errEl.textContent = giftData.error || 'Gift claim failed.';
+      errEl.style.display = 'block';
+      return;
+    }
+    currentOasisChain = 'SolanaOASIS';
+    await mint(giftData.orderId, 'GIFT', wallet, email);
+  } catch(e) {
+    console.error(e);
+    errEl.textContent = 'Unexpected error. Please try again.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎁 CLAIM FREE GIFT';
+  }
+}
 
 // Detect Edge + tracking prevention and warn user
 async function checkMintCounts() {
@@ -4240,7 +4458,20 @@ window.addEventListener('DOMContentLoaded', async () => {
   //currentTier = 'supporter';
   //showSuccess('evm', '0xabc123def456abc123def456abc123def456abc123', 'https://etherscan.io');
 
+  try {
+    document.getElementById('cardEmail').addEventListener('blur', e => checkEmailOverride(e.target.value.trim()));
+  document.getElementById('oasisEmail').addEventListener('blur', e => checkEmailOverride(e.target.value.trim()));
+
   await loadConfig();
+  } catch (e) {
+    console.error('[config]', e.message);
+    const badge = document.getElementById('envBadge');
+    if (badge) {
+      badge.textContent = '⚠ CONFIG ERROR';
+      badge.style.cssText += ';background:rgba(255,50,50,.18);color:#ff5555;border-color:rgba(255,50,50,.5);opacity:1';
+    }
+  }
+  initTestMode();
   updateOasisWalletUI();
   preWarmPhantom();
   checkEdgeTracking();
@@ -4333,20 +4564,7 @@ document.querySelectorAll('.nav-links a').forEach(a => {
 </div>
 
 <script>
-// Gate: show Coming Soon popup when any MINT button is clicked.
-// const _originalOpenModal = openModal;
-// openModal = function(tier) {
-//   let _pendingNotifyTier = tier;
-//   const modal = document.getElementById('comingSoonModal');
-//   modal.style.display = 'flex';
-//   document.body.style.overflow = 'hidden';
-//   document.getElementById('notifyResult').textContent = '';
-//   document.getElementById('notifyEmail').value = '';
-//   document.getElementById('notifyBtn').disabled = false;
-//   document.getElementById('notifyBtn').textContent = 'JOIN THE WAITLIST';
-//   document.getElementById('notifyBtn').onclick = null;
-//   document.getElementById('notifyForm').onsubmit = function(e) { submitNotify(e, _pendingNotifyTier); };
-// };
+// Gate moved into openModal() directly — see function above.
 
 function closeComingSoon() {
   document.getElementById('comingSoonModal').style.display = 'none';

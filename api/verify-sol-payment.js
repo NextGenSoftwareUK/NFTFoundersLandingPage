@@ -3,8 +3,11 @@
 const { verifySolPayment } = require("../lib/verifySolTx");
 const { createClient } = require("redis");
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+const P = TEST_MODE ? 'test:' : '';
 const redis = createClient({
   url: process.env.REDIS_URL,
+  socket: { reconnectStrategy: false },
 });
 
 redis.on("error", (err) => {
@@ -29,7 +32,7 @@ export default async function handler(req, res) {
     console.log("VERIFY BODY:", req.body);
     await ensureRedis();
 
-    const rawOrder = await redis.get(`order:${orderId}`);
+    const rawOrder = await redis.get(`${P}order:${orderId}`);
 
     if (!rawOrder) {
       return res.json({
@@ -86,8 +89,9 @@ export default async function handler(req, res) {
 
     order.status = "paid";
     order.signature = signature;
+    order.paidAt = Date.now();
 
-    await redis.set(`order:${orderId}`, JSON.stringify(order));
+    await redis.set(`${P}order:${orderId}`, JSON.stringify(order));
 
     return res.json({ success: true });
 
