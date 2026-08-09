@@ -4234,15 +4234,16 @@ async function mint(orderId, paymentSignature, wallet, email) {
 
 
 async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird }) {
-  try {
-    await fetch('/api/sendEmail', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird })
-    });
-  } catch(e) {
-    console.warn('Email send failed:', e.message);
-    // non-fatal, don't block the success UI
+  const body = JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird });
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch('/api/sendEmail', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      if (res.ok) return;
+      console.warn(`Email send attempt ${attempt} failed with status ${res.status}`);
+    } catch(e) {
+      console.warn(`Email send attempt ${attempt} error:`, e.message);
+    }
+    if (attempt < 3) await new Promise(r => setTimeout(r, 3000 * attempt));
   }
 }
 
