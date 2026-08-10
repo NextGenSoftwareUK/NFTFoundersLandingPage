@@ -42,7 +42,6 @@ function getOasisClient() {
 }
 
 async function ensurePlatformAuth(oasis) {
-  if (oasis.auth.isAuthenticated()) return;
   const username = TEST_MODE ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE;
   const password = TEST_MODE ? process.env.OASIS_AVATAR_PASSWORD_TEST : process.env.OASIS_AVATAR_PASSWORD_LIVE;
   console.log('[oasis] authenticating platform user:', username);
