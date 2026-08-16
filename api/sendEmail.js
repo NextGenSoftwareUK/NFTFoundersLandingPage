@@ -15,8 +15,8 @@ async function ensureRedis() {
 }
 
 const OASIS_API_URL = TEST_MODE
-  ? "https://dev.api.web4.oasisomniverse.one"
-  : "https://api.web4.oasisomniverse.one";
+  ? process.env.OASIS_API_URL_TEST
+  : process.env.OASIS_API_URL_LIVE;
 const ACTIVATION_PORTAL_URL = TEST_MODE
   ? "https://dev.oportal.oasisomniverse.one/activate.html"
   : "https://oportal.oasisomniverse.one/activate.html";
