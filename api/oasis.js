@@ -36,6 +36,7 @@ let _oasisClient = null;
 function getOasisClient() {
   if (!_oasisClient) {
     const baseUrl = TEST_MODE ? process.env.OASIS_API_URL_TEST : process.env.OASIS_API_URL_LIVE;
+    console.log('[oasis] OASIS_API_URL:', baseUrl, '| TEST_MODE:', TEST_MODE);
     _oasisClient = new OASISClient({ baseUrl });
   }
   return _oasisClient;
