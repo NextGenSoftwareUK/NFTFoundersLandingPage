@@ -3,6 +3,7 @@
   "symbol": "OASISFNDR",
   "description": "OASIS Founder Access NFT — Core Builder",
   "image": "https://founders.oasisomniverse.one/img/nft-core-wallet.png",
+  "external_url": "https://founders.oasisomniverse.one",
   "seller_fee_basis_points": 0,
   "attributes": [
     { "trait_type": "Tier", "value": "Core Builder" },
