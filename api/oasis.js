@@ -178,7 +178,7 @@ export default async function handler(req, res) {
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST     || "HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF")
-      : (process.env.COLLECTION_PUBLIC_KEY_MAINNET  || "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj");
+      : (process.env.COLLECTION_PUBLIC_KEY_LIVE  || "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj");
 
     console.log('[oasis] testMode:', testMode, '| CollectionPublicKey:', payload.CollectionPublicKey);
 
@@ -402,7 +402,7 @@ export default async function handler(req, res) {
       error: e.message || 'Unknown error',
       //_debug: { // DO NOT expose to client
       //  testMode:          process.env.TEST_MODE,
-      //  collectionPublicKey: TEST_MODE ? process.env.COLLECTION_PUBLIC_KEY_TEST : process.env.COLLECTION_PUBLIC_KEY_MAINNET,
+      //  collectionPublicKey: TEST_MODE ? process.env.COLLECTION_PUBLIC_KEY_TEST : process.env.COLLECTION_PUBLIC_KEY_LIVE,
       //  username:          TEST_MODE ? process.env.OASIS_AVATAR_USERNAME_TEST : process.env.OASIS_AVATAR_USERNAME_LIVE,
       //  avatarId:          TEST_MODE ? process.env.OASIS_AVATAR_ID_TEST       : process.env.OASIS_AVATAR_ID_LIVE,
       //}
