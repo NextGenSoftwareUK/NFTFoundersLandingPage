@@ -88,21 +88,6 @@
     </div>
 
     <section>
-      <h2>OASIS Founder NFT Launch Status</h2>
-      <table class="table">
-        <tbody>
-          <tr><td style="color:var(--green)">✓</td><td><strong>Minting Live</strong></td></tr>
-          <tr><td style="color:var(--green)">✓</td><td><strong>Web3 NFT Created &amp; On-Chain</strong></td></tr>
-          <tr><td style="color:var(--green)">✓</td><td><strong>Web4 NFT Holon Created</strong></td></tr>
-          <tr><td style="color:var(--green)">✓</td><td><strong>OASIS Avatar Generated</strong></td></tr>
-          <tr><td style="color:var(--green)">✓</td><td><strong>OPORTAL Integration Live</strong></td></tr>
-          <tr><td style="color:var(--green)">✓</td><td><strong>Metadata Frozen (Immutable)</strong></td></tr>
-          <tr><td style="color:var(--amber)">⏳</td><td><strong>Third-party wallet display updates pending</strong> — Phantom / Solflare indexing in progress</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section>
       <h2>Where You Can View Your NFT Right Now</h2>
       <p>Your NFT is live on Solana mainnet and visible in multiple places right now. The <strong>OASIS Portal</strong> is the primary home — this is where its Web4 utility lives and it is the definitive record of your ownership.</p>
       <table class="table">
@@ -121,8 +106,8 @@
 
     <section>
       <h2>Why Phantom and Solflare May Not Be Showing Your NFT Yet</h2>
-      <p>Phantom and Solflare use their own indexing and data services to display NFTs. These systems can take time to recognise newly created collections or updated metadata. Your NFT is not missing from the blockchain — it simply has not yet been picked up by these third-party display layers.</p>
-      <p>This can occur with newly created Solana NFT collections as third-party services build and refresh their indexes. When a collection is newly created or updated, this process can take anywhere from a few hours to several days. This is entirely outside our control.</p>
+      <p>Phantom and Solflare do not read NFT data directly from the Solana blockchain. Instead, they rely on a third-party indexing service called the <strong>Helius DAS API</strong>, which crawls the chain and builds a searchable database of NFTs. Your NFT is not missing from the blockchain — it is missing from that database.</p>
+      <p>This is a well-known, common issue affecting all new Solana NFT projects. When a collection is newly created or updated, Helius can take anywhere from a few hours to several days to re-index it. This is entirely outside our control.</p>
       <div class="callout">
         <strong>This is not a sign anything is wrong.</strong> The NFT exists on-chain, is verified, and is fully usable in the OASIS ecosystem right now. Phantom and Solflare simply have not caught up yet.
       </div>
@@ -141,7 +126,7 @@
           <tr>
             <td><strong>Mint Authority enabled</strong></td>
             <td><span class="badge badge-fp">False positive</span></td>
-            <td>When Metaplex creates the Master Edition (which enforces supply = 1), it transfers the Mint Authority to a Program Derived Address controlled entirely by the Metaplex program — not any wallet. Nobody can mint more of this token. This behaviour is a characteristic of standard Metaplex NFT collections and is not by itself an indicator of risk.</td>
+            <td>When Metaplex creates the Master Edition (which enforces supply = 1), it transfers the Mint Authority to a Program Derived Address controlled entirely by the Metaplex program — not any wallet. Nobody can mint more of this token. This is the same state as every major Solana NFT collection including DeGods, Mad Lads and Okay Bears.</td>
           </tr>
           <tr>
             <td><strong>Freeze Authority enabled</strong></td>
@@ -168,7 +153,7 @@
     <section>
       <h2>This Is a Real NFT With Real Utility</h2>
       <p>Your OASIS Founders NFT is a legitimate, on-chain Metaplex Non-Fungible Token on Solana mainnet. It is part of a <strong>verified, sized collection</strong> — the collection NFT is itself verified on-chain, and each Founders NFT is cryptographically linked to it.</p>
-      <p>Beyond being an NFT, it carries genuine utility within the <strong>OASIS Web4 ecosystem</strong>. Your NFT is linked to your OASIS avatar, unlocking Founders-tier access, participation opportunities, and future governance features within the OASIS Platform as they become available. This utility lives in the OASIS Portal and does not depend on Phantom or Solflare.</p>
+      <p>Beyond being an NFT, it carries genuine utility within the <strong>OASIS Web4 ecosystem</strong>. Your NFT is linked to your OASIS avatar, unlocking Founders-tier access, governance rights, and features within the OASIS Platform as they become available. This utility lives in the OASIS Portal and does not depend on Phantom or Solflare.</p>
       <p>The combination of on-chain verification via Solscan and the Solana Explorer, permanent metadata immutability, collection verification, and active utility in the OASIS Portal is what defines the legitimacy of your NFT — not the display status in a third-party wallet app.</p>
     </section>
 

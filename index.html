@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -391,11 +391,6 @@ button, a, .coin-btn, .tier-card, .feature-item, .why-card, .proof-card {
 #stripe-card-element{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:13px 14px;transition:border-color .2s}
 #stripe-card-errors{color:var(--red);font-size:13px;margin-top:8px;min-height:18px;font-family:'Share Tech Mono',monospace}
 .test-banner{display:none;background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#ffd166;font-family:'Share Tech Mono',monospace;text-align:center;line-height:1.6}
-
-/* ── ENV BADGE (always visible) ── */
-#envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
-#envBadge.live{background:rgba(0,200,80,.13);color:#00e676;border-color:rgba(0,200,80,.4);}
-#envBadge.test{background:rgba(255,160,0,.16);color:#ffb300;border-color:rgba(255,160,0,.5);}
 
 /* ── ENV BADGE (always visible) ── */
 #envBadge{position:fixed;bottom:16px;right:16px;z-index:9998;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 14px;border-radius:20px;border:1px solid;pointer-events:none;opacity:0;transition:opacity .4s}
@@ -1018,12 +1013,12 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
       <div class="protocol-panel">
         <div class="protocol-kicker">ODOOM / OQUAKE / OUR WORLD</div>
         <div class="protocol-heading">OGEngine is the runtime contract that lets games share one avatar, one quest graph and one inventory.</div>
-        <p class="protocol-copy">The OASIS Omniverse docs describe OGEngine as the combined stack formed by <strong>Web4 OASIS API, Web5 STAR API and OGEngine Client</strong>. Games stay thin: they call shared <code>ogengine_*</code> hooks while the client handles authentication, caching, queues, quest progress, inventory sync and NFT mint/add flows.</p>
+        <p class="protocol-copy">The OASIS Omniverse docs describe OGEngine as the combined stack formed by <strong>Web4 OASIS API, Web5 STAR API and STARAPIClient</strong>. Games stay thin: they call shared <code>star_api_*</code> hooks while the client handles authentication, caching, queues, quest progress, inventory sync and NFT mint/add flows.</p>
         <div class="provider-cloud">
           <span class="provider-pill">ODOOM</span>
           <span class="provider-pill">OQuake</span>
           <span class="provider-pill">Our World</span>
-          <span class="provider-pill">OGEngine Client</span>
+          <span class="provider-pill">STARAPIClient</span>
           <span class="provider-pill">STAR CLI</span>
           <span class="provider-pill">ODK Light</span>
           <span class="provider-pill">star_api_*</span>
@@ -1037,7 +1032,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <div class="protocol-point"><div class="protocol-num">01</div><div><div class="protocol-title">BEAM-IN SSO</div><div class="protocol-text">Players authenticate once with their OASIS/STAR avatar, then carry profile, quest and inventory state across games.</div></div></div>
           <div class="protocol-point"><div class="protocol-num">02</div><div><div class="protocol-title">CROSS-GAME INVENTORY</div><div class="protocol-text">Keys, weapons, ammo, powerups and items can be synced through STAR and optionally minted as Web4 NFT inventory assets.</div></div></div>
           <div class="protocol-point"><div class="protocol-num">03</div><div><div class="protocol-title">QUEST HANDOFFS</div><div class="protocol-text">Objectives can point to another game, OPORTAL, STAR CLI, a website, chat, or a linked GeoHotSpot in the real world.</div></div></div>
-          <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">PORTABLE GAME HOOKS</div><div class="protocol-text">Future ports only need small gameplay hooks while OGEngine Client keeps API work, queues and cache logic reusable.</div></div></div>
+          <div class="protocol-point"><div class="protocol-num">04</div><div><div class="protocol-title">PORTABLE GAME HOOKS</div><div class="protocol-text">Future ports only need small gameplay hooks while STARAPIClient keeps API work, queues and cache logic reusable.</div></div></div>
         </div>
       </div>
     </div>
@@ -1499,8 +1494,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
         <ul class="download-list">
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-ODK-Runtime-v3.5.0" target="_blank">⬇️ STAR CLI / ODK Runtime v3.5.0</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/OASIS-Runtime-v4.5.1" target="_blank">⬇️ OASIS Runtime v4.5.1</a></li>
-          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-API-CLIENT-v1.0.0" target="_blank">⬇️ OGEngine Client v1.0.0</a></li>
-          <li><a href="https://github.com/NextGenSoftwareUK/UltimateDoomBuilder/releases" target="_blank">⬇️ OGEditor SDK v1.0.0 <span style="font-size:10px;color:#FFA500">ALPHA</span></a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-API-CLIENT-v1.0.0" target="_blank">⬇️ STAR API Client v1.0.0</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/IDE/releases" target="_blank">⬇️ OASIS IDE v1.0.0 <span style="font-size:10px;color:#FFA500">ALPHA</span></a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases" target="_blank">⬇️ ONODE Manager v1.0.0 <span style="font-size:10px;color:#FFA500">ALPHA</span></a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS-HyperDrive-Client/releases" target="_blank">⬇️ HyperDrive Client v1.0.0 <span style="font-size:10px;color:#FFA500">ALPHA</span></a></li>
@@ -1540,7 +1534,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
       <div class="download-card">
         <div class="download-title">WEB 5 STAR SDKS</div>
         <ul class="download-list">
-          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-api-client" target="_blank">⬇️ Web5 OGEngine Client</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-api-client" target="_blank">⬇️ Web5 STAR API Client</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-rust-sdk" target="_blank">⬇️ Web5 STAR Rust SDK</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-unity-sdk" target="_blank">⬇️ Web5 STAR Unity SDK</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/tree/master/STAR%20ODK/NextGenSoftware.OASIS.STAR.WebUI/ClientApp/public/downloads/oasis-web5-star-unreal-sdk" target="_blank">⬇️ Web5 STAR Unreal SDK</a></li>
@@ -1648,7 +1642,6 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <li><a href="https://ourworld.oasisomniverse.one" target="_blank" rel="noopener">Our World</a></li>
           <li><a href="https://odoom.oasisomniverse.one" target="_blank" rel="noopener">ODOOM</a></li>
           <li><a href="https://oquake.oasisomniverse.one" target="_blank" rel="noopener">OQuake</a></li>
-          <li><a href="https://odao.oasisomniverse.one" target="_blank" rel="noopener">ODAO</a></li>
           <li><a href="https://holonet.oasisomniverse.one" target="_blank" rel="noopener">HoloNET</a></li>
           <li><a href="https://web6.oasisomniverse.one" target="_blank" rel="noopener">WEB 6</a></li>
           <li><a href="https://web7.oasisomniverse.one" target="_blank" rel="noopener">WEB 7</a></li>
@@ -1678,8 +1671,7 @@ a:hover{filter:drop-shadow(0 0 8px rgba(0,229,255,1)) drop-shadow(0 0 20px rgba(
           <li><a href="https://www.nuget.org/profiles/OASISOmniverse" target="_blank" rel="noopener">NuGet (50 pkgs)</a></li>
           <li><a href="https://marketplace.visualstudio.com/items?itemName=NextGenSoftware.oasis-ide" target="_blank" rel="noopener">OASIS IDE</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-ODK-Runtime-v3.5.0" target="_blank" rel="noopener">STAR CLI/ODK</a></li>
-          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-API-CLIENT-v1.0.0" target="_blank" rel="noopener">OGEngine Client</a></li>
-          <li><a href="https://github.com/NextGenSoftwareUK/UltimateDoomBuilder/releases" target="_blank" rel="noopener">OGEditor SDK</a></li>
+          <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/STAR-API-CLIENT-v1.0.0" target="_blank" rel="noopener">STAR API Client</a></li>
           <li><a href="https://github.com/NextGenSoftwareUK/OASIS/releases/tag/OASIS-Runtime-v4.5.1" target="_blank" rel="noopener">OASIS Runtime v4.5.1</a></li>
         </ul>
       </div>
@@ -4234,16 +4226,15 @@ async function mint(orderId, paymentSignature, wallet, email) {
 
 
 async function sendConfirmationEmail({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird }) {
-  const body = JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird });
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      const res = await fetch('/api/sendEmail', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-      if (res.ok) return;
-      console.warn(`Email send attempt ${attempt} failed with status ${res.status}`);
-    } catch(e) {
-      console.warn(`Email send attempt ${attempt} error:`, e.message);
-    }
-    if (attempt < 3) await new Promise(r => setTimeout(r, 3000 * attempt));
+  try {
+    await fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, tierTitle, tierBadge, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird })
+    });
+  } catch(e) {
+    console.warn('Email send failed:', e.message);
+    // non-fatal, don't block the success UI
   }
 }
 

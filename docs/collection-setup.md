@@ -103,8 +103,8 @@ In the Vercel dashboard for this project, set:
 
 | Variable | Value |
 |---|---|
-| `COLLECTION_PUBLIC_KEY_LIVE` | 2uVFTptrWeQD4iunhNQKyMqor7eNQKe5RuiQfVM7R4eu The mainnet collection mint address |
-| `COLLECTION_PUBLIC_KEY_TEST` | 7PYZ18VxNaPeNyTtfoWn9eo2r4ibq5ixzceR7jcaFxhx The devnet collection mint address (if separate) |
+| `COLLECTION_PUBLIC_KEY_LIVE` | FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj The mainnet collection mint address |
+| `COLLECTION_PUBLIC_KEY_TEST` | HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF The devnet collection mint address (if separate) |
 
 Trigger a redeploy after saving.
 
@@ -139,8 +139,6 @@ Trigger a redeploy after saving.
 | ~early 2025 | Original collection created (live) | `BV3M26PqhztUpaXtesmYpG3EP2usWRYHL76QLiNWGEgs` |
 | 2026-07-11 | New live collection created after old wallet compromised | `9vgkKES9Cph9ukZPxXZKEV1uvbHenbofFi3BqXhP456r` |
 | 2026-07-12 | New dev/test collection created via dev API | `HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF` |
-| 2026-08-09 | New dev/test collection with fixed collection size created via dev API | `7PYZ18VxNaPeNyTtfoWn9eo2r4ibq5ixzceR7jcaFxhx` |
-| 2026-08-09 | New live collection created with fixed collection size via dev API | `2uVFTptrWeQD4iunhNQKyMqor7eNQKe5RuiQfVM7R4eu` |
 
 
 Due to some odd issues with Vercel env variables not working correctly (needs further investigation) to switch between dev/live:
