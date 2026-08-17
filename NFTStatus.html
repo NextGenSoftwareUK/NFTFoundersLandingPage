@@ -140,7 +140,14 @@
           </tr>
         </tbody>
       </table>
-      <p class="note" style="margin-top:14px">We have reported these false positives to RugCheck. The Mint and Freeze Authority flags are a structural characteristic of all Metaplex NFTs — they cannot be cleared without destroying the NFT standard itself. We are continuing to engage with RugCheck to ensure correct classification of NFTs vs fungible tokens.</p>
+
+      <h3>Why We Cannot Revoke Mint &amp; Freeze Authority Yet</h3>
+      <p>RugCheck and some guides suggest revoking Mint and Freeze Authority to achieve a clean score. We fully intend to do this — but it cannot be done until the collection has completely sold out and all 170 NFTs have been minted.</p>
+      <p>The reason: revoking these authorities while minting is still active would permanently break the ability to mint the remaining NFTs in the collection. Doing so prematurely would harm buyers who have not yet received their NFT. <strong>This is entirely standard practice across the Solana NFT ecosystem.</strong> Every major project — DeGods, Mad Lads, Okay Bears, and countless others — kept these authorities live during their mint phase and only revoked them at or after sellout. Once our collection is fully minted, we will revoke both authorities immediately and RugCheck's score will reflect that.</p>
+      <div class="callout">
+        The RugCheck warnings on Mint and Freeze Authority are completely outside our control for the duration of the mint. They do not indicate any risk to existing holders — your NFT is on-chain, immutable, and fully secured. Every other Solana NFT project that is mid-mint is in exactly the same position.
+      </div>
+      <p class="note">We have reported these false positives to RugCheck. The Mint and Freeze Authority flags are a structural characteristic of all Metaplex NFTs during an active mint — they cannot be cleared without destroying the ability to mint the remaining collection. We are continuing to engage with RugCheck to ensure correct classification of NFTs vs fungible tokens.</p>
     </section>
 
     <section>
@@ -158,8 +165,8 @@
         <span class="chip">Solflare</span>
         <span class="chip">Helius</span>
         <span class="chip">RugCheck</span>
-        <span class="chip">Magic Eden</span>
-        <span class="chip">Tensor</span>
+        <span class="chip">Magic Eden ✓ Submitted</span>
+        <span class="chip">Tensor ✓ Submitted</span>
         <span class="chip">Jupiter</span>
         <span class="chip">CoinGecko</span>
         <span class="chip">Bluprynt</span>
@@ -171,7 +178,7 @@
 
     <div class="footer">
       <a href="index.html">Return to the founder page</a>
-      <span>Last updated July 2026</span>
+      <span>Last updated August 2026</span>
     </div>
   </div>
 </body>
