@@ -5,6 +5,23 @@ const { OASISClient } = require("@oasisomniverse/web4-api");
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const P = TEST_MODE ? 'test:' : '';
 
+async function resendWithRetry(payload, maxAttempts = 3) {
+  let lastErr;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.RESEND_API_KEY}` },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return res;
+    const body = await res.text();
+    lastErr = `Resend error (${res.status}): ${body}`;
+    console.warn(`[oasis] Resend attempt ${attempt} failed: ${lastErr}`);
+    if (attempt < maxAttempts) await new Promise(r => setTimeout(r, 2000 * attempt));
+  }
+  throw new Error(lastErr);
+}
+
 // ── Redis (transactional data: orders, mint counts, locks, waitlists) ──
 const redis = createClient({ url: process.env.REDIS_URL, socket: { reconnectStrategy: false } });
 redis.on("error", (err) => console.error("Redis error:", err.message));
@@ -351,29 +368,23 @@ export default async function handler(req, res) {
       if (!notifyTo.length) {
         console.warn('[oasis] OWNER_NOTIFICATION_EMAIL not set — skipping owner notification');
       } else {
-        const notifyRes = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` },
-          body: JSON.stringify({
-            from: process.env.EMAIL_FROM,
-            to: notifyTo,
-            subject: `🌌 New Founder Mint — ${tierLabel} (${recipientEmail || 'no email'})`,
-            html: `
-              <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:32px;max-width:520px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
-                <h2 style="color:#00e5ff;margin:0 0 16px">New Founder Minted!</h2>
-                <p style="margin:0 0 8px">Tier: <strong style="color:#00e5ff">${tierLabel}</strong></p>
-                <p style="margin:0 0 8px">Email: <strong>${recipientEmail || 'not provided'}</strong></p>
-                <p style="margin:0 0 8px">Early Bird: <strong>${isEarlyBird ? 'Yes ✅' : 'No'}</strong></p>
-                <p style="margin:0 0 8px">Wallet: <code style="color:#f0a500">${payload.SendToAddressAfterMinting || 'unknown'}</code></p>
-                <p style="margin:0 0 8px">Mint Tx: <code style="color:#888;font-size:12px">${order.mintTx || 'pending'}</code></p>
-                <p style="margin:0 0 8px">Test Mode: ${testMode ? 'YES' : 'no'}</p>
-              </div>
-            `
-          })
+        await resendWithRetry({
+          from: process.env.EMAIL_FROM,
+          to: notifyTo,
+          subject: `🌌 New Founder Mint — ${tierLabel} (${recipientEmail || 'no email'})`,
+          html: `
+            <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:32px;max-width:520px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
+              <h2 style="color:#00e5ff;margin:0 0 16px">New Founder Minted!</h2>
+              <p style="margin:0 0 8px">Tier: <strong style="color:#00e5ff">${tierLabel}</strong></p>
+              <p style="margin:0 0 8px">Email: <strong>${recipientEmail || 'not provided'}</strong></p>
+              <p style="margin:0 0 8px">Early Bird: <strong>${isEarlyBird ? 'Yes ✅' : 'No'}</strong></p>
+              <p style="margin:0 0 8px">Wallet: <code style="color:#f0a500">${payload.SendToAddressAfterMinting || 'unknown'}</code></p>
+              <p style="margin:0 0 8px">Mint Tx: <code style="color:#888;font-size:12px">${order.mintTx || 'pending'}</code></p>
+              <p style="margin:0 0 8px">Test Mode: ${testMode ? 'YES' : 'no'}</p>
+            </div>
+          `
         });
-        const notifyBody = await notifyRes.text();
-        if (!notifyRes.ok) console.error('[oasis] owner notification failed:', notifyRes.status, notifyBody);
-        else console.log('[oasis] owner notification sent ok');
+        console.log('[oasis] owner notification sent ok');
       }
     } catch (notifyErr) {
       console.warn('[oasis] owner notification error (non-fatal):', notifyErr.message);
