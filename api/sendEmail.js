@@ -37,6 +37,113 @@ function randomUUID() {
   });
 }
 
+async function resendWithRetry(payload, maxAttempts = 3) {
+  let lastErr;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.RESEND_API_KEY}` },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return res;
+    const body = await res.text();
+    lastErr = `Resend error: ${body}`;
+    console.warn(`[sendEmail] Resend attempt ${attempt} failed (${res.status}): ${body}`);
+    if (attempt < maxAttempts) await new Promise(r => setTimeout(r, 2000 * attempt));
+  }
+  // All retries exhausted — push to queue for later retry
+  await queueFailedEmail(payload).catch(e => console.error('[sendEmail] failed to queue email:', e.message));
+  throw new Error(lastErr);
+}
+
+async function queueFailedEmail(payload) {
+  await ensureRedis();
+  const entry = { payload, queuedAt: Date.now(), attempts: 0 };
+  await redisClient.lPush(`${P}email-queue`, JSON.stringify(entry));
+  console.warn('[sendEmail] email queued for later retry:', payload.to, payload.subject);
+}
+
+async function handleProcessEmailQueue(req, res) {
+  const secret = process.env.EMAIL_QUEUE_SECRET;
+  if (secret && req.body?.secret !== secret)
+    return res.status(401).json({ error: 'Unauthorized' });
+
+  await ensureRedis();
+  const results = { sent: 0, failed: 0, remaining: 0 };
+
+  // Process up to 20 queued emails per call
+  for (let i = 0; i < 20; i++) {
+    const raw = await redisClient.rPop(`${P}email-queue`);
+    if (!raw) break;
+
+    let entry;
+    try { entry = JSON.parse(raw); } catch { results.failed++; continue; }
+
+    try {
+      const res2 = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.RESEND_API_KEY}` },
+        body: JSON.stringify(entry.payload)
+      });
+      if (res2.ok) {
+        results.sent++;
+        console.log('[sendEmail] queued email sent ok:', entry.payload.to, entry.payload.subject);
+      } else {
+        const body = await res2.text();
+        entry.attempts = (entry.attempts || 0) + 1;
+        if (entry.attempts < 10) {
+          await redisClient.lPush(`${P}email-queue`, JSON.stringify(entry));
+          console.warn(`[sendEmail] queued email still failing (attempt ${entry.attempts}), re-queued:`, body);
+        } else {
+          console.error('[sendEmail] queued email exceeded max attempts, dropping:', entry.payload.to, body);
+        }
+        results.failed++;
+      }
+    } catch (e) {
+      entry.attempts = (entry.attempts || 0) + 1;
+      if (entry.attempts < 10) await redisClient.lPush(`${P}email-queue`, JSON.stringify(entry));
+      results.failed++;
+    }
+  }
+
+  results.remaining = await redisClient.lLen(`${P}email-queue`);
+  return res.status(200).json({ success: true, ...results });
+}
+
+const TIER_LABELS = { genesis: '⚡ Genesis', core: '🔵 Core', supporter: '🟢 Supporter' };
+const NFT_IMAGES  = { genesis: 'https://founders.oasisomniverse.one/img/nft-genesis-wallet.png', core: 'https://founders.oasisomniverse.one/img/nft-core-wallet.png', supporter: 'https://founders.oasisomniverse.one/img/nft-supporter-wallet.png' };
+
+async function handleResendConfirmation(req, res) {
+  const { orderId, secret } = req.body || {};
+  const envSecret = process.env.EMAIL_QUEUE_SECRET;
+  if (envSecret && secret !== envSecret) return res.status(401).json({ error: 'Unauthorized' });
+  if (!orderId) return res.status(400).json({ error: 'Missing orderId' });
+
+  await ensureRedis();
+  const raw = await redisClient.get(`${P}order:${orderId}`);
+  if (!raw) return res.status(404).json({ error: 'Order not found' });
+
+  const order = JSON.parse(raw);
+  if (order.status !== 'minted') return res.status(400).json({ error: `Order status is '${order.status}', not minted` });
+
+  const email     = order.email;
+  const tier      = order.tier || 'supporter';
+  const tierTitle = TIER_LABELS[tier] || tier;
+  const txHash    = order.mintTx || null;
+  const activationUrl  = order.avatarActivationUrl || null;
+  const activationLabel = order.avatarCreated ? 'Activate Your Avatar' : null;
+  const earlyBird = !!(await redisClient.sIsMember(`${P}waitlist:emails`, (email || '').toLowerCase().trim()));
+  const nftImage  = NFT_IMAGES[tier] || NFT_IMAGES.supporter;
+  const chain     = 'Solana SPL';
+  const testMode  = false;
+
+  if (!email) return res.status(400).json({ error: 'Order has no email address' });
+
+  // Reuse handleSendEmail by injecting into req.body
+  req.body = { email, tierTitle, tierBadge: tier, chain, txHash, nftImage, testMode, activationUrl, activationLabel, earlyBird };
+  return await handleSendEmail(req, res);
+}
+
 const ALLOWED_ORIGINS = new Set([
   "https://oportal.oasisomniverse.one",
   "https://dev.oportal.oasisomniverse.one"
@@ -220,31 +327,26 @@ async function handleResendActivation(req, res) {
   // Build activation URL and resend email
   const activationUrl = `${ACTIVATION_PORTAL_URL}?email=${encodeURIComponent(email)}&key=${activationKey}`;
 
-  const emailRes = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.RESEND_API_KEY}` },
-    body: JSON.stringify({
-      from: process.env.EMAIL_FROM,
-      to: email,
-      subject: "Activate your OASIS Avatar — new link",
-      html: `
-        <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:40px;max-width:560px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
-          <h1 style="color:#00e5ff;margin:0 0 8px">NEW ACTIVATION LINK</h1>
-          <p style="color:#a8bfd8;margin:0 0 24px">Your previous link expired. Here is a fresh one — valid for 30 days.</p>
-          <div style="background:#071022;border-radius:12px;padding:20px;margin-bottom:24px;border:1px solid #00e5ff33">
-            <p style="margin:0 0 10px;font-size:16px"><strong>Activate Your OASIS Avatar</strong></p>
-            <p style="margin:0 0 14px;color:#888;font-size:13px">Click below to set your password and access the portal.</p>
-            <p style="margin:0 0 14px;color:#f0a500;font-size:12px">⚠️ This link expires in 30 days.</p>
-            <a href="${activationUrl}" style="display:inline-block;padding:10px 18px;background:#00e5ff11;border:1px solid #00e5ff44;border-radius:8px;color:#00e5ff;text-decoration:none;font-size:13px;font-weight:600" target="_blank" rel="noopener">Activate Your Avatar</a>
-          </div>
-          <p style="color:#a8bfd8;font-size:13px">Questions? Contact us on Telegram: <a href="https://t.me/oasisweb4chat" style="color:#00e5ff;text-decoration:none">https://t.me/oasisweb4chat</a></p>
-          <hr style="border:none;border-top:1px solid #ffffff11;margin:24px 0">
-          <p style="color:#6a80a8;font-size:11px;margin:0">OASIS · Founder Access Program</p>
+  await resendWithRetry({
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Activate your OASIS Avatar — new link",
+    html: `
+      <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:40px;max-width:560px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
+        <h1 style="color:#00e5ff;margin:0 0 8px">NEW ACTIVATION LINK</h1>
+        <p style="color:#a8bfd8;margin:0 0 24px">Your previous link expired. Here is a fresh one — valid for 30 days.</p>
+        <div style="background:#071022;border-radius:12px;padding:20px;margin-bottom:24px;border:1px solid #00e5ff33">
+          <p style="margin:0 0 10px;font-size:16px"><strong>Activate Your OASIS Avatar</strong></p>
+          <p style="margin:0 0 14px;color:#888;font-size:13px">Click below to set your password and access the portal.</p>
+          <p style="margin:0 0 14px;color:#f0a500;font-size:12px">⚠️ This link expires in 30 days.</p>
+          <a href="${activationUrl}" style="display:inline-block;padding:10px 18px;background:#00e5ff11;border:1px solid #00e5ff44;border-radius:8px;color:#00e5ff;text-decoration:none;font-size:13px;font-weight:600" target="_blank" rel="noopener">Activate Your Avatar</a>
         </div>
-      `
-    })
+        <p style="color:#a8bfd8;font-size:13px">Questions? Contact us on Telegram: <a href="https://t.me/oasisweb4chat" style="color:#00e5ff;text-decoration:none">https://t.me/oasisweb4chat</a></p>
+        <hr style="border:none;border-top:1px solid #ffffff11;margin:24px 0">
+        <p style="color:#6a80a8;font-size:11px;margin:0">OASIS · Founder Access Program</p>
+      </div>
+    `
   });
-  if (!emailRes.ok) throw new Error("Failed to send resend email");
 
   return res.status(200).json({ success: true });
 }
@@ -296,42 +398,30 @@ async function handleSendEmail(req, res) {
     ? `Activate your OASIS Avatar — ${tierTitle}`
     : `🌌 Your OASIS Founder NFT is confirmed — ${tierTitle}`;
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
-    },
-    body: JSON.stringify({
-      from: process.env.EMAIL_FROM,
-      to: email,
-      subject,
-      html: `
-        <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:40px;max-width:560px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
-          <h1 style="color:#00e5ff;margin:0 0 8px">${activationUrl ? 'MINT SUCCESSFUL + ACTIVATION REQUIRED' : 'MINT SUCCESSFUL'}</h1>
-          <p style="color:#888;margin:0 0 24px">${activationUrl ? 'Your NFT is confirmed and your avatar is ready for activation.' : 'Welcome to the OASIS, Founder.'}</p>
-          ${imageLine}
-          <div style="background:#0a0f2a;border-radius:12px;padding:24px;margin-bottom:24px">
-            <p style="margin:0 0 8px;font-size:18px"><strong>${tierTitle}</strong></p>
-            <p style="margin:8px 0;color:#888">Chain: ${chain}</p>
-            ${earlyBird ? `<p style="margin:8px 0;color:#00cc44;font-weight:700">🐦 Early Bird Supporter — you're one of the first to join the OASIS Founders program!</p>` : ''}
-            ${txLine}
-            ${explorerUrl ? `<a href="${explorerUrl}" style="display:inline-block;margin-top:12px;padding:8px 16px;background:#00e5ff11;border:1px solid #00e5ff44;border-radius:8px;color:#00e5ff;text-decoration:none;font-size:13px">View on Explorer →</a>` : ''}
-          </div>
-          ${activationSection}
-          <p style="color:#a8bfd8;font-size:13px">${activationUrl ? 'Your NFT has been linked to your OASIS avatar. Complete activation to choose your new password and finish setup.' : 'Your NFT grants you Founder access to the OASIS. It should appear in your wallet shortly.'}</p>
-          <p style="color:#a8bfd8;font-size:13px">Questions? Contact us on our telegram group: <a href="https://t.me/oasisweb4chat" style="color:#00e5ff;text-decoration:none">https://t.me/oasisweb4chat</a></p>
-          <hr style="border:none;border-top:1px solid #ffffff11;margin:24px 0">
-          <p style="color:#6a80a8;font-size:11px;margin:0">OASIS · Founder Access Program</p>
+  await resendWithRetry({
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject,
+    html: `
+      <div style="background:#01040f;color:#e0e0e0;font-family:sans-serif;padding:40px;max-width:560px;margin:0 auto;border-radius:16px;border:1px solid #00e5ff22">
+        <h1 style="color:#00e5ff;margin:0 0 8px">${activationUrl ? 'MINT SUCCESSFUL + ACTIVATION REQUIRED' : 'MINT SUCCESSFUL'}</h1>
+        <p style="color:#888;margin:0 0 24px">${activationUrl ? 'Your NFT is confirmed and your avatar is ready for activation.' : 'Welcome to the OASIS, Founder.'}</p>
+        ${imageLine}
+        <div style="background:#0a0f2a;border-radius:12px;padding:24px;margin-bottom:24px">
+          <p style="margin:0 0 8px;font-size:18px"><strong>${tierTitle}</strong></p>
+          <p style="margin:8px 0;color:#888">Chain: ${chain}</p>
+          ${earlyBird ? `<p style="margin:8px 0;color:#00cc44;font-weight:700">🐦 Early Bird Supporter — you're one of the first to join the OASIS Founders program!</p>` : ''}
+          ${txLine}
+          ${explorerUrl ? `<a href="${explorerUrl}" style="display:inline-block;margin-top:12px;padding:8px 16px;background:#00e5ff11;border:1px solid #00e5ff44;border-radius:8px;color:#00e5ff;text-decoration:none;font-size:13px">View on Explorer →</a>` : ''}
         </div>
-      `
-    })
+        ${activationSection}
+        <p style="color:#a8bfd8;font-size:13px">${activationUrl ? 'Your NFT has been linked to your OASIS avatar. Complete activation to choose your new password and finish setup.' : 'Your NFT grants you Founder access to the OASIS. It should appear in your wallet shortly.'}</p>
+        <p style="color:#a8bfd8;font-size:13px">Questions? Contact us on our telegram group: <a href="https://t.me/oasisweb4chat" style="color:#00e5ff;text-decoration:none">https://t.me/oasisweb4chat</a></p>
+        <hr style="border:none;border-top:1px solid #ffffff11;margin:24px 0">
+        <p style="color:#6a80a8;font-size:11px;margin:0">OASIS · Founder Access Program</p>
+      </div>
+    `
   });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Resend error: ${err}`);
-  }
 
   return res.status(200).json({ success: true });
 }
@@ -339,11 +429,21 @@ async function handleSendEmail(req, res) {
 export default async function handler(req, res) {
   Object.entries(getCorsHeaders(req)).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === "OPTIONS") return res.status(204).end();
+
+  // Vercel cron fires GET — use it to drain the email queue
+  if (req.method === "GET") {
+    const secret = process.env.EMAIL_QUEUE_SECRET;
+    if (secret && req.query?.secret !== secret) return res.status(401).json({ error: 'Unauthorized' });
+    return await handleProcessEmailQueue(req, res);
+  }
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     if (req.body?.action === 'activate') return await handleActivate(req, res);
     if (req.body?.action === 'resend-activation') return await handleResendActivation(req, res);
+    if (req.body?.action === 'resend-confirmation') return await handleResendConfirmation(req, res);
+    if (req.body?.action === 'process-email-queue') return await handleProcessEmailQueue(req, res);
     return await handleSendEmail(req, res);
   } catch (e) {
     console.error('[sendEmail] error:', e.message);
