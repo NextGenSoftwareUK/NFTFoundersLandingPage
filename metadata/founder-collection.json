@@ -1,9 +1,8 @@
 {
   "name": "OASIS Founders Collection",
   "symbol": "OASISFNDR",
-  "description": "OASIS Founder Access NFTs grant holders exclusive early access to the OASIS platform — a next-generation open metaverse built on Web4. Genesis, Core and Supporter tiers each carry unique in-world privileges and governance rights.",
+  "description": "OASIS Founder Access NFTs",
   "image": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
-  "external_url": "https://founders.oasisomniverse.one",
   "seller_fee_basis_points": 0,
   "properties": {
     "files": [
