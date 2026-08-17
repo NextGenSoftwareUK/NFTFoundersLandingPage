@@ -37,13 +37,13 @@ Use Postman (or any REST client) to call `POST https://api.web4.oasisomniverse.o
 Request body:
 ```json
 {
-    "InitialSize": 170,
+    "InitialSize": 0,
     "SendToAddressAfterMinting": "kEGrGguhZYn2VFAW6GzNLQMce4rSHZd2G3AYsQCBydX",
     "SendToAvatarAfterMintingId": "",
     "SendToAvatarAfterMintingUsername": "",
     "SendToAvatarAfterMintingEmail": "",
     "Title": "OASIS Founders Collection",
-    "Description": "OASIS Founder Access NFTs",
+    "Description": "OASIS Founder Access NFTs grant holders exclusive early access to the OASIS platform — a next-generation open metaverse built on Web4. Genesis, Core and Supporter tiers each carry unique in-world privileges and governance rights.",
     "Thumbnail": null,
     "ThumbnailUrl": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
     "Price": 0,
