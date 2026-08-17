@@ -8,12 +8,18 @@
     "reset:dry:test": "node scripts/reset-redis.mjs --dry-run --test"
   },
   "dependencies": {
+    "@irys/sdk": "^0.2.11",
+    "@irys/upload": "^0.0.15",
+    "@irys/upload-solana": "^0.1.8",
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
     "@metaplex-foundation/umi-bundle-defaults": "^1.5.1",
     "@oasisomniverse/web4-api": "github:NextGenSoftwareUK/OASIS-API-Javascipt-Package-WEB4",
     "@solana/web3.js": "^1.91.8",
     "@upstash/redis": "^1.38.0",
     "@vercel/kv": "^3.0.0",
+    "bip39": "^3.1.0",
+    "bs58": "^6.0.0",
+    "ed25519-hd-key": "^2.0.0",
     "redis": "^5.12.1",
     "rpc-websockets": "^7.7.0",
     "stripe": "^22.1.1",
