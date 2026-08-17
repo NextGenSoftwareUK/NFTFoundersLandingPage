@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/sendEmail",
+      "schedule": "*/10 * * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
