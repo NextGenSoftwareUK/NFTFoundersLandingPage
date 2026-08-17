@@ -263,6 +263,7 @@ export default async function handler(req, res) {
     payload.SendToAvatarAfterMintingId = buyerAvatarId || platformAvatarId;
     payload.Price = order.priceSOL || 0;
     payload.WaitForNFTToMintInSeconds = 300;
+    payload.FreezeMetadata = true;
 
     // =========================
     // 5b. EARLYBIRD CHECK
