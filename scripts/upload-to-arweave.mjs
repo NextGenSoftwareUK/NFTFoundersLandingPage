@@ -25,7 +25,11 @@ if (!privateKey) {
   process.exit(1);
 }
 
-const RPC = "https://api.mainnet-beta.solana.com";
+// Use Helius RPC if available (more reliable than public endpoint), else fall back
+const HELIUS_KEY = process.env.HELIUS_API_KEY;
+const RPC = HELIUS_KEY
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
+  : "https://solana-mainnet.g.alchemy.com/v2/demo";
 
 const IMAGES = [
   { file: "img/nft-genesis-wallet.png",      key: "genesis" },
