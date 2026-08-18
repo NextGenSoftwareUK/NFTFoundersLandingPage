@@ -2,23 +2,17 @@
   "name": "Genesis Founder NFT",
   "symbol": "OASISFNDR",
   "description": "OASIS Founder Access NFT — Genesis Founder",
-  "image": "https://arweave.net/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod",
+  "image": "https://founders.oasisomniverse.one/img/nft-genesis-wallet.png",
   "external_url": "https://founders.oasisomniverse.one",
   "seller_fee_basis_points": 0,
   "attributes": [
-    {
-      "trait_type": "Tier",
-      "value": "Genesis Founder"
-    },
-    {
-      "trait_type": "Access",
-      "value": "Founder"
-    }
+    { "trait_type": "Tier", "value": "Genesis Founder" },
+    { "trait_type": "Access", "value": "Founder" }
   ],
   "properties": {
     "files": [
       {
-        "uri": "https://arweave.net/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod",
+        "uri": "https://founders.oasisomniverse.one/img/nft-genesis-wallet.png",
         "type": "image/png"
       }
     ],
