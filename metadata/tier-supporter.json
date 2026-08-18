@@ -2,17 +2,23 @@
   "name": "Early Supporters NFT",
   "symbol": "OASISFNDR",
   "description": "OASIS Founder Access NFT — Early Supporter",
-  "image": "https://founders.oasisomniverse.one/img/nft-supporter-wallet.png",
+  "image": "https://arweave.net/HoYjMGJJNMp2rSu8Nvk54W8khzfa85ztWGyzDgH6t87M",
   "external_url": "https://founders.oasisomniverse.one",
   "seller_fee_basis_points": 0,
   "attributes": [
-    { "trait_type": "Tier", "value": "Early Supporter" },
-    { "trait_type": "Access", "value": "Founder" }
+    {
+      "trait_type": "Tier",
+      "value": "Early Supporter"
+    },
+    {
+      "trait_type": "Access",
+      "value": "Founder"
+    }
   ],
   "properties": {
     "files": [
       {
-        "uri": "https://founders.oasisomniverse.one/img/nft-supporter-wallet.png",
+        "uri": "https://arweave.net/HoYjMGJJNMp2rSu8Nvk54W8khzfa85ztWGyzDgH6t87M",
         "type": "image/png"
       }
     ],
