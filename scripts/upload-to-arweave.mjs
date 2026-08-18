@@ -81,6 +81,7 @@ async function main() {
 
   const irys = await getIrys();
 
+  console.log(`Wallet address: ${irys.address}`);
   const balance = await irys.getLoadedBalance();
   console.log(`Irys balance: ${irys.utils.fromAtomic(balance).toFixed(8)} SOL`);
 
