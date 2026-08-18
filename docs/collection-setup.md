@@ -144,9 +144,9 @@ Trigger a redeploy after saving.
 | 2026-07-12 | New dev/test collection created via dev API | `HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF` |
 | 2026-08-09 | New dev/test collection with fixed collection size created via dev API | `7PYZ18VxNaPeNyTtfoWn9eo2r4ibq5ixzceR7jcaFxhx` |
 | 2026-08-09 | New live collection created with fixed collection size via dev API | `2uVFTptrWeQD4iunhNQKyMqor7eNQKe5RuiQfVM7R4eu` |
-| 2026-08-18 | New devnet collection after wallet compromise — Arweave metadata (frozen, wrong gateway) | `32QH9iMunepwzMCvSDoHvwxUFFmCB92bsDGjCzjNZxtY` |
-| 2026-08-18 | New devnet collection — Irys gateway metadata, mutable | `DAvRirJX9N2bBCKMpxmVTkMHXs7Uc7TwPZwJqZMn5S8P` |
-| 2026-08-18 | New mainnet collection after wallet compromise — Arweave metadata | *(pending — mint on mainnet)* |
+| 2026-08-17 | New devnet collection after wallet compromise — Arweave metadata (frozen, wrong gateway) | `32QH9iMunepwzMCvSDoHvwxUFFmCB92bsDGjCzjNZxtY` |
+| 2026-08-17 | New devnet collection — Irys gateway metadata, mutable | `DAvRirJX9N2bBCKMpxmVTkMHXs7Uc7TwPZwJqZMn5S8P` |
+| 2026-08-17 | New mainnet collection after wallet compromise — Arweave metadata | *(pending — mint on mainnet)* |
 
 
 Due to some odd issues with Vercel env variables not working correctly (needs further investigation) to switch between dev/live:
