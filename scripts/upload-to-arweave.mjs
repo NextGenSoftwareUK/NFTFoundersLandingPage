@@ -80,10 +80,8 @@ async function main() {
 
   const irys = await getIrys();
 
-  if (!isDevnet) {
-    const balance = await irys.getLoadedBalance();
-    console.log(`Irys balance: ${irys.utils.fromAtomic(balance).toFixed(8)} SOL`);
-  }
+  const balance = await irys.getLoadedBalance();
+  console.log(`Irys balance: ${irys.utils.fromAtomic(balance).toFixed(8)} SOL`);
 
   console.log("\n--- Files to upload ---");
   const allFiles = [...IMAGES, ...METADATA];
@@ -94,15 +92,14 @@ async function main() {
     return;
   }
 
-  // Fund if needed (mainnet only)
-  if (!isDevnet) {
-    const balance = await irys.getLoadedBalance();
-    if (balance < estimatedPrice) {
-      const needed = estimatedPrice - balance;
-      console.log(`\nFunding Irys with ${irys.utils.fromAtomic(needed).toFixed(8)} SOL...`);
-      await irys.fund(needed);
-      console.log("Funded.");
-    }
+  // Fund Irys node if balance is insufficient
+  if (balance < estimatedPrice) {
+    const needed = estimatedPrice - balance;
+    console.log(`\nFunding Irys with ${irys.utils.fromAtomic(needed).toFixed(8)} SOL from your wallet...`);
+    await irys.fund(needed);
+    console.log("Funded.");
+  } else {
+    console.log(`\nIrys balance sufficient — no funding needed.`);
   }
 
   // Step 1: Upload images
