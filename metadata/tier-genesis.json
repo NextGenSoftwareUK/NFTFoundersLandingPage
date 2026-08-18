@@ -2,23 +2,30 @@
   "name": "Genesis Founder NFT",
   "symbol": "OASISFNDR",
   "description": "OASIS Founder Access NFT — Genesis Founder",
-  "image": "https://founders.oasisomniverse.one/img/nft-genesis-wallet.png",
+  "image": "https://gateway.irys.xyz/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod",
   "_arweave_image": "https://arweave.net/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod",
-  "_arweave_metadata": "https://arweave.net/C3BMShYrvUaWSELAx9UZycL3zmVMD7i9MjtPu5i7Gpcd",
+  "_arweave_metadata": "https://gateway.irys.xyz/6VTb9VSyWbg4Az158udJivkLbAZoQe6KDtNF8zEoJ3Qz",
   "external_url": "https://founders.oasisomniverse.one",
   "seller_fee_basis_points": 0,
   "attributes": [
-    { "trait_type": "Tier", "value": "Genesis Founder" },
-    { "trait_type": "Access", "value": "Founder" }
+    {
+      "trait_type": "Tier",
+      "value": "Genesis Founder"
+    },
+    {
+      "trait_type": "Access",
+      "value": "Founder"
+    }
   ],
   "properties": {
     "files": [
       {
-        "uri": "https://founders.oasisomniverse.one/img/nft-genesis-wallet.png",
+        "uri": "https://gateway.irys.xyz/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod",
         "_arweave_uri": "https://arweave.net/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod",
         "type": "image/png"
       }
     ],
     "category": "image"
-  }
+  },
+  "_irys_image": "https://gateway.irys.xyz/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod"
 }
