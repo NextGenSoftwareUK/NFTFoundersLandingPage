@@ -194,7 +194,7 @@ export default async function handler(req, res) {
     payload.OffChainProvider    = 'MongoDBOASIS';
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
-      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "32QH9iMunepwzMCvSDoHvwxUFFmCB92bsDGjCzjNZxtY")
+      ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "DAvRirJX9N2bBCKMpxmVTkMHXs7Uc7TwPZwJqZMn5S8P")
       : (process.env.COLLECTION_PUBLIC_KEY_LIVE || "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj");
 
     console.log('[oasis] testMode:', testMode, '| CollectionPublicKey:', payload.CollectionPublicKey);
