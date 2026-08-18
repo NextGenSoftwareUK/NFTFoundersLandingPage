@@ -2,16 +2,20 @@
   "name": "OASIS Founders Collection",
   "symbol": "OASISFNDR",
   "description": "OASIS Founder Access NFTs grant holders exclusive early access to the OASIS platform — a next-generation open metaverse built on Web4 & Web5. Genesis, Core and Supporter tiers each carry unique in-world privileges and governance rights.",
-  "image": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
+  "image": "https://gateway.irys.xyz/52GZMG1UmC9t9eXkDeoT5PaPcy4FP4kjqv7dp4vz5YmF",
+  "_arweave_image": "https://arweave.net/52GZMG1UmC9t9eXkDeoT5PaPcy4FP4kjqv7dp4vz5YmF",
+  "_arweave_metadata": "https://gateway.irys.xyz/Ev2yfRdu86QWbi79Zht57uRSuEUcAAhjHwZLN1fpvGbY",
   "external_url": "https://founders.oasisomniverse.one",
   "seller_fee_basis_points": 0,
   "properties": {
     "files": [
       {
-        "uri": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
+        "uri": "https://gateway.irys.xyz/52GZMG1UmC9t9eXkDeoT5PaPcy4FP4kjqv7dp4vz5YmF",
+        "_arweave_uri": "https://arweave.net/52GZMG1UmC9t9eXkDeoT5PaPcy4FP4kjqv7dp4vz5YmF",
         "type": "image/png"
       }
     ],
     "category": "image"
-  }
+  },
+  "_irys_image": "https://gateway.irys.xyz/52GZMG1UmC9t9eXkDeoT5PaPcy4FP4kjqv7dp4vz5YmF"
 }
