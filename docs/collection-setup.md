@@ -105,7 +105,7 @@ In the Vercel dashboard for this project, set:
 
 | Variable | Value |
 |---|---|
-| `COLLECTION_PUBLIC_KEY_LIVE` | 2uVFTptrWeQD4iunhNQKyMqor7eNQKe5RuiQfVM7R4eu The mainnet collection mint address |
+| `COLLECTION_PUBLIC_KEY_LIVE` | `EmWwo8qWdGemfGPeAa3MKKEJAn5C2WSevUHwJynU9gps` The mainnet collection mint address |
 | `COLLECTION_PUBLIC_KEY_TEST` | `DAvRirJX9N2bBCKMpxmVTkMHXs7Uc7TwPZwJqZMn5S8P` The devnet collection mint address |
 
 Trigger a redeploy after saving.
@@ -146,7 +146,7 @@ Trigger a redeploy after saving.
 | 2026-08-09 | New live collection created with fixed collection size via dev API | `2uVFTptrWeQD4iunhNQKyMqor7eNQKe5RuiQfVM7R4eu` |
 | 2026-08-17 | New devnet collection after wallet compromise — Arweave metadata (frozen, wrong gateway) | `32QH9iMunepwzMCvSDoHvwxUFFmCB92bsDGjCzjNZxtY` |
 | 2026-08-17 | New devnet collection — Irys gateway metadata, mutable | `DAvRirJX9N2bBCKMpxmVTkMHXs7Uc7TwPZwJqZMn5S8P` |
-| 2026-08-17 | New mainnet collection after wallet compromise — Arweave metadata | *(pending — mint on mainnet)* |
+| 2026-08-18 | New mainnet collection — Irys gateway metadata, mutable | `EmWwo8qWdGemfGPeAa3MKKEJAn5C2WSevUHwJynU9gps` |
 
 
 Due to some odd issues with Vercel env variables not working correctly (needs further investigation) to switch between dev/live:

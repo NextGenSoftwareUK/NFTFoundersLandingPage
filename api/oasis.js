@@ -195,7 +195,7 @@ export default async function handler(req, res) {
     payload.NFTOffChainMetaType = 'ExternalJSONURL';
     payload.CollectionPublicKey = testMode
       ? (process.env.COLLECTION_PUBLIC_KEY_TEST || "DAvRirJX9N2bBCKMpxmVTkMHXs7Uc7TwPZwJqZMn5S8P")
-      : (process.env.COLLECTION_PUBLIC_KEY_LIVE || "FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj");
+      : (process.env.COLLECTION_PUBLIC_KEY_LIVE || "EmWwo8qWdGemfGPeAa3MKKEJAn5C2WSevUHwJynU9gps");
 
     console.log('[oasis] testMode:', testMode, '| CollectionPublicKey:', payload.CollectionPublicKey);
 
