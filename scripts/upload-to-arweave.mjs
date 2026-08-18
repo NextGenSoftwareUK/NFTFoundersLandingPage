@@ -19,16 +19,13 @@ const ROOT = path.resolve(__dirname, "..");
 const args = process.argv.slice(2);
 const privateKey = args.find(a => !a.startsWith("--"));
 const isDryRun = args.includes("--dry-run");
-const isDevnet = args.includes("--devnet");
 
 if (!privateKey) {
-  console.error("Usage: node scripts/upload-to-arweave.mjs <base58-private-key> [--dry-run] [--devnet]");
+  console.error("Usage: node scripts/upload-to-arweave.mjs <base58-private-key> [--dry-run]");
   process.exit(1);
 }
 
-const RPC = isDevnet
-  ? "https://api.devnet.solana.com"
-  : "https://api.mainnet-beta.solana.com";
+const RPC = "https://api.mainnet-beta.solana.com";
 
 const IMAGES = [
   { file: "img/nft-genesis-wallet.png",      key: "genesis" },
@@ -48,7 +45,7 @@ async function getIrys() {
   const irys = await Uploader(Solana)
     .withWallet(privateKey)
     .withRpc(RPC)
-    .network(isDevnet ? "devnet" : "mainnet")
+    .mainnet()
     .build();
   await irys.ready();
   return irys;
@@ -76,7 +73,7 @@ async function upload(irys, filePath, contentType) {
 }
 
 async function main() {
-  console.log(`Mode: ${isDryRun ? "DRY RUN" : "LIVE"} | Network: ${isDevnet ? "devnet" : "mainnet"}\n`);
+  console.log(`Mode: ${isDryRun ? "DRY RUN" : "LIVE"} | Network: mainnet\n`);
 
   const irys = await getIrys();
 
