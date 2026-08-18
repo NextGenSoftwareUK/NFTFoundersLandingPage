@@ -5,6 +5,8 @@
 //   node scripts/upload-to-arweave.mjs <base58-mint-wallet-private-key>
 //
 // Run with --dry-run to check prices without uploading.
+// Run with --metadata-only to re-upload just the metadata JSONs (images already uploaded).
+//   Uses existing _arweave_image hashes from local metadata files.
 
 import "dotenv/config";
 import { Uploader } from "@irys/upload";
@@ -19,6 +21,7 @@ const ROOT = path.resolve(__dirname, "..");
 const args = process.argv.slice(2);
 const privateKey = args.find(a => !a.startsWith("--"));
 const isDryRun = args.includes("--dry-run");
+const metadataOnly = args.includes("--metadata-only");
 
 if (!privateKey) {
   console.error("Usage: node scripts/upload-to-arweave.mjs <base58-private-key> [--dry-run]");
@@ -68,16 +71,20 @@ async function checkPrice(irys, files) {
   return price;
 }
 
+// Always use gateway.irys.xyz — more reliable than arweave.net
+const GATEWAY = "https://gateway.irys.xyz";
+
 async function upload(irys, filePath, contentType) {
   const data = fs.readFileSync(path.join(ROOT, filePath));
   const receipt = await irys.upload(data, {
     tags: [{ name: "Content-Type", value: contentType }],
   });
-  return `https://arweave.net/${receipt.id}`;
+  return `${GATEWAY}/${receipt.id}`;
 }
 
 async function main() {
-  console.log(`Mode: ${isDryRun ? "DRY RUN" : "LIVE"} | Network: mainnet\n`);
+  const mode = isDryRun ? "DRY RUN" : metadataOnly ? "METADATA-ONLY" : "FULL UPLOAD";
+  console.log(`Mode: ${mode} | Network: mainnet\n`);
 
   const irys = await getIrys();
 
@@ -85,9 +92,10 @@ async function main() {
   const balance = await irys.getLoadedBalance();
   console.log(`Irys balance: ${irys.utils.fromAtomic(balance).toFixed(8)} SOL`);
 
+  const filesToUpload = metadataOnly ? METADATA : [...IMAGES, ...METADATA];
+
   console.log("\n--- Files to upload ---");
-  const allFiles = [...IMAGES, ...METADATA];
-  const estimatedPrice = await checkPrice(irys, allFiles);
+  const estimatedPrice = await checkPrice(irys, filesToUpload);
 
   if (isDryRun) {
     console.log("\nDry run complete. Remove --dry-run to upload.");
@@ -112,26 +120,44 @@ async function main() {
     console.log(`\nIrys balance sufficient — no funding needed.`);
   }
 
-  // Step 1: Upload images
-  console.log("\n--- Uploading images ---");
   const imageUrls = {};
-  for (const img of IMAGES) {
-    process.stdout.write(`Uploading ${img.file}... `);
-    const url = await upload(irys, img.file, "image/png");
-    imageUrls[img.key] = url;
-    console.log(url);
+
+  if (!metadataOnly) {
+    // Step 1: Upload images
+    console.log("\n--- Uploading images ---");
+    for (const img of IMAGES) {
+      process.stdout.write(`Uploading ${img.file}... `);
+      const url = await upload(irys, img.file, "image/png");
+      imageUrls[img.key] = url;
+      console.log(url);
+    }
+  } else {
+    // Use existing _arweave_image hashes from local metadata, swap to gateway.irys.xyz
+    console.log("\n--- Using existing image hashes from _arweave_image fields ---");
+    for (const meta of METADATA) {
+      const json = JSON.parse(fs.readFileSync(path.join(ROOT, meta.file), "utf8"));
+      if (!json._arweave_image) {
+        console.error(`Missing _arweave_image in ${meta.file} — run full upload first`);
+        process.exit(1);
+      }
+      const hash = json._arweave_image.replace(/^https?:\/\/[^/]+\//, "");
+      imageUrls[meta.key] = `${GATEWAY}/${hash}`;
+      console.log(`  ${meta.key}: ${imageUrls[meta.key]}`);
+    }
   }
 
-  // Step 2: Update local metadata JSONs with new image URLs
+  // Step 2: Update local metadata JSONs with gateway.irys.xyz image URLs
   console.log("\n--- Updating local metadata JSONs ---");
   for (const meta of METADATA) {
     const fullPath = path.join(ROOT, meta.file);
     const json = JSON.parse(fs.readFileSync(fullPath, "utf8"));
-    const arweaveImageUrl = imageUrls[meta.key];
-    json.image = arweaveImageUrl;
-    json.properties.files[0].uri = arweaveImageUrl;
+    const imageUrl = imageUrls[meta.key];
+    json.image = imageUrl;
+    json.properties.files[0].uri = imageUrl;
+    // Store the irys gateway URL as reference too
+    json._irys_image = imageUrl;
     fs.writeFileSync(fullPath, JSON.stringify(json, null, 2));
-    console.log(`Updated ${meta.file} → ${arweaveImageUrl}`);
+    console.log(`Updated ${meta.file} → ${imageUrl}`);
   }
 
   // Step 3: Upload updated metadata JSONs
@@ -141,6 +167,11 @@ async function main() {
     process.stdout.write(`Uploading ${meta.file}... `);
     const url = await upload(irys, meta.file, "application/json");
     metadataUrls[meta.key] = url;
+    // Save new metadata URL into local file
+    const fullPath = path.join(ROOT, meta.file);
+    const json = JSON.parse(fs.readFileSync(fullPath, "utf8"));
+    json._arweave_metadata = url;
+    fs.writeFileSync(fullPath, JSON.stringify(json, null, 2));
     console.log(url);
   }
 
@@ -148,12 +179,12 @@ async function main() {
   console.log("\n========================================");
   console.log("UPLOAD COMPLETE — save these URLs!");
   console.log("========================================");
-  console.log("\nImage URLs (Arweave):");
+  console.log("\nImage URLs (gateway.irys.xyz):");
   for (const [k, v] of Object.entries(imageUrls)) console.log(`  ${k}: ${v}`);
-  console.log("\nMetadata URLs (Arweave) — use these for on-chain update:");
+  console.log("\nMetadata URLs — use these for on-chain URI update:");
   for (const [k, v] of Object.entries(metadataUrls)) console.log(`  ${k}: ${v}`);
   console.log("\nNext step:");
-  console.log("  node scripts/update-nft-uri.mjs <private-key> <nft-mint-address> <arweave-metadata-url>");
+  console.log("  node scripts/update-nft-uri.mjs <private-key> <nft-mint-address> <metadata-url>");
   console.log("\nSave this summary before closing the terminal!");
 }
 
