@@ -7,8 +7,8 @@
 // Run with --dry-run to check prices without uploading.
 // Run with --devnet to use devnet (free, for testing).
 
-import Irys from "@irys/upload";
-import { Solana } from "@irys/upload-solana";
+import { Uploader } from "@irys/upload";
+import Solana from "@irys/upload-solana";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -45,12 +45,12 @@ const METADATA = [
 ];
 
 async function getIrys() {
-  const irys = await Irys({
-    network: isDevnet ? "devnet" : "mainnet",
-    token: "solana",
-    key: privateKey,
-    config: { providerUrl: RPC },
-  }).withProvider(Solana);
+  const irys = await Uploader(Solana)
+    .withWallet(privateKey)
+    .withRpc(RPC)
+    .network(isDevnet ? "devnet" : "mainnet")
+    .build();
+  await irys.ready();
   return irys;
 }
 
