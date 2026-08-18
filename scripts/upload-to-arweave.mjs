@@ -93,8 +93,16 @@ async function main() {
   if (balance < estimatedPrice) {
     const needed = estimatedPrice - balance;
     console.log(`\nFunding Irys with ${irys.utils.fromAtomic(needed).toFixed(8)} SOL from your wallet...`);
-    await irys.fund(needed);
-    console.log("Funded.");
+    try {
+      await irys.fund(needed);
+      console.log("Funded.");
+    } catch (err) {
+      if (err.getLogs) {
+        const logs = await err.getLogs();
+        console.error("Transaction logs:", logs);
+      }
+      throw err;
+    }
   } else {
     console.log(`\nIrys balance sufficient — no funding needed.`);
   }
