@@ -5,8 +5,8 @@
 //   node scripts/upload-to-arweave.mjs <base58-mint-wallet-private-key>
 //
 // Run with --dry-run to check prices without uploading.
-// Run with --devnet to use devnet (free, for testing).
 
+import "dotenv/config";
 import { Uploader } from "@irys/upload";
 import Solana from "@irys/upload-solana";
 import fs from "fs";
