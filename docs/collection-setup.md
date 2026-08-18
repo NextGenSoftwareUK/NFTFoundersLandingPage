@@ -38,12 +38,13 @@ Request body:
 ```json
 {
     "InitialSize": 0,
-    "SendToAddressAfterMinting": "kEGrGguhZYn2VFAW6GzNLQMce4rSHZd2G3AYsQCBydX",
+    "FreezeMetadata": true,
+    "SendToAddressAfterMinting": "Hoy9VvULRVG16UUvP97D7FkdjFqzTd9uHfr1rYE6wPMd",
     "SendToAvatarAfterMintingId": "",
     "SendToAvatarAfterMintingUsername": "",
     "SendToAvatarAfterMintingEmail": "",
     "Title": "OASIS Founders Collection",
-    "Description": "OASIS Founder Access NFTs grant holders exclusive early access to the OASIS platform — a next-generation open metaverse built on Web4. Genesis, Core and Supporter tiers each carry unique in-world privileges and governance rights.",
+    "Description": "OASIS Founder Access NFTs grant holders exclusive early access to the OASIS platform — a next-generation open metaverse built on Web4 & Web5. Genesis, Core and Supporter tiers each carry unique in-world privileges and governance rights.",
     "Thumbnail": null,
     "ThumbnailUrl": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
     "Price": 0,
@@ -57,6 +58,31 @@ Request body:
     "JSONMetaDataURL": "https://founders.oasisomniverse.one/metadata/founder-collection.json",
     "NFTStandardType": "SPL",
     "ImageURL": "https://founders.oasisomniverse.one/img/nft-founder-collection.png",
+    "Symbol": "OASISFNDR"
+}
+
+{
+    "InitialSize": 0,
+    "FreezeMetadata": true,
+    "SendToAddressAfterMinting": "Hoy9VvULRVG16UUvP97D7FkdjFqzTd9uHfr1rYE6wPMd",
+    "SendToAvatarAfterMintingId": "",
+    "SendToAvatarAfterMintingUsername": "",
+    "SendToAvatarAfterMintingEmail": "",
+    "Title": "OASIS Founders Collection",
+    "Description": "OASIS Founder Access NFTs grant holders exclusive early access to the OASIS platform — a next-generation open metaverse built on Web4 & Web5. Genesis, Core and Supporter tiers each carry unique in-world privileges and governance rights.",
+    "Thumbnail": null,
+    "ThumbnailUrl": "https://arweave.net/52GZMG1UmC9t9eXkDeoT5PaPcy4FP4kjqv7dp4vz5YmF",
+    "Price": 0,
+    "Discount": 0,
+    "NumberToMint": 1,
+    "MetaData": null,
+    "OnChainProvider": "SolanaOASIS",
+    "OffChainProvider": "MongoDBOASIS",
+    "StoreNFTMetaDataOnChain": false,
+    "NFTOffChainMetaType": "ExternalJSONURL",
+    "JSONMetaDataURL": "https://arweave.net/9oHFqz1myWCMWbstmNvAqtqJfUE3TpLQLUrCtj7gRXDC",
+    "NFTStandardType": "SPL",
+    "ImageURL": "https://arweave.net/52GZMG1UmC9t9eXkDeoT5PaPcy4FP4kjqv7dp4vz5YmF",
     "Symbol": "OASISFNDR"
 }
 ```
@@ -104,7 +130,7 @@ In the Vercel dashboard for this project, set:
 | Variable | Value |
 |---|---|
 | `COLLECTION_PUBLIC_KEY_LIVE` | 2uVFTptrWeQD4iunhNQKyMqor7eNQKe5RuiQfVM7R4eu The mainnet collection mint address |
-| `COLLECTION_PUBLIC_KEY_TEST` | 7PYZ18VxNaPeNyTtfoWn9eo2r4ibq5ixzceR7jcaFxhx The devnet collection mint address (if separate) |
+| `COLLECTION_PUBLIC_KEY_TEST` | 32QH9iMunepwzMCvSDoHvwxUFFmCB92bsDGjCzjNZxtY The devnet collection mint address (if separate) |
 
 Trigger a redeploy after saving.
 
@@ -128,7 +154,8 @@ Trigger a redeploy after saving.
 | Wallet | Purpose | Notes |
 |---|---|---|
 | Old wallet | Previous collection creator | **Compromised — do not use** |
-| `kEGrGguhZYn2VFAW6GzNLQMce4rSHZd2G3AYsQCBydX` | Current OASIS minting wallet | Used for all new mints from 2026-07-11 |
+| `kEGrGguhZYn2VFAW6GzNLQMce4rSHZd2G3AYsQCBydX` | Previous OASIS minting wallet | **Compromised 2026-08-17 — do not use** |
+| `Hoy9VvULRVG16UUvP97D7FkdjFqzTd9uHfr1rYE6wPMd` | Current OASIS minting wallet | Used for all new mints from 2026-08-18 |
 
 ---
 
@@ -141,6 +168,8 @@ Trigger a redeploy after saving.
 | 2026-07-12 | New dev/test collection created via dev API | `HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF` |
 | 2026-08-09 | New dev/test collection with fixed collection size created via dev API | `7PYZ18VxNaPeNyTtfoWn9eo2r4ibq5ixzceR7jcaFxhx` |
 | 2026-08-09 | New live collection created with fixed collection size via dev API | `2uVFTptrWeQD4iunhNQKyMqor7eNQKe5RuiQfVM7R4eu` |
+| 2026-08-18 | New devnet collection after wallet compromise — Arweave metadata | `32QH9iMunepwzMCvSDoHvwxUFFmCB92bsDGjCzjNZxtY` |
+| 2026-08-18 | New mainnet collection after wallet compromise — Arweave metadata | *(pending — mint on mainnet)* |
 
 
 Due to some odd issues with Vercel env variables not working correctly (needs further investigation) to switch between dev/live:
