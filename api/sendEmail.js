@@ -111,7 +111,8 @@ async function handleProcessEmailQueue(req, res) {
 }
 
 const TIER_LABELS = { genesis: '⚡ Genesis', core: '🔵 Core', supporter: '🟢 Supporter' };
-const NFT_IMAGES  = { genesis: 'https://founders.oasisomniverse.one/img/nft-genesis-wallet.png', core: 'https://founders.oasisomniverse.one/img/nft-core-wallet.png', supporter: 'https://founders.oasisomniverse.one/img/nft-supporter-wallet.png' };
+// const NFT_IMAGES  = { genesis: 'https://founders.oasisomniverse.one/img/nft-genesis-wallet.png', core: 'https://founders.oasisomniverse.one/img/nft-core-wallet.png', supporter: 'https://founders.oasisomniverse.one/img/nft-supporter-wallet.png' };
+const NFT_IMAGES  = { genesis: 'https://arweave.net/HzQmmCiM2iWsS94BuZhTuGwBMTzpaEaVnYC7rXe2fTod', core: 'https://arweave.net/CydoH7RJLY6WoezqDQhQJ9Sq6h2Rs5Dibmz21sNHicn7', supporter: 'https://arweave.net/HoYjMGJJNMp2rSu8Nvk54W8khzfa85ztWGyzDgH6t87M' };
 
 async function handleResendConfirmation(req, res) {
   const { orderId, secret } = req.body || {};
