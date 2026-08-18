@@ -600,8 +600,8 @@ OASIS_WEB6_URL=https://api.web6.oasisomniverse.one
 STARNET_API_URL=https://api.star.oasisomniverse.one
 
 # ── Solana NFT ─────────────────────────────────────────────
-COLLECTION_PUBLIC_KEY_MAINNET=FEarZUmzY6CidJPkufVbiEEvxBFYYY5bfSNpvZ5sp5Zj
-COLLECTION_PUBLIC_KEY_TEST=HrrzdjdLgsttkyM66uEAvsUWkCBukXx5sbGEaznjTdxF
+COLLECTION_PUBLIC_KEY_MAINNET=pending-mainnet-mint
+COLLECTION_PUBLIC_KEY_TEST=32QH9iMunepwzMCvSDoHvwxUFFmCB92bsDGjCzjNZxtY
 TREASURY_WALLET_SOL=your-sol-wallet
 
 # ── Stripe ─────────────────────────────────────────────────
