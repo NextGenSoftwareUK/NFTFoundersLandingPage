@@ -78,12 +78,13 @@
 
     <div class="hero">
       <h1>OASIS Founders NFT — Verification & Status</h1>
-      <p class="intro">Your OASIS Founders NFT is genuine, verified, and live on Solana mainnet. If it isn't showing up in Phantom or Solflare yet, or you've seen a RugCheck warning, this page explains exactly what is happening and why your NFT is completely legitimate.</p>
+      <p class="intro">Your OASIS Founders NFT is genuine, verified, and live on Solana mainnet — and now fully visible in Phantom. If you have seen a RugCheck warning, this page explains exactly what is happening and why your NFT is completely legitimate.</p>
       <div class="meta">
         <span class="pill green">✓ On-Chain Verified</span>
         <span class="pill green">✓ Metadata Frozen</span>
         <span class="pill green">✓ OASIS Web4 Wallet Live</span>
-        <span class="pill amber">⏳ Phantom / Solflare Indexing</span>
+        <span class="pill green">✓ Phantom Visible</span>
+        <span class="pill green">✓ Magic Eden Listed</span>
       </div>
     </div>
 
@@ -99,19 +100,21 @@
           <tr><td>Solscan.io</td><td style="color:var(--green)">✓ Live</td><td>Full on-chain detail, verified collection badge, metadata</td></tr>
           <tr><td>Solana Explorer (explorer.solana.com)</td><td style="color:var(--green)">✓ Live</td><td>Official Solana Foundation explorer</td></tr>
           <tr><td>Solana FM (solana.fm)</td><td style="color:var(--green)">✓ Live</td><td>Full transaction and metadata history</td></tr>
-          <tr><td>Phantom / Solflare</td><td style="color:var(--amber)">⏳ Indexing</td><td>Helius DAS re-index in progress — see below</td></tr>
+          <tr><td>Phantom</td><td style="color:var(--green)">✓ Live</td><td>Now fully visible — Magic Eden listing triggered indexer pickup</td></tr>
+          <tr><td>Magic Eden</td><td style="color:var(--green)">✓ Live</td><td>Collection registered and live on Magic Eden marketplace</td></tr>
+          <tr><td>Solflare</td><td style="color:var(--amber)">⏳ Indexing</td><td>May still be catching up — NFT is fully on-chain and verified</td></tr>
         </tbody>
       </table>
     </section>
 
     <section>
-      <h2>Why Phantom and Solflare May Not Be Showing Your NFT Yet</h2>
-      <p>Phantom and Solflare do not read NFT data directly from the Solana blockchain. Instead, they rely on a third-party indexing service called the <strong>Helius DAS API</strong>, which crawls the chain and builds a searchable database of NFTs. Your NFT is not missing from the blockchain — it is missing from that database.</p>
-      <p>This is a well-known, common issue affecting all new Solana NFT projects. When a collection is newly created or updated, Helius can take anywhere from a few hours to several days to re-index it. This is entirely outside our control.</p>
+      <h2>Phantom Visibility — Now Resolved</h2>
+      <p>OASIS Founders NFTs are now fully visible in Phantom. Registering the collection on <strong>Magic Eden</strong> triggered immediate re-indexing of the OASIS Founders Collection through the Helius DAS API — exactly as we anticipated when we submitted the listing.</p>
       <div class="callout">
-        <strong>This is not a sign anything is wrong.</strong> The NFT exists on-chain, is verified, and is fully usable in the OASIS ecosystem right now. Phantom and Solflare simply have not caught up yet.
+        <strong>✓ Your NFT should now appear in Phantom.</strong> If you open Phantom and do not see it yet, try pulling down to refresh your NFTs tab, or disconnect and reconnect your wallet. Indexer propagation can occasionally take a few minutes to reach all devices.
       </div>
-      <p>We are actively engaging with <strong>Helius, Phantom, and Solflare</strong> directly to request prioritised re-indexing of the OASIS Founders Collection. We are also exploring listing on Magic Eden and Tensor, as marketplace listings are known to trigger immediate indexer pickup.</p>
+      <p>For context: Phantom and Solflare do not read NFT data directly from the Solana blockchain. Instead, they rely on a third-party indexing service called the <strong>Helius DAS API</strong>. When a collection is newly minted, Helius needs to crawl and index it before wallets pick it up. Listing on a major marketplace like Magic Eden is a known and reliable way to trigger that indexing — and it worked.</p>
+      <p>If Solflare has not yet updated for you, this is normal — different wallets query Helius on different schedules. Your NFT is fully on-chain and the underlying data is indexed; Solflare should catch up shortly.</p>
     </section>
 
     <section>
@@ -165,7 +168,7 @@
         <span class="chip">Solflare</span>
         <span class="chip">Helius</span>
         <span class="chip">RugCheck</span>
-        <span class="chip">Magic Eden ✓ Submitted</span>
+        <span class="chip">Magic Eden ✓ Live</span>
         <span class="chip">Tensor ✓ Submitted</span>
         <span class="chip">Jupiter</span>
         <span class="chip">CoinGecko</span>
@@ -178,7 +181,7 @@
 
     <div class="footer">
       <a href="index.html">Return to the founder page</a>
-      <span>Last updated August 2026</span>
+      <span>Last updated September 2026</span>
     </div>
   </div>
 </body>
